@@ -393,7 +393,7 @@ model WebhookDeliveryLog {
 
 model Identity {
   id                String      @id @default(uuid())
-  emailHash         String
+  emailHash         String      @unique
   encryptedEmail    String
   encryptedFullName String
   trustStatus       TrustStatus
@@ -438,7 +438,7 @@ model PlatformUser {
 model Organization {
   id                    String      @id @default(uuid())
   legalName             String
-  domain                String
+  domain                String      @unique
   registrationNumber    String
   country               String
   industry              String
