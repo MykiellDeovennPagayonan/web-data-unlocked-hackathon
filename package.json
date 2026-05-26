@@ -1,0 +1,22 @@
+{
+  "name": "trust-layer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter api dev\" \"pnpm --filter web dev\"",
+    "build:api": "pnpm --filter api build",
+    "build:web": "pnpm --filter web build",
+    "db:migrate": "pnpm --filter api exec prisma migrate dev",
+    "db:studio": "pnpm --filter api exec prisma studio",
+    "db:generate": "pnpm --filter api exec prisma generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.29.3",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
