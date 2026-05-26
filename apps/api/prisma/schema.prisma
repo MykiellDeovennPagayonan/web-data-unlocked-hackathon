@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,4 +5,828 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────
+// SHARED ENUMS
+// ─────────────────────────────────────────────
+
+enum TrustStatus {
+  clean
+  flagged
+  limited
+  blocked
+  verified
+}
+
+enum EntityType {
+  identity
+  organization
+}
+
+enum TargetType {
+  identity
+  organization
+  ip
+  email
+  device
+}
+
+// ─────────────────────────────────────────────
+// PLATFORM & CONFIG ENUMS
+// ─────────────────────────────────────────────
+
+enum PlatformStatus {
+  active
+  suspended
+  trial
+}
+
+enum StrictnessLevel {
+  low
+  medium
+  high
+  custom
+}
+
+enum RuleTrigger {
+  registration
+  login
+  payment
+  data_export
+  api_call
+}
+
+enum RuleAction {
+  block
+  flag
+  throttle
+  require_reverification
+}
+
+// ─────────────────────────────────────────────
+// IDENTITY & ACCOUNTS ENUMS
+// ─────────────────────────────────────────────
+
+enum PlatformUserStatus {
+  active
+  flagged
+  blocked
+}
+
+enum AliasType {
+  email
+  ip
+  device
+  phone
+  username
+}
+
+enum AliasSource {
+  behavioral
+  background_check
+  manual
+  ml_inference
+}
+
+// ─────────────────────────────────────────────
+// DEVICE & IP ENUMS
+// ─────────────────────────────────────────────
+
+enum DeviceSignalType {
+  user_agent
+  os
+  browser
+  screen_resolution
+  timezone
+  language
+  canvas_hash
+  webgl_hash
+}
+
+enum IpType {
+  residential
+  datacenter
+  vpn
+  tor
+  proxy
+  mobile
+}
+
+// ─────────────────────────────────────────────
+// ACCESS & SESSIONS ENUMS
+// ─────────────────────────────────────────────
+
+enum AccessEventType {
+  registration
+  login
+  api_call
+  page_visit
+}
+
+enum AccessVerdict {
+  allowed
+  flagged
+  throttled
+  blocked
+}
+
+enum SessionVerdict {
+  clean
+  flagged
+  terminated
+}
+
+enum BehavioralEventType {
+  api_call
+  endpoint_probe
+  scrape_pattern
+  rapid_action
+  permission_violation
+}
+
+enum BehavioralActionTaken {
+  none
+  throttled
+  session_limited
+  blocked
+  reverification_required
+}
+
+// ─────────────────────────────────────────────
+// BACKGROUND CHECKS ENUMS
+// ─────────────────────────────────────────────
+
+enum CheckTrigger {
+  registration
+  manual
+  periodic_refresh
+  community_report
+}
+
+enum CheckVerdict {
+  clean
+  flagged
+  blocked
+}
+
+enum CheckSource {
+  linkedin
+  crunchbase
+  ofac
+  opensanctions
+  news
+  serp
+  social_media
+  glassdoor
+  business_registry
+}
+
+enum NormalizedVerdict {
+  clear
+  soft_flag
+  hard_flag
+  not_found
+}
+
+// ─────────────────────────────────────────────
+// TRUST ENGINE ENUMS
+// ─────────────────────────────────────────────
+
+enum SignalType {
+  linkedin_verified
+  vpn_detected
+  ofac_match
+  community_report
+  clean_history
+  behavioral_flag
+  kyc_passed
+}
+
+enum SignalSource {
+  background_check
+  behavioral
+  community_report
+  ml
+  manual
+}
+
+enum SnapshotReason {
+  background_check
+  behavioral_flag
+  community_report
+  certificate_issued
+  manual_review
+  signal_expired
+}
+
+enum CertificateStatus {
+  active
+  expired
+  revoked
+}
+
+enum CertificateVerificationVerdict {
+  valid
+  expired
+  revoked
+  not_found
+}
+
+// ─────────────────────────────────────────────
+// REGISTRY ENUMS
+// ─────────────────────────────────────────────
+
+enum ListType {
+  blacklist
+  whitelist
+}
+
+enum RegistrySeverity {
+  yellow_soft
+  orange_watch
+  red_hard
+}
+
+enum RegistrySourceType {
+  external_db
+  behavioral
+  community_report
+  manual
+}
+
+enum ReportSeverity {
+  low
+  medium
+  high
+}
+
+enum ReportCategory {
+  fraud
+  bot
+  scraping
+  spam
+  identity_theft
+  other
+}
+
+enum ReportStatus {
+  pending
+  reviewed
+  accepted
+  rejected
+}
+
+// ─────────────────────────────────────────────
+// COMPLIANCE ENUMS
+// ─────────────────────────────────────────────
+
+enum AuditActorType {
+  platform
+  identity
+  system
+  admin
+}
+
+enum ConsentType {
+  data_processing
+  background_check
+  cross_platform_sharing
+  marketing
+}
+
+enum VerificationType {
+  email
+  phone
+  government_id
+  liveness
+  business_docs
+}
+
+enum VerificationStatus {
+  pending
+  submitted
+  approved
+  rejected
+  expired
+}
+
+// ─────────────────────────────────────────────
+// PLATFORM & CONFIG
+// ─────────────────────────────────────────────
+
+model Platform {
+  id              String          @id @default(uuid())
+  name            String
+  domain          String
+  status          PlatformStatus
+  strictnessLevel StrictnessLevel
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  apiKeys                  ApiKey[]
+  platformRules            PlatformRule[]
+  webhookDeliveryLogs      WebhookDeliveryLog[]
+  platformUsers            PlatformUser[]
+  organizations            Organization[]            @relation("PlatformOrganizations")
+  accessEvents             AccessEvent[]
+  sessions                 Session[]
+  behavioralEvents         BehavioralEvent[]
+  certificateVerifications CertificateVerification[]
+  communityReports         CommunityReport[]
+  consentRecords           ConsentRecord[]
+  verificationRequests     VerificationRequest[]
+
+  @@map("platforms")
+}
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  platformId String
+  name       String
+  keyHash    String
+  scopes     Json
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  platform Platform @relation(fields: [platformId], references: [id])
+
+  @@map("api_keys")
+}
+
+model PlatformRule {
+  id            String      @id @default(uuid())
+  platformId    String
+  ruleTrigger   RuleTrigger
+  conditionJson Json
+  action        RuleAction
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  platform Platform @relation(fields: [platformId], references: [id])
+
+  @@map("platform_rules")
+}
+
+model WebhookDeliveryLog {
+  id             String    @id @default(uuid())
+  platformId     String
+  eventType      String
+  payload        Json
+  responseStatus Int
+  responseBody   String?
+  attemptNumber  Int
+  deliveredAt    DateTime?
+  createdAt      DateTime  @default(now())
+
+  platform Platform @relation(fields: [platformId], references: [id])
+
+  @@map("webhook_delivery_logs")
+}
+
+// ─────────────────────────────────────────────
+// IDENTITY & ACCOUNTS
+// ─────────────────────────────────────────────
+
+model Identity {
+  id                String      @id @default(uuid())
+  emailHash         String
+  encryptedEmail    String
+  encryptedFullName String
+  trustStatus       TrustStatus
+  isHumanVerified   Boolean     @default(false)
+  certificateId     String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  certificate          TrustCertificate?     @relation("IdentityCertificate", fields: [certificateId], references: [id])
+  platformUsers        PlatformUser[]
+  entityAliases        EntityAlias[]
+  consentRecords       ConsentRecord[]
+  verificationRequests VerificationRequest[]
+  accessEvents         AccessEvent[]
+  sessions             Session[]
+  behavioralEvents     BehavioralEvent[]
+  backgroundChecks     BackgroundCheck[]
+  trustSignals         TrustSignal[]
+  trustScoreSnapshots  TrustScoreSnapshot[]
+  trustCertificates    TrustCertificate[]    @relation("IdentityOwnedCertificates")
+  registryTargets      RegistryTarget[]
+  communityReports     CommunityReport[]
+
+  @@map("identities")
+}
+
+model PlatformUser {
+  id               String             @id @default(uuid())
+  identityId       String
+  platformId       String
+  externalUserId   String
+  statusOnPlatform PlatformUserStatus
+  joinedAt         DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  identity Identity @relation(fields: [identityId], references: [id])
+  platform Platform @relation(fields: [platformId], references: [id])
+
+  @@map("platform_users")
+}
+
+model Organization {
+  id                    String      @id @default(uuid())
+  legalName             String
+  domain                String
+  registrationNumber    String
+  country               String
+  industry              String
+  trustStatus           TrustStatus
+  certificateId         String?
+  submittedByPlatformId String
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  certificate         TrustCertificate?    @relation("OrganizationCertificate", fields: [certificateId], references: [id])
+  submittedByPlatform Platform             @relation("PlatformOrganizations", fields: [submittedByPlatformId], references: [id])
+  entityAliases       EntityAlias[]
+  accessEvents        AccessEvent[]
+  backgroundChecks    BackgroundCheck[]
+  trustSignals        TrustSignal[]
+  trustScoreSnapshots TrustScoreSnapshot[]
+  trustCertificates   TrustCertificate[]   @relation("OrganizationOwnedCertificates")
+  registryTargets     RegistryTarget[]
+  communityReports    CommunityReport[]
+
+  @@map("organizations")
+}
+
+model EntityAlias {
+  id                  String      @id @default(uuid())
+  canonicalEntityType EntityType
+  canonicalEntityId   String
+  aliasType           AliasType
+  aliasValueHash      String
+  aliasValueEncrypted String
+  confidence          Decimal
+  source              AliasSource
+  createdAt           DateTime    @default(now())
+
+  identity     Identity?     @relation(fields: [canonicalEntityId], references: [id], map: "entity_aliases_identity_fk")
+  organization Organization? @relation(fields: [canonicalEntityId], references: [id], map: "entity_aliases_org_fk")
+
+  @@map("entity_aliases")
+}
+
+// ─────────────────────────────────────────────
+// DEVICE & IP
+// ─────────────────────────────────────────────
+
+model Device {
+  id          String   @id @default(uuid())
+  stableHash  String
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @updatedAt
+  riskScore   Decimal
+  isFlagged   Boolean  @default(false)
+
+  deviceSignals   DeviceSignal[]
+  accessEvents    AccessEvent[]
+  sessions        Session[]
+  registryTargets RegistryTarget[]
+
+  @@map("devices")
+}
+
+model DeviceSignal {
+  id         String           @id @default(uuid())
+  deviceId   String
+  signalType DeviceSignalType
+  value      String
+  recordedAt DateTime         @default(now())
+
+  device Device @relation(fields: [deviceId], references: [id])
+
+  @@map("device_signals")
+}
+
+model IpRecord {
+  id              String   @id @default(uuid())
+  ipAddress       String   @db.Inet
+  ipType          IpType
+  country         String
+  region          String
+  asn             String
+  riskScore       Decimal
+  isBlacklisted   Boolean  @default(false)
+  blacklistSource String?
+  lastEvaluatedAt DateTime
+  createdAt       DateTime @default(now())
+
+  accessEvents     AccessEvent[]
+  sessions         Session[]
+  registryTargets  RegistryTarget[]
+  communityReports CommunityReport[]
+
+  @@map("ip_records")
+}
+
+// ─────────────────────────────────────────────
+// ACCESS & SESSIONS
+// ─────────────────────────────────────────────
+
+model AccessEvent {
+  id             String          @id @default(uuid())
+  platformId     String
+  identityId     String?
+  orgId          String?
+  ipId           String
+  deviceId       String
+  eventType      AccessEventType
+  verdict        AccessVerdict
+  scoreAtEvent   Decimal
+  triggeredRules Json
+  createdAt      DateTime        @default(now())
+
+  platform Platform      @relation(fields: [platformId], references: [id])
+  identity Identity?     @relation(fields: [identityId], references: [id])
+  org      Organization? @relation(fields: [orgId], references: [id])
+  ip       IpRecord      @relation(fields: [ipId], references: [id])
+  device   Device        @relation(fields: [deviceId], references: [id])
+
+  @@map("access_events")
+}
+
+model Session {
+  id                String         @id @default(uuid())
+  identityId        String
+  platformId        String
+  ipId              String
+  deviceId          String
+  sessionTokenHash  String
+  riskScoreAtStart  Decimal
+  riskScoreAtEnd    Decimal?
+  startedAt         DateTime       @default(now())
+  endedAt           DateTime?
+  sessionVerdict    SessionVerdict
+  terminationReason String?
+
+  identity         Identity          @relation(fields: [identityId], references: [id])
+  platform         Platform          @relation(fields: [platformId], references: [id])
+  ip               IpRecord          @relation(fields: [ipId], references: [id])
+  device           Device            @relation(fields: [deviceId], references: [id])
+  behavioralEvents BehavioralEvent[]
+
+  @@map("sessions")
+}
+
+model BehavioralEvent {
+  id            String                @id @default(uuid())
+  sessionId     String
+  identityId    String
+  platformId    String
+  eventType     BehavioralEventType
+  endpoint      String
+  flagTriggered Boolean               @default(false)
+  flagType      String?
+  actionTaken   BehavioralActionTaken
+  createdAt     DateTime              @default(now())
+
+  session  Session  @relation(fields: [sessionId], references: [id])
+  identity Identity @relation(fields: [identityId], references: [id])
+  platform Platform @relation(fields: [platformId], references: [id])
+
+  @@map("behavioral_events")
+}
+
+// ─────────────────────────────────────────────
+// BACKGROUND CHECKS
+// ─────────────────────────────────────────────
+
+model BackgroundCheck {
+  id             String       @id @default(uuid())
+  entityType     EntityType
+  identityId     String?
+  orgId          String?
+  triggeredBy    CheckTrigger
+  overallVerdict CheckVerdict
+  completedAt    DateTime?
+  createdAt      DateTime     @default(now())
+
+  identity Identity?     @relation(fields: [identityId], references: [id])
+  org      Organization? @relation(fields: [orgId], references: [id])
+
+  results           BackgroundCheckResult[]
+  trustCertificates TrustCertificate[]
+
+  @@map("background_checks")
+}
+
+model BackgroundCheckResult {
+  id                String            @id @default(uuid())
+  checkId           String
+  source            CheckSource
+  rawResult         Json
+  normalizedVerdict NormalizedVerdict
+  confidenceScore   Decimal
+  llmSummary        String
+  checkedAt         DateTime          @default(now())
+
+  check BackgroundCheck @relation(fields: [checkId], references: [id])
+
+  @@map("background_check_results")
+}
+
+// ─────────────────────────────────────────────
+// TRUST ENGINE
+// ─────────────────────────────────────────────
+
+model TrustSignal {
+  id          String       @id @default(uuid())
+  entityType  EntityType
+  identityId  String?
+  orgId       String?
+  signalType  SignalType
+  weight      Decimal
+  source      SignalSource
+  referenceId String
+  expiresAt   DateTime?
+  createdAt   DateTime     @default(now())
+
+  identity Identity?     @relation(fields: [identityId], references: [id])
+  org      Organization? @relation(fields: [orgId], references: [id])
+
+  @@map("trust_signals")
+}
+
+model TrustScoreSnapshot {
+  id             String         @id @default(uuid())
+  entityType     EntityType
+  identityId     String?
+  orgId          String?
+  score          Decimal
+  snapshotReason SnapshotReason
+  referenceId    String
+  createdAt      DateTime       @default(now())
+
+  identity Identity?     @relation(fields: [identityId], references: [id])
+  org      Organization? @relation(fields: [orgId], references: [id])
+
+  @@map("trust_score_snapshots")
+}
+
+model TrustCertificate {
+  id               String            @id @default(uuid())
+  entityType       EntityType
+  identityId       String?
+  orgId            String?
+  issuedAt         DateTime          @default(now())
+  expiresAt        DateTime
+  status           CertificateStatus
+  revocationReason String?
+  certificateHash  String
+  blockchainTxHash String
+  issuingCheckId   String
+
+  identity     Identity?       @relation("IdentityOwnedCertificates", fields: [identityId], references: [id])
+  org          Organization?   @relation("OrganizationOwnedCertificates", fields: [orgId], references: [id])
+  issuingCheck BackgroundCheck @relation(fields: [issuingCheckId], references: [id])
+
+  identityRef Identity[]     @relation("IdentityCertificate")
+  orgRef      Organization[] @relation("OrganizationCertificate")
+
+  verifications CertificateVerification[]
+
+  @@map("trust_certificates")
+}
+
+model CertificateVerification {
+  id                   String                         @id @default(uuid())
+  certificateId        String
+  verifiedByPlatformId String
+  verdict              CertificateVerificationVerdict
+  verifiedAt           DateTime                       @default(now())
+
+  certificate        TrustCertificate @relation(fields: [certificateId], references: [id])
+  verifiedByPlatform Platform         @relation(fields: [verifiedByPlatformId], references: [id])
+
+  @@map("certificate_verifications")
+}
+
+// ─────────────────────────────────────────────
+// REGISTRY
+// ─────────────────────────────────────────────
+
+model RegistryEntry {
+  id          String             @id @default(uuid())
+  listType    ListType
+  severity    RegistrySeverity
+  sourceType  RegistrySourceType
+  reportCount Int                @default(0)
+  isActive    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  targets          RegistryTarget[]
+  communityReports CommunityReport[]
+
+  @@map("registry_entries")
+}
+
+model RegistryTarget {
+  id              String     @id @default(uuid())
+  registryEntryId String
+  targetType      TargetType
+  identityId      String?
+  orgId           String?
+  ipId            String?
+  deviceId        String?
+  emailHash       String?
+  createdAt       DateTime   @default(now())
+
+  registryEntry RegistryEntry @relation(fields: [registryEntryId], references: [id])
+  identity      Identity?     @relation(fields: [identityId], references: [id])
+  org           Organization? @relation(fields: [orgId], references: [id])
+  ip            IpRecord?     @relation(fields: [ipId], references: [id])
+  device        Device?       @relation(fields: [deviceId], references: [id])
+
+  @@map("registry_targets")
+}
+
+model CommunityReport {
+  id                  String         @id @default(uuid())
+  reportingPlatformId String
+  targetType          TargetType
+  identityId          String?
+  orgId               String?
+  ipId                String?
+  emailHash           String?
+  severity            ReportSeverity
+  category            ReportCategory
+  description         String
+  evidenceUrls        Json
+  status              ReportStatus
+  registryEntryId     String?
+  createdAt           DateTime       @default(now())
+
+  reportingPlatform Platform       @relation(fields: [reportingPlatformId], references: [id])
+  identity          Identity?      @relation(fields: [identityId], references: [id])
+  org               Organization?  @relation(fields: [orgId], references: [id])
+  ip                IpRecord?      @relation(fields: [ipId], references: [id])
+  registryEntry     RegistryEntry? @relation(fields: [registryEntryId], references: [id])
+
+  @@map("community_reports")
+}
+
+// ─────────────────────────────────────────────
+// COMPLIANCE
+// ─────────────────────────────────────────────
+
+model AuditLog {
+  id         String         @id @default(uuid())
+  actorType  AuditActorType
+  actorId    String
+  action     String
+  targetType String
+  targetId   String
+  oldValue   Json?
+  newValue   Json?
+  createdAt  DateTime       @default(now())
+
+  @@map("audit_logs")
+}
+
+model ConsentRecord {
+  id             String      @id @default(uuid())
+  identityId     String
+  platformId     String
+  consentType    ConsentType
+  acceptedAt     DateTime?
+  revokedAt      DateTime?
+  consentVersion String
+  ipAtConsent    String      @db.Inet
+
+  identity Identity @relation(fields: [identityId], references: [id])
+  platform Platform @relation(fields: [platformId], references: [id])
+
+  @@map("consent_records")
+}
+
+model VerificationRequest {
+  id               String             @id @default(uuid())
+  identityId       String
+  platformId       String
+  verificationType VerificationType
+  provider         String
+  status           VerificationStatus
+  submittedAt      DateTime?
+  decidedAt        DateTime?
+  rejectionReason  String?
+  createdAt        DateTime           @default(now())
+
+  identity Identity @relation(fields: [identityId], references: [id])
+  platform Platform @relation(fields: [platformId], references: [id])
+
+  @@map("verification_requests")
 }
