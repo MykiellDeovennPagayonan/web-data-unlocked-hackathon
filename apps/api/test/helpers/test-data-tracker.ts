@@ -54,6 +54,18 @@ export class TestDataTracker {
         where: { id: { in: this.platformUsers } },
       });
     }
+    // Delete all api_keys and platform_rules for tracked platforms (catches untracked ones from presets/rotations)
+    if (this.platforms.length > 0) {
+      await prisma.apiKey.deleteMany({
+        where: { platformId: { in: this.platforms } },
+      });
+      await prisma.platformRule.deleteMany({
+        where: { platformId: { in: this.platforms } },
+      });
+      await prisma.webhookDeliveryLog.deleteMany({
+        where: { platformId: { in: this.platforms } },
+      });
+    }
     if (this.apiKeys.length > 0) {
       await prisma.apiKey.deleteMany({
         where: { id: { in: this.apiKeys } },
@@ -75,6 +87,9 @@ export class TestDataTracker {
       });
     }
     if (this.identities.length > 0) {
+      await prisma.platformUser.deleteMany({
+        where: { identityId: { in: this.identities } },
+      });
       await prisma.identity.deleteMany({
         where: { id: { in: this.identities } },
       });

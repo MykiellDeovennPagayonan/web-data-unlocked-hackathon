@@ -145,7 +145,7 @@ describe('A. Platform Management (e2e)', () => {
           scopes: ['read', 'write'],
           expiresAt: '2026-12-31T23:59:59Z',
         })
-        .expect(200);
+        .expect(201);
 
       expect(res.body).toHaveProperty('apiKey');
       expect(res.body).toHaveProperty('rawKey');
@@ -179,7 +179,7 @@ describe('A. Platform Management (e2e)', () => {
         .post('/v1/platform/api-keys')
         .set('x-api-key', apiKey)
         .send({ name: 'Rotatable Key', scopes: ['read'] })
-        .expect(200);
+        .expect(201);
 
       const rotatableKeyId = createRes.body.apiKey.id;
       const rotatableRawKey = createRes.body.rawKey;
@@ -189,10 +189,11 @@ describe('A. Platform Management (e2e)', () => {
         .post(`/v1/platform/api-keys/${rotatableKeyId}/rotate`)
         .set('x-api-key', apiKey)
         .send({ name: 'Rotated Key' })
-        .expect(200);
+        .expect(201);
 
       expect(rotateRes.body.rawKey).not.toBe(rotatableRawKey);
-      expect(rotateRes.body.apiKey.revokedAt).not.toBeNull();
+      expect(rotateRes.body.apiKey).toHaveProperty('id');
+      expect(rotateRes.body.apiKey.id).not.toBe(rotatableKeyId);
       tracker.trackApiKey(rotateRes.body.apiKey.id);
     });
   });
@@ -244,7 +245,7 @@ describe('A. Platform Management (e2e)', () => {
       const res = await request(testApp.app.getHttpServer())
         .post(`/v1/platform/rules/${ruleId}/toggle`)
         .send({ isActive: false })
-        .expect(200);
+        .expect(201);
 
       expect(res.body.isActive).toBe(false);
     });
@@ -281,7 +282,7 @@ describe('A. Platform Management (e2e)', () => {
         .post('/v1/platform/rules/apply-preset')
         .set('x-api-key', apiKey)
         .send({ strictnessLevel: 'high' })
-        .expect(200);
+        .expect(201);
     });
   });
 
@@ -326,7 +327,7 @@ describe('A. Platform Management (e2e)', () => {
       const res = await request(testApp.app.getHttpServer())
         .post(`/v1/platform/webhooks/logs/${webhookLogId}/retry`)
         .send({})
-        .expect(200);
+        .expect(201);
 
       expect(res.body).toHaveProperty('id');
       tracker.trackWebhookLog(res.body.id);

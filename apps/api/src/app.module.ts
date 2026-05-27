@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { PlatformManagementModule } from './modules/platform-management/platform-management.module';
 import { IdentityModule } from './modules/identity/identity.module';
+import { DeviceIntelligenceModule } from './modules/device-intelligence/device-intelligence.module';
+import { AccessSessionsModule } from './modules/access-sessions/access-sessions.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { IdentityModule } from './modules/identity/identity.module';
     PrismaModule,
     PlatformManagementModule,
     IdentityModule,
+    DeviceIntelligenceModule,
+    AccessSessionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
