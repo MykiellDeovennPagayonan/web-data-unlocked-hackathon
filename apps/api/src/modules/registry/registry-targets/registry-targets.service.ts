@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { RegistryTargetsRepository } from './registry-targets.repository';
 import { createTarget } from './service-methods/create-target';
 import { getTargetsByEntry } from './service-methods/get-targets-by-entry';
@@ -12,10 +13,13 @@ import { RegistryEntry } from '../registry-entries/entities/registry-entry.entit
 
 @Injectable()
 export class RegistryTargetsService {
-  constructor(private readonly repository: RegistryTargetsRepository) {}
+  constructor(
+    private readonly repository: RegistryTargetsRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   createTarget = (input: CreateRegistryTargetData): Promise<RegistryTarget> =>
-    createTarget(this.repository, input);
+    createTarget(this.repository, this.auditLogsService, input);
 
   getTargetsByEntry = (registryEntryId: string): Promise<RegistryTarget[]> =>
     getTargetsByEntry(this.repository, registryEntryId);

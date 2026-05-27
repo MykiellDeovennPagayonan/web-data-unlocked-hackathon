@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { RegistryEntriesRepository } from './registry-entries.repository';
 import { createEntry } from './service-methods/create-entry';
 import { getEntryById } from './service-methods/get-entry-by-id';
@@ -14,10 +15,13 @@ import {
 
 @Injectable()
 export class RegistryEntriesService {
-  constructor(private readonly repository: RegistryEntriesRepository) {}
+  constructor(
+    private readonly repository: RegistryEntriesRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   createEntry = (input: CreateRegistryEntryData): Promise<RegistryEntry> =>
-    createEntry(this.repository, input);
+    createEntry(this.repository, this.auditLogsService, input);
 
   getEntryById = (id: string): Promise<RegistryEntry | null> =>
     getEntryById(this.repository, id);
@@ -28,8 +32,9 @@ export class RegistryEntriesService {
   updateEntry = (
     id: string,
     input: UpdateRegistryEntryData,
-  ): Promise<RegistryEntry> => updateEntry(this.repository, id, input);
+  ): Promise<RegistryEntry> =>
+    updateEntry(this.repository, this.auditLogsService, id, input);
 
   escalateSeverity = (id: string): Promise<RegistryEntry> =>
-    escalateSeverity(this.repository, id);
+    escalateSeverity(this.repository, this.auditLogsService, id);
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { DevicesRepository } from './devices.repository';
 import { DeviceSignalsRepository } from '../device-signals/device-signals.repository';
 import { resolveOrCreateDevice } from './service-methods/resolve-or-create-device';
@@ -13,6 +14,7 @@ export class DevicesService {
   constructor(
     private readonly repository: DevicesRepository,
     private readonly signalsRepository: DeviceSignalsRepository,
+    private readonly auditLogsService: AuditLogsService,
   ) {}
 
   resolveOrCreateDevice = (
@@ -27,5 +29,5 @@ export class DevicesService {
     updateDeviceRiskScore(this.repository, id, riskScore);
 
   flagDevice = (id: string, isFlagged: boolean): Promise<Device> =>
-    flagDevice(this.repository, id, isFlagged);
+    flagDevice(this.repository, this.auditLogsService, id, isFlagged);
 }

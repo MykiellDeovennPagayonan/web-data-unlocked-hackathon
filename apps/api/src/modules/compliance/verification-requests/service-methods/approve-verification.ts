@@ -57,6 +57,7 @@ export async function approveVerification(
     action: 'verification_approved',
     targetType: 'verification_request',
     targetId: updated.id,
+    oldValue: { status: request.status },
     newValue: { status: VerificationStatus.approved },
   });
 

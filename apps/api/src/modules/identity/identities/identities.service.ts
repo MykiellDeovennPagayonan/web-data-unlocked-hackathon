@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { IdentitiesRepository } from './identities.repository';
 import { createIdentity } from './service-methods/create-identity';
 import { getIdentityById } from './service-methods/get-identity-by-id';
@@ -12,10 +13,13 @@ import {
 
 @Injectable()
 export class IdentitiesService {
-  constructor(private readonly repository: IdentitiesRepository) {}
+  constructor(
+    private readonly repository: IdentitiesRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   createIdentity = (input: CreateIdentityData): Promise<Identity> =>
-    createIdentity(this.repository, input);
+    createIdentity(this.repository, this.auditLogsService, input);
 
   getIdentityById = (id: string): Promise<Identity | null> =>
     getIdentityById(this.repository, id);
@@ -26,5 +30,6 @@ export class IdentitiesService {
   updateTrustStatus = (
     id: string,
     status: UpdateIdentityData['trustStatus'],
-  ): Promise<Identity> => updateTrustStatus(this.repository, id, status);
+  ): Promise<Identity> =>
+    updateTrustStatus(this.repository, this.auditLogsService, id, status);
 }

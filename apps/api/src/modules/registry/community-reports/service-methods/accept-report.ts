@@ -76,7 +76,8 @@ export async function acceptReport(
     action: 'report_accepted',
     targetType: 'community_report',
     targetId: updated.id,
-    newValue: { registryEntryId: entry.id },
+    oldValue: { status: report.status },
+    newValue: { status: ReportStatus.accepted, registryEntryId: entry.id },
   });
 
   return updated;

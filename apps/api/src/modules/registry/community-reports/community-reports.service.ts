@@ -30,7 +30,7 @@ export class CommunityReportsService {
   ) {}
 
   submitReport = (input: CreateCommunityReportData): Promise<CommunityReport> =>
-    submitReport(this.repository, input);
+    submitReport(this.repository, this.auditLogsService, input);
 
   getReportById = (id: string): Promise<CommunityReport | null> =>
     getReportById(this.repository, id);
@@ -41,7 +41,8 @@ export class CommunityReportsService {
   updateReportStatus = (
     id: string,
     input: UpdateCommunityReportStatusData,
-  ): Promise<CommunityReport> => updateReportStatus(this.repository, id, input);
+  ): Promise<CommunityReport> =>
+    updateReportStatus(this.repository, this.auditLogsService, id, input);
 
   acceptReport = (input: AcceptReportInput): Promise<CommunityReport> =>
     acceptReport(

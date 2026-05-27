@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { OrganizationsRepository } from './organizations.repository';
 import { createOrganization } from './service-methods/create-organization';
 import { getOrganizationById } from './service-methods/get-organization-by-id';
@@ -12,10 +13,13 @@ import {
 
 @Injectable()
 export class OrganizationsService {
-  constructor(private readonly repository: OrganizationsRepository) {}
+  constructor(
+    private readonly repository: OrganizationsRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   createOrganization = (input: CreateOrganizationData): Promise<Organization> =>
-    createOrganization(this.repository, input);
+    createOrganization(this.repository, this.auditLogsService, input);
 
   getOrganizationById = (id: string): Promise<Organization | null> =>
     getOrganizationById(this.repository, id);
@@ -26,5 +30,6 @@ export class OrganizationsService {
   updateTrustStatus = (
     id: string,
     status: UpdateOrganizationData['trustStatus'],
-  ): Promise<Organization> => updateTrustStatus(this.repository, id, status);
+  ): Promise<Organization> =>
+    updateTrustStatus(this.repository, this.auditLogsService, id, status);
 }

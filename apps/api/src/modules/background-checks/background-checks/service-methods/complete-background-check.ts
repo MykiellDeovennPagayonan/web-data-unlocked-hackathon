@@ -1,10 +1,12 @@
 import { BackgroundChecksRepository } from '../background-checks.repository';
+import { AuditLogsService } from '../../../compliance/audit-logs/audit-logs.service';
 import { BackgroundCheck } from '../entities/background-check.entity';
 import { TrustSignalsService } from '../../../trust-engine/trust-signals/trust-signals.service';
 import {
   CheckVerdict,
   SignalType,
   SignalSource,
+  AuditActorType,
 } from '../../../../generated/client';
 
 export interface CompleteBackgroundCheckInput {
@@ -15,8 +17,14 @@ export interface CompleteBackgroundCheckInput {
 export async function completeBackgroundCheck(
   repository: BackgroundChecksRepository,
   trustSignalsService: TrustSignalsService,
+  auditLogsService: AuditLogsService,
   input: CompleteBackgroundCheckInput,
 ): Promise<BackgroundCheck> {
+  const old = await repository.findById(input.checkId);
+  if (!old) {
+    throw new Error(`Background check not found: ${input.checkId}`);
+  }
+
   const check = await repository.update(input.checkId, {
     overallVerdict: input.overallVerdict,
     completedAt: new Date(),
@@ -43,6 +51,22 @@ export async function completeBackgroundCheck(
     weight,
     source: SignalSource.background_check,
     referenceId: check.id,
+  });
+
+  await auditLogsService.logAction({
+    actorType: AuditActorType.system,
+    actorId: 'system',
+    action: 'background_check_completed',
+    targetType: 'background_check',
+    targetId: input.checkId,
+    oldValue: {
+      overallVerdict: old.overallVerdict,
+      completedAt: old.completedAt,
+    },
+    newValue: {
+      overallVerdict: check.overallVerdict,
+      completedAt: check.completedAt,
+    },
   });
 
   return check;

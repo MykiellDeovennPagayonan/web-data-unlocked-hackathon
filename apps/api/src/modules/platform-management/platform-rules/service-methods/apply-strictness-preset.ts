@@ -1,8 +1,11 @@
 import { StrictnessLevel } from '../../../../generated/client';
 import { PlatformRulesRepository } from '../platform-rules.repository';
+import { AuditLogsService } from '../../../compliance/audit-logs/audit-logs.service';
+import { AuditActorType } from '../../../../generated/client';
 
 export async function applyStrictnessPreset(
   repository: PlatformRulesRepository,
+  auditLogsService: AuditLogsService,
   platformId: string,
   strictnessLevel: StrictnessLevel,
 ): Promise<void> {
@@ -23,6 +26,21 @@ export async function applyStrictnessPreset(
       }),
     ),
   );
+
+  await auditLogsService.logAction({
+    actorType: AuditActorType.system,
+    actorId: 'system',
+    action: 'strictness_preset_applied',
+    targetType: 'platform',
+    targetId: platformId,
+    oldValue: {
+      rulesDeleted: existingRules.length,
+      previousStrictnessLevel: existingRules[0]?.platformId
+        ? undefined
+        : undefined,
+    },
+    newValue: { strictnessLevel, rulesCreated: presetRules.length },
+  });
 }
 
 function getPresetRules(level: StrictnessLevel): Array<{

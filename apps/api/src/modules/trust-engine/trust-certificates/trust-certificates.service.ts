@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { TrustCertificatesRepository } from './trust-certificates.repository';
 import {
   issueCertificate,
@@ -11,14 +12,18 @@ import { EntityType } from '../../../generated/client';
 
 @Injectable()
 export class TrustCertificatesService {
-  constructor(private readonly repository: TrustCertificatesRepository) {}
+  constructor(
+    private readonly repository: TrustCertificatesRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   issueCertificate = (
     input: IssueCertificateInput,
-  ): Promise<TrustCertificate> => issueCertificate(this.repository, input);
+  ): Promise<TrustCertificate> =>
+    issueCertificate(this.repository, this.auditLogsService, input);
 
   revokeCertificate = (id: string, reason: string): Promise<TrustCertificate> =>
-    revokeCertificate(this.repository, id, reason);
+    revokeCertificate(this.repository, this.auditLogsService, id, reason);
 
   getCertificatesByEntity = (
     entityType: EntityType,

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PlatformStatus, StrictnessLevel } from '../../../generated/client';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { PlatformsRepository } from './platforms.repository';
 import { createPlatform } from './service-methods/create-platform';
 import { getPlatformById } from './service-methods/get-platform-by-id';
@@ -17,10 +18,13 @@ import {
 
 @Injectable()
 export class PlatformsService {
-  constructor(private readonly repository: PlatformsRepository) {}
+  constructor(
+    private readonly repository: PlatformsRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   createPlatform = (input: CreatePlatformData): Promise<Platform> =>
-    createPlatform(this.repository, input);
+    createPlatform(this.repository, this.auditLogsService, input);
 
   getPlatformById = (id: string): Promise<Platform | null> =>
     getPlatformById(this.repository, id);
@@ -32,16 +36,22 @@ export class PlatformsService {
     listPlatforms(this.repository, filters);
 
   updatePlatform = (id: string, input: UpdatePlatformData): Promise<Platform> =>
-    updatePlatform(this.repository, id, input);
+    updatePlatform(this.repository, this.auditLogsService, id, input);
 
   updatePlatformStatus = (
     id: string,
     status: PlatformStatus,
-  ): Promise<Platform> => updatePlatformStatus(this.repository, id, status);
+  ): Promise<Platform> =>
+    updatePlatformStatus(this.repository, this.auditLogsService, id, status);
 
   updateStrictnessLevel = (
     id: string,
     strictnessLevel: StrictnessLevel,
   ): Promise<Platform> =>
-    updateStrictnessLevel(this.repository, id, strictnessLevel);
+    updateStrictnessLevel(
+      this.repository,
+      this.auditLogsService,
+      id,
+      strictnessLevel,
+    );
 }

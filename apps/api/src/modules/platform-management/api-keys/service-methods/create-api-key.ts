@@ -1,5 +1,7 @@
 import { randomBytes, createHash } from 'crypto';
 import { ApiKeysRepository } from '../api-keys.repository';
+import { AuditLogsService } from '../../../compliance/audit-logs/audit-logs.service';
+import { AuditActorType } from '../../../../generated/client';
 import { ApiKey, CreateApiKeyData } from '../entities/api-key.entity';
 
 export interface CreateApiKeyResult {
@@ -9,6 +11,7 @@ export interface CreateApiKeyResult {
 
 export async function createApiKey(
   repository: ApiKeysRepository,
+  auditLogsService: AuditLogsService,
   platformId: string,
   input: CreateApiKeyData,
 ): Promise<CreateApiKeyResult> {
@@ -25,6 +28,15 @@ export async function createApiKey(
 
   // Update with the hash after creation
   await repository.update(apiKey.id, { keyHash });
+
+  await auditLogsService.logAction({
+    actorType: AuditActorType.system,
+    actorId: 'system',
+    action: 'api_key_created',
+    targetType: 'api_key',
+    targetId: apiKey.id,
+    newValue: { platformId, name: input.name, scopes: input.scopes },
+  });
 
   return { apiKey, rawKey };
 }

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ComplianceModule } from '../compliance/compliance.module';
 import { DevicesController } from './devices/devices.controller';
 import { IpRecordsController } from './ip-records/ip-records.controller';
 import { DevicesService } from './devices/devices.service';
@@ -10,6 +11,7 @@ import { DeviceSignalsRepository } from './device-signals/device-signals.reposit
 import { IpRecordsRepository } from './ip-records/ip-records.repository';
 
 @Module({
+  imports: [ComplianceModule],
   controllers: [DevicesController, IpRecordsController],
   providers: [
     PrismaService,

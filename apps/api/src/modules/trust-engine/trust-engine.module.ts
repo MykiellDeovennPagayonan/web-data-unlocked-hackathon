@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ComplianceModule } from '../compliance/compliance.module';
 import { TrustSignalsController } from './trust-signals/trust-signals.controller';
 import { TrustSignalsService } from './trust-signals/trust-signals.service';
 import { TrustSignalsRepository } from './trust-signals/trust-signals.repository';
@@ -14,6 +15,7 @@ import { CertificateVerificationsService } from './certificate-verifications/cer
 import { CertificateVerificationsRepository } from './certificate-verifications/certificate-verifications.repository';
 
 @Module({
+  imports: [ComplianceModule],
   controllers: [
     TrustSignalsController,
     TrustScoreSnapshotsController,

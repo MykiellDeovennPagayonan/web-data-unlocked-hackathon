@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ComplianceModule } from '../compliance/compliance.module';
 import { TrustEngineModule } from '../trust-engine/trust-engine.module';
 import { BackgroundChecksController } from './background-checks/background-checks.controller';
 import { BackgroundChecksService } from './background-checks/background-checks.service';
@@ -9,7 +10,7 @@ import { BackgroundCheckResultsService } from './background-check-results/backgr
 import { BackgroundCheckResultsRepository } from './background-check-results/background-check-results.repository';
 
 @Module({
-  imports: [TrustEngineModule],
+  imports: [TrustEngineModule, ComplianceModule],
   controllers: [BackgroundChecksController, BackgroundCheckResultsController],
   providers: [
     PrismaService,

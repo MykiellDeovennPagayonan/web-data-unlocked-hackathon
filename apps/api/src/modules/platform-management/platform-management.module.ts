@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ComplianceModule } from '../compliance/compliance.module';
 import { PlatformsController } from './platforms/platforms.controller';
 import { PlatformsService } from './platforms/platforms.service';
 import { PlatformsRepository } from './platforms/platforms.repository';
@@ -14,6 +15,7 @@ import { WebhooksService } from './webhooks/webhooks.service';
 import { WebhooksRepository } from './webhooks/webhooks.repository';
 
 @Module({
+  imports: [ComplianceModule],
   controllers: [
     PlatformsController,
     ApiKeysController,

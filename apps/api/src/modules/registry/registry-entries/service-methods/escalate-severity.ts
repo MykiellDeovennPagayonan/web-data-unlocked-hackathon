@@ -1,9 +1,11 @@
 import { RegistryEntriesRepository } from '../registry-entries.repository';
+import { AuditLogsService } from '../../../compliance/audit-logs/audit-logs.service';
 import { RegistryEntry } from '../entities/registry-entry.entity';
-import { RegistrySeverity } from '../../../../generated/client';
+import { RegistrySeverity, AuditActorType } from '../../../../generated/client';
 
 export async function escalateSeverity(
   repository: RegistryEntriesRepository,
+  auditLogsService: AuditLogsService,
   id: string,
 ): Promise<RegistryEntry> {
   const entry = await repository.findById(id);
@@ -17,7 +19,19 @@ export async function escalateSeverity(
     [RegistrySeverity.red_hard]: RegistrySeverity.red_hard,
   };
 
-  return repository.update(id, {
+  const updated = await repository.update(id, {
     severity: nextSeverity[entry.severity],
   });
+
+  await auditLogsService.logAction({
+    actorType: AuditActorType.system,
+    actorId: 'system',
+    action: 'registry_entry_severity_escalated',
+    targetType: 'registry_entry',
+    targetId: id,
+    oldValue: { severity: entry.severity },
+    newValue: { severity: updated.severity },
+  });
+
+  return updated;
 }

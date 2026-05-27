@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { insertConsent } from './repository-ops/insert-consent';
 import { findActiveConsent } from './repository-ops/find-active-consent';
+import { findConsentById } from './repository-ops/find-consent-by-id';
 import { listConsentByIdentity } from './repository-ops/list-consent-by-identity';
 import { revokeConsent } from './repository-ops/revoke-consent';
 import {
@@ -27,6 +28,9 @@ export class ConsentRecordsRepository {
 
   listByIdentity = (filters: ConsentRecordFilters): Promise<ConsentRecord[]> =>
     listConsentByIdentity(this.prisma, filters);
+
+  findById = (id: string): Promise<ConsentRecord | null> =>
+    findConsentById(this.prisma, id);
 
   revoke = (id: string): Promise<ConsentRecord> =>
     revokeConsent(this.prisma, id);

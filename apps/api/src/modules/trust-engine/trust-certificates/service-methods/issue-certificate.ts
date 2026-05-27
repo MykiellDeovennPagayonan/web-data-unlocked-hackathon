@@ -1,6 +1,11 @@
 import { TrustCertificatesRepository } from '../trust-certificates.repository';
+import { AuditLogsService } from '../../../compliance/audit-logs/audit-logs.service';
 import { TrustCertificate } from '../entities/trust-certificate.entity';
-import { CertificateStatus, EntityType } from '../../../../generated/client';
+import {
+  CertificateStatus,
+  EntityType,
+  AuditActorType,
+} from '../../../../generated/client';
 import { randomUUID } from 'crypto';
 
 export interface IssueCertificateInput {
@@ -18,6 +23,7 @@ function mockBlockchainAnchor(hash: string): string {
 
 export async function issueCertificate(
   repository: TrustCertificatesRepository,
+  auditLogsService: AuditLogsService,
   input: IssueCertificateInput,
 ): Promise<TrustCertificate> {
   const certificateHash = randomUUID();
@@ -26,7 +32,7 @@ export async function issueCertificate(
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + (input.validDays ?? 90));
 
-  return repository.insert({
+  const certificate = await repository.insert({
     entityType: input.entityType,
     identityId: input.identityId,
     orgId: input.orgId,
@@ -36,4 +42,20 @@ export async function issueCertificate(
     blockchainTxHash,
     issuingCheckId: input.issuingCheckId,
   });
+
+  await auditLogsService.logAction({
+    actorType: AuditActorType.system,
+    actorId: 'system',
+    action: 'certificate_issued',
+    targetType: 'trust_certificate',
+    targetId: certificate.id,
+    newValue: {
+      entityType: input.entityType,
+      identityId: input.identityId,
+      orgId: input.orgId,
+      status: CertificateStatus.active,
+    },
+  });
+
+  return certificate;
 }

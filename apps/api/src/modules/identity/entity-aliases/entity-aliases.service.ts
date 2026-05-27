@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { EntityAliasesRepository } from './entity-aliases.repository';
 import { createAlias } from './service-methods/create-alias';
 import { getAliasesByEntity } from './service-methods/get-aliases-by-entity';
@@ -13,10 +14,13 @@ import {
 
 @Injectable()
 export class EntityAliasesService {
-  constructor(private readonly repository: EntityAliasesRepository) {}
+  constructor(
+    private readonly repository: EntityAliasesRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   createAlias = (input: CreateEntityAliasData): Promise<EntityAlias> =>
-    createAlias(this.repository, input);
+    createAlias(this.repository, this.auditLogsService, input);
 
   getAliasesByEntity = (
     canonicalEntityType: EntityType,
@@ -34,5 +38,10 @@ export class EntityAliasesService {
     id: string,
     confidence: number,
   ): Promise<EntityAlias> =>
-    updateAliasConfidenceMethod(this.repository, id, confidence);
+    updateAliasConfidenceMethod(
+      this.repository,
+      this.auditLogsService,
+      id,
+      confidence,
+    );
 }

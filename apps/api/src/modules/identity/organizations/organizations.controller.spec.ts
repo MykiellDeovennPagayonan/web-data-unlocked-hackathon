@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationsController } from './organizations.controller';
+import { OrganizationsService } from './organizations.service';
+import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
 
 describe('OrganizationsController', () => {
   let controller: OrganizationsController;
@@ -7,7 +9,11 @@ describe('OrganizationsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [OrganizationsController],
-    }).compile();
+      providers: [{ provide: OrganizationsService, useValue: {} }],
+    })
+      .overrideGuard(ApiKeyGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<OrganizationsController>(OrganizationsController);
   });

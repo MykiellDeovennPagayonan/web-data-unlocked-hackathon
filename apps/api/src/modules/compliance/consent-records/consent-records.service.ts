@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuditLogsService } from '../audit-logs/audit-logs.service';
 import { ConsentRecordsRepository } from './consent-records.repository';
 import { recordConsent } from './service-methods/record-consent';
 import { revokeConsent } from './service-methods/revoke-consent';
@@ -13,13 +14,16 @@ import { ConsentType } from '../../../generated/client';
 
 @Injectable()
 export class ConsentRecordsService {
-  constructor(private readonly repository: ConsentRecordsRepository) {}
+  constructor(
+    private readonly repository: ConsentRecordsRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   recordConsent = (input: CreateConsentRecordData): Promise<ConsentRecord> =>
     recordConsent(this.repository, input);
 
   revokeConsent = (id: string): Promise<ConsentRecord> =>
-    revokeConsent(this.repository, id);
+    revokeConsent(this.repository, this.auditLogsService, id);
 
   listConsentByIdentity = (
     filters: ConsentRecordFilters,

@@ -43,6 +43,7 @@ export async function rejectVerification(
     action: 'verification_rejected',
     targetType: 'verification_request',
     targetId: updated.id,
+    oldValue: { status: request.status },
     newValue: { status: VerificationStatus.rejected, rejectionReason },
   });
 

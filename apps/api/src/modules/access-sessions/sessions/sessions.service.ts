@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SessionVerdict } from '../../../generated/client';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { SessionsRepository } from './sessions.repository';
 import { createSession } from './service-methods/create-session';
 import { endSession } from './service-methods/end-session';
@@ -8,10 +9,13 @@ import { CreateSessionData, Session } from './entities/session.entity';
 
 @Injectable()
 export class SessionsService {
-  constructor(private readonly repository: SessionsRepository) {}
+  constructor(
+    private readonly repository: SessionsRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   createSession = (data: CreateSessionData): Promise<Session> =>
-    createSession(this.repository, data);
+    createSession(this.repository, this.auditLogsService, data);
 
   endSession = (
     sessionId: string,
@@ -21,6 +25,7 @@ export class SessionsService {
   ): Promise<Session> =>
     endSession(
       this.repository,
+      this.auditLogsService,
       sessionId,
       riskScoreAtEnd,
       verdict,

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
 import { ApiKeysRepository } from './api-keys.repository';
 import {
   createApiKey,
@@ -16,13 +17,16 @@ import { ApiKey, CreateApiKeyData } from './entities/api-key.entity';
 
 @Injectable()
 export class ApiKeysService {
-  constructor(private readonly repository: ApiKeysRepository) {}
+  constructor(
+    private readonly repository: ApiKeysRepository,
+    private readonly auditLogsService: AuditLogsService,
+  ) {}
 
   createApiKey = (
     platformId: string,
     input: CreateApiKeyData,
   ): Promise<CreateApiKeyResult> =>
-    createApiKey(this.repository, platformId, input);
+    createApiKey(this.repository, this.auditLogsService, platformId, input);
 
   getApiKeyByHash = (keyHash: string): Promise<ApiKey | null> =>
     getApiKeyByHash(this.repository, keyHash);
@@ -34,13 +38,13 @@ export class ApiKeysService {
     listApiKeysByPlatform(this.repository, platformId, isActive);
 
   revokeApiKey = (id: string): Promise<ApiKey> =>
-    revokeApiKey(this.repository, id);
+    revokeApiKey(this.repository, this.auditLogsService, id);
 
   rotateApiKey = (
     oldKeyId: string,
     newKeyData: CreateApiKeyData,
   ): Promise<RotateApiKeyResult> =>
-    rotateApiKey(this.repository, oldKeyId, newKeyData);
+    rotateApiKey(this.repository, this.auditLogsService, oldKeyId, newKeyData);
 
   validateApiKey = (keyHash: string): Promise<ApiKey | null> =>
     validateApiKey(this.repository, keyHash);
