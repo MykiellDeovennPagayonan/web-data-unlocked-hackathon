@@ -13,6 +13,17 @@ export class TestDataTracker {
   ipRecords: string[] = [];
   backgroundChecks: string[] = [];
   trustSignals: string[] = [];
+  sessions: string[] = [];
+  accessEvents: string[] = [];
+  behavioralEvents: string[] = [];
+  trustCertificates: string[] = [];
+  trustScoreSnapshots: string[] = [];
+  registryEntries: string[] = [];
+  registryTargets: string[] = [];
+  communityReports: string[] = [];
+  consentRecords: string[] = [];
+  verificationRequests: string[] = [];
+  certificateVerifications: string[] = [];
 
   trackPlatform(id: string) {
     this.platforms.push(id);
@@ -62,6 +73,50 @@ export class TestDataTracker {
     this.trustSignals.push(id);
   }
 
+  trackSession(id: string) {
+    this.sessions.push(id);
+  }
+
+  trackAccessEvent(id: string) {
+    this.accessEvents.push(id);
+  }
+
+  trackBehavioralEvent(id: string) {
+    this.behavioralEvents.push(id);
+  }
+
+  trackTrustCertificate(id: string) {
+    this.trustCertificates.push(id);
+  }
+
+  trackCertificateVerification(id: string) {
+    this.certificateVerifications.push(id);
+  }
+
+  trackTrustScoreSnapshot(id: string) {
+    this.trustScoreSnapshots.push(id);
+  }
+
+  trackRegistryEntry(id: string) {
+    this.registryEntries.push(id);
+  }
+
+  trackRegistryTarget(id: string) {
+    this.registryTargets.push(id);
+  }
+
+  trackCommunityReport(id: string) {
+    this.communityReports.push(id);
+  }
+
+  trackConsentRecord(id: string) {
+    this.consentRecords.push(id);
+  }
+
+  trackVerificationRequest(id: string) {
+    this.verificationRequests.push(id);
+  }
+
   async cleanup(prisma: PrismaService): Promise<void> {
     // Delete in reverse dependency order to satisfy FK constraints
     if (this.entityAliases.length > 0) {
@@ -101,17 +156,55 @@ export class TestDataTracker {
         where: { id: { in: this.webhookLogs } },
       });
     }
-    if (this.organizations.length > 0) {
-      await prisma.organization.deleteMany({
-        where: { id: { in: this.organizations } },
+    // Clean up untracked access/behavioral events that may reference tracked parents
+    await prisma.accessEvent.deleteMany();
+    await prisma.behavioralEvent.deleteMany();
+    if (this.certificateVerifications.length > 0) {
+      await prisma.certificateVerification.deleteMany({
+        where: { id: { in: this.certificateVerifications } },
       });
     }
-    if (this.identities.length > 0) {
-      await prisma.platformUser.deleteMany({
-        where: { identityId: { in: this.identities } },
+    if (this.communityReports.length > 0) {
+      await prisma.communityReport.deleteMany({
+        where: { id: { in: this.communityReports } },
       });
-      await prisma.identity.deleteMany({
-        where: { id: { in: this.identities } },
+    }
+    if (this.registryTargets.length > 0) {
+      await prisma.registryTarget.deleteMany({
+        where: { id: { in: this.registryTargets } },
+      });
+    }
+    if (this.registryEntries.length > 0) {
+      await prisma.registryTarget.deleteMany({
+        where: { registryEntryId: { in: this.registryEntries } },
+      });
+      await prisma.registryEntry.deleteMany({
+        where: { id: { in: this.registryEntries } },
+      });
+    }
+    if (this.sessions.length > 0) {
+      await prisma.session.deleteMany({
+        where: { id: { in: this.sessions } },
+      });
+    }
+    if (this.trustCertificates.length > 0) {
+      await prisma.trustCertificate.deleteMany({
+        where: { id: { in: this.trustCertificates } },
+      });
+    }
+    if (this.trustScoreSnapshots.length > 0) {
+      await prisma.trustScoreSnapshot.deleteMany({
+        where: { id: { in: this.trustScoreSnapshots } },
+      });
+    }
+    if (this.verificationRequests.length > 0) {
+      await prisma.verificationRequest.deleteMany({
+        where: { id: { in: this.verificationRequests } },
+      });
+    }
+    if (this.consentRecords.length > 0) {
+      await prisma.consentRecord.deleteMany({
+        where: { id: { in: this.consentRecords } },
       });
     }
     if (this.trustSignals.length > 0) {
@@ -138,6 +231,16 @@ export class TestDataTracker {
     if (this.ipRecords.length > 0) {
       await prisma.ipRecord.deleteMany({
         where: { id: { in: this.ipRecords } },
+      });
+    }
+    if (this.identities.length > 0) {
+      await prisma.identity.deleteMany({
+        where: { id: { in: this.identities } },
+      });
+    }
+    if (this.organizations.length > 0) {
+      await prisma.organization.deleteMany({
+        where: { id: { in: this.organizations } },
       });
     }
     if (this.platforms.length > 0) {
