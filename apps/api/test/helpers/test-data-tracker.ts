@@ -9,6 +9,10 @@ export class TestDataTracker {
   entityAliases: string[] = [];
   platformUsers: string[] = [];
   webhookLogs: string[] = [];
+  devices: string[] = [];
+  ipRecords: string[] = [];
+  backgroundChecks: string[] = [];
+  trustSignals: string[] = [];
 
   trackPlatform(id: string) {
     this.platforms.push(id);
@@ -40,6 +44,22 @@ export class TestDataTracker {
 
   trackWebhookLog(id: string) {
     this.webhookLogs.push(id);
+  }
+
+  trackDevice(id: string) {
+    this.devices.push(id);
+  }
+
+  trackIpRecord(id: string) {
+    this.ipRecords.push(id);
+  }
+
+  trackBackgroundCheck(id: string) {
+    this.backgroundChecks.push(id);
+  }
+
+  trackTrustSignal(id: string) {
+    this.trustSignals.push(id);
   }
 
   async cleanup(prisma: PrismaService): Promise<void> {
@@ -92,6 +112,32 @@ export class TestDataTracker {
       });
       await prisma.identity.deleteMany({
         where: { id: { in: this.identities } },
+      });
+    }
+    if (this.trustSignals.length > 0) {
+      await prisma.trustSignal.deleteMany({
+        where: { id: { in: this.trustSignals } },
+      });
+    }
+    if (this.backgroundChecks.length > 0) {
+      await prisma.backgroundCheckResult.deleteMany({
+        where: { checkId: { in: this.backgroundChecks } },
+      });
+      await prisma.backgroundCheck.deleteMany({
+        where: { id: { in: this.backgroundChecks } },
+      });
+    }
+    if (this.devices.length > 0) {
+      await prisma.deviceSignal.deleteMany({
+        where: { deviceId: { in: this.devices } },
+      });
+      await prisma.device.deleteMany({
+        where: { id: { in: this.devices } },
+      });
+    }
+    if (this.ipRecords.length > 0) {
+      await prisma.ipRecord.deleteMany({
+        where: { id: { in: this.ipRecords } },
       });
     }
     if (this.platforms.length > 0) {

@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { createTestApp, TestApp } from '../helpers/setup-e2e';
-import { TestDataTracker } from '../helpers/test-data-tracker';
+import { createTestApp, TestApp } from '../../helpers/setup-e2e';
+import { TestDataTracker } from '../../helpers/test-data-tracker';
 
 describe('A. Platform Management (e2e)', () => {
   let testApp: TestApp;

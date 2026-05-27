@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { createTestApp, TestApp } from '../helpers/setup-e2e';
-import { TestDataTracker } from '../helpers/test-data-tracker';
+import { createTestApp, TestApp } from '../../helpers/setup-e2e';
+import { TestDataTracker } from '../../helpers/test-data-tracker';
 
 function unique(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 100000)}`;

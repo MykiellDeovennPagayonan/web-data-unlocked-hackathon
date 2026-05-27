@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ComplianceModule } from '../compliance/compliance.module';
 import { TrustSignalsController } from './trust-signals/trust-signals.controller';
@@ -15,7 +15,7 @@ import { CertificateVerificationsService } from './certificate-verifications/cer
 import { CertificateVerificationsRepository } from './certificate-verifications/certificate-verifications.repository';
 
 @Module({
-  imports: [ComplianceModule],
+  imports: [forwardRef(() => ComplianceModule)],
   controllers: [
     TrustSignalsController,
     TrustScoreSnapshotsController,

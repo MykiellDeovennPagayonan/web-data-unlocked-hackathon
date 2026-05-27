@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ComplianceModule } from '../compliance/compliance.module';
 import { PlatformsController } from './platforms/platforms.controller';
@@ -14,6 +14,7 @@ import { WebhooksController } from './webhooks/webhooks.controller';
 import { WebhooksService } from './webhooks/webhooks.service';
 import { WebhooksRepository } from './webhooks/webhooks.repository';
 
+@Global()
 @Module({
   imports: [ComplianceModule],
   controllers: [
