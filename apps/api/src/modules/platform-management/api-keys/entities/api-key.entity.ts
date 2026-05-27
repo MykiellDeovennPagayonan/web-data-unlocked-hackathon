@@ -1,4 +1,4 @@
-import { ApiKey as PrismaApiKey } from '../../../../../generated/prisma/client';
+import { ApiKey as PrismaApiKey } from '../../../../generated/client';
 
 export type ApiKey = PrismaApiKey;
 

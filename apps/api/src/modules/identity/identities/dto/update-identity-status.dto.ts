@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsBoolean, IsString } from 'class-validator';
-import { TrustStatus } from '../../../../../generated/prisma/client';
+import { TrustStatus } from '../../../../generated/client';
 
 export class UpdateIdentityStatusDto {
   @IsOptional()

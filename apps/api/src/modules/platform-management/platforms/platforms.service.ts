@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  PlatformStatus,
-  StrictnessLevel,
-} from '../../../../generated/prisma/client';
+import { PlatformStatus, StrictnessLevel } from '../../../generated/client';
 import { PlatformsRepository } from './platforms.repository';
 import { createPlatform } from './service-methods/create-platform';
 import { getPlatformById } from './service-methods/get-platform-by-id';

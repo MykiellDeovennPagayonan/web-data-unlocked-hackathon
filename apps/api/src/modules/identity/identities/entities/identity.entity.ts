@@ -1,7 +1,7 @@
 import {
   Identity as PrismaIdentity,
   TrustStatus,
-} from '../../../../../generated/prisma/client';
+} from '../../../../generated/client';
 
 export type Identity = PrismaIdentity;
 

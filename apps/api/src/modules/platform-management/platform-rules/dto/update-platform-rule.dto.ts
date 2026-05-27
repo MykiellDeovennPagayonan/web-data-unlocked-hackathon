@@ -1,8 +1,5 @@
 import { IsEnum, IsObject, IsBoolean, IsOptional } from 'class-validator';
-import {
-  RuleTrigger,
-  RuleAction,
-} from '../../../../../generated/prisma/client';
+import { RuleTrigger, RuleAction } from '../../../../generated/client';
 
 export class UpdatePlatformRuleDto {
   @IsOptional()

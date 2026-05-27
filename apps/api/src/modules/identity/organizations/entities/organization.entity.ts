@@ -1,7 +1,7 @@
 import {
   Organization as PrismaOrganization,
   TrustStatus,
-} from '../../../../../generated/prisma/client';
+} from '../../../../generated/client';
 
 export type Organization = PrismaOrganization;
 

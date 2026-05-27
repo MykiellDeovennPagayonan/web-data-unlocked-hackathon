@@ -3,7 +3,7 @@ import {
   EntityType,
   AliasType,
   AliasSource,
-} from '../../../../../generated/prisma/client';
+} from '../../../../generated/enums';
 
 export class CreateEntityAliasDto {
   @IsEnum(EntityType)

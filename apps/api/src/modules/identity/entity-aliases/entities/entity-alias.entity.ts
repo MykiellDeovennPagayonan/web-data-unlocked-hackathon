@@ -3,7 +3,7 @@ import {
   EntityType as PrismaEntityType,
   AliasType as PrismaAliasType,
   AliasSource as PrismaAliasSource,
-} from '../../../../../generated/prisma/client';
+} from '../../../../generated/client';
 
 export type EntityAlias = PrismaEntityAlias;
 export type EntityType = PrismaEntityType;

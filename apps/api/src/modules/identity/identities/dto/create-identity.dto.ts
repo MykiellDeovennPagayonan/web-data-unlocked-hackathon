@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsEnum } from 'class-validator';
-import { TrustStatus } from '../../../../../generated/prisma/client';
+import { TrustStatus } from '../../../../generated/client';
 
 export class CreateIdentityDto {
   @IsString()

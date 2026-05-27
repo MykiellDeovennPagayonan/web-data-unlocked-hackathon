@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RuleTrigger } from '../../../../generated/prisma/client';
+import { RuleTrigger } from '../../../generated/client';
 import { PlatformRulesRepository } from './platform-rules.repository';
 import { createPlatformRule } from './service-methods/create-platform-rule';
 import { getRuleById } from './service-methods/get-rule-by-id';

@@ -1,4 +1,4 @@
-import { PlatformStatus } from '../../../../../generated/prisma/client';
+import { PlatformStatus } from '../../../../generated/enums';
 import { PlatformsRepository } from '../platforms.repository';
 import { Platform } from '../entities/platform.entity';
 

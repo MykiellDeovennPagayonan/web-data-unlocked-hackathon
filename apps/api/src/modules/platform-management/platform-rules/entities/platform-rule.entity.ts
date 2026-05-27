@@ -2,7 +2,7 @@ import {
   PlatformRule as PrismaPlatformRule,
   RuleTrigger,
   RuleAction,
-} from '../../../../../generated/prisma/client';
+} from '../../../../generated/client';
 
 export type PlatformRule = PrismaPlatformRule;
 

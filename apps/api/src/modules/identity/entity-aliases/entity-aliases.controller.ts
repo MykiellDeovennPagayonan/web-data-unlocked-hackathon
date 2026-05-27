@@ -3,7 +3,7 @@ import { EntityAliasesService } from './entity-aliases.service';
 import { CreateEntityAliasDto } from './dto/create-entity-alias.dto';
 import { ResolveAliasDto } from './dto/resolve-alias.dto';
 import { EntityAlias } from './entities/entity-alias.entity';
-import { EntityType } from '../../../../generated/prisma/client';
+import { EntityType } from '../../../generated/client';
 
 @Controller()
 export class EntityAliasesController {

@@ -15,7 +15,7 @@ import { CreatePlatformDto } from './dto/create-platform.dto';
 import { UpdatePlatformDto } from './dto/update-platform.dto';
 import { UpdateStrictnessDto } from './dto/update-strictness.dto';
 import { Platform, PlatformFilters } from './entities/platform.entity';
-import { PlatformStatus } from '../../../../generated/prisma/client';
+import { PlatformStatus } from 'src/generated/enums';
 
 @Controller()
 export class PlatformsController {

@@ -1,5 +1,5 @@
 import { IsString, IsEnum } from 'class-validator';
-import { AliasType } from '../../../../../generated/prisma/client';
+import { AliasType } from '../../../../generated/client';
 
 export class ResolveAliasDto {
   @IsEnum(AliasType)

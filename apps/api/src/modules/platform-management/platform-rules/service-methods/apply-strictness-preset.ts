@@ -1,4 +1,4 @@
-import { StrictnessLevel } from '../../../../../generated/prisma/client';
+import { StrictnessLevel } from '../../../../generated/client';
 import { PlatformRulesRepository } from '../platform-rules.repository';
 
 export async function applyStrictnessPreset(

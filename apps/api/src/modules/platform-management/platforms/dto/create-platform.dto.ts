@@ -1,8 +1,5 @@
 import { IsString, IsEnum, IsOptional } from 'class-validator';
-import {
-  PlatformStatus,
-  StrictnessLevel,
-} from '../../../../../generated/prisma/client';
+import { PlatformStatus, StrictnessLevel } from '../../../../generated/client';
 
 export class CreatePlatformDto {
   @IsString()

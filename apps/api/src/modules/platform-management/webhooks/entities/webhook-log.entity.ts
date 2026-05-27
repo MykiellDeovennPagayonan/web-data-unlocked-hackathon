@@ -1,4 +1,4 @@
-import { WebhookDeliveryLog as PrismaWebhookLog } from '../../../../../generated/prisma/client';
+import { WebhookDeliveryLog as PrismaWebhookLog } from '../../../../generated/client';
 
 export type WebhookLog = PrismaWebhookLog;
 

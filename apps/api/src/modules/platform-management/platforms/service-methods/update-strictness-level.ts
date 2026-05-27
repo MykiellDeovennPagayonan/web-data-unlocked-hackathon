@@ -1,4 +1,4 @@
-import { StrictnessLevel } from '../../../../../generated/prisma/client';
+import { StrictnessLevel } from '../../../../generated/client';
 import { PlatformsRepository } from '../platforms.repository';
 import { Platform } from '../entities/platform.entity';
 

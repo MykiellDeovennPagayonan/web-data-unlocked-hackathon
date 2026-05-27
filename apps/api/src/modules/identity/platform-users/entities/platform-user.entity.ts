@@ -1,7 +1,7 @@
 import {
   PlatformUser as PrismaPlatformUser,
   PlatformUserStatus,
-} from '../../../../../generated/prisma/client';
+} from '../../../../generated/client';
 
 export type PlatformUser = PrismaPlatformUser;
 

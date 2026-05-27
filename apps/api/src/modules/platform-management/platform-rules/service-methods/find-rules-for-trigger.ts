@@ -1,4 +1,4 @@
-import { RuleTrigger } from '../../../../../generated/prisma/client';
+import { RuleTrigger } from '../../../../generated/client';
 import { PlatformRulesRepository } from '../platform-rules.repository';
 import { PlatformRule } from '../entities/platform-rule.entity';
 

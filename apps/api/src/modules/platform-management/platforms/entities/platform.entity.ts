@@ -2,7 +2,7 @@ import {
   Platform as PrismaPlatform,
   PlatformStatus,
   StrictnessLevel,
-} from '../../../../../generated/prisma/client';
+} from '../../../../generated/client';
 
 export type Platform = PrismaPlatform;
 
