@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { EntityAliasesController } from '../entity-aliases.controller';
-import { EntityAliasesService } from '../entity-aliases.service';
+import { EntityAliasesController } from './entity-aliases.controller';
+import { EntityAliasesService } from './entity-aliases.service';
 import { EntityAliasesRepository } from './entity-aliases.repository';
 
 @Module({

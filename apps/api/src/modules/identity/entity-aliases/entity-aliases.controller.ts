@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
 import { EntityAliasesService } from './entity-aliases.service';
-import { CreateEntityAliasDto } from './entity-aliases/dto/create-entity-alias.dto';
-import { ResolveAliasDto } from './entity-aliases/dto/resolve-alias.dto';
-import { EntityAlias } from './entity-aliases/entities/entity-alias.entity';
-import { EntityType } from '../../../generated/prisma/client';
+import { CreateEntityAliasDto } from './dto/create-entity-alias.dto';
+import { ResolveAliasDto } from './dto/resolve-alias.dto';
+import { EntityAlias } from './entities/entity-alias.entity';
+import { EntityType } from '../../../../generated/prisma/client';
 
 @Controller()
 export class EntityAliasesController {

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { OrganizationsRepository } from './organizations/organizations.repository';
-import { createOrganization } from './organizations/service-methods/create-organization';
-import { getOrganizationById } from './organizations/service-methods/get-organization-by-id';
-import { getOrganizationByDomain } from './organizations/service-methods/get-organization-by-domain';
-import { updateTrustStatus } from './organizations/service-methods/update-trust-status';
+import { OrganizationsRepository } from './organizations.repository';
+import { createOrganization } from './service-methods/create-organization';
+import { getOrganizationById } from './service-methods/get-organization-by-id';
+import { getOrganizationByDomain } from './service-methods/get-organization-by-domain';
+import { updateTrustStatus } from './service-methods/update-trust-status';
 import {
   CreateOrganizationData,
   Organization,
   UpdateOrganizationData,
-} from './organizations/entities/organization.entity';
+} from './entities/organization.entity';
 
 @Injectable()
 export class OrganizationsService {

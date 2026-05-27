@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { IdentitiesRepository } from './identities/identities.repository';
-import { createIdentity } from './identities/service-methods/create-identity';
-import { getIdentityById } from './identities/service-methods/get-identity-by-id';
-import { getIdentityByEmailHash } from './identities/service-methods/get-identity-by-email-hash';
-import { updateTrustStatus } from './identities/service-methods/update-trust-status';
+import { IdentitiesRepository } from './identities.repository';
+import { createIdentity } from './service-methods/create-identity';
+import { getIdentityById } from './service-methods/get-identity-by-id';
+import { getIdentityByEmailHash } from './service-methods/get-identity-by-email-hash';
+import { updateTrustStatus } from './service-methods/update-trust-status';
 import {
   CreateIdentityData,
   Identity,
   UpdateIdentityData,
-} from './identities/entities/identity.entity';
+} from './entities/identity.entity';
 
 @Injectable()
 export class IdentitiesService {

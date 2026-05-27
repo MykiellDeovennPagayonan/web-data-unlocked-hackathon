@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
 import { OrganizationsService } from './organizations.service';
-import { CreateOrganizationDto } from './organizations/dto/create-organization.dto';
-import { UpdateOrganizationStatusDto } from './organizations/dto/update-organization-status.dto';
-import { Organization } from './organizations/entities/organization.entity';
+import { CreateOrganizationDto } from './dto/create-organization.dto';
+import { UpdateOrganizationStatusDto } from './dto/update-organization-status.dto';
+import { Organization } from './entities/organization.entity';
 
 @Controller()
 export class OrganizationsController {

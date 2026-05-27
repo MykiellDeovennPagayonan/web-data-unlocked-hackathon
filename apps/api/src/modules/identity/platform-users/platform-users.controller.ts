@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
 import { PlatformUsersService } from './platform-users.service';
-import { CreatePlatformUserDto } from './platform-users/dto/create-platform-user.dto';
-import { UpdatePlatformUserStatusDto } from './platform-users/dto/update-platform-user-status.dto';
-import { PlatformUser } from './platform-users/entities/platform-user.entity';
+import { CreatePlatformUserDto } from './dto/create-platform-user.dto';
+import { UpdatePlatformUserStatusDto } from './dto/update-platform-user-status.dto';
+import { PlatformUser } from './entities/platform-user.entity';
 
 @Controller()
 export class PlatformUsersController {

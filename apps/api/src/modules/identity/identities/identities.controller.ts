@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
 import { IdentitiesService } from './identities.service';
-import { CreateIdentityDto } from './identities/dto/create-identity.dto';
-import { UpdateIdentityStatusDto } from './identities/dto/update-identity-status.dto';
-import { Identity } from './identities/entities/identity.entity';
+import { CreateIdentityDto } from './dto/create-identity.dto';
+import { UpdateIdentityStatusDto } from './dto/update-identity-status.dto';
+import { Identity } from './entities/identity.entity';
 
 @Controller()
 export class IdentitiesController {
