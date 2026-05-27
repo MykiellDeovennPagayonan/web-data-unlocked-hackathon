@@ -19,6 +19,12 @@ export class PlatformUsersService {
   getPlatformUserById = (id: string): Promise<PlatformUser | null> =>
     getPlatformUserById(this.repository, id);
 
+  getPlatformUserByExternalId = (
+    platformId: string,
+    externalUserId: string,
+  ): Promise<PlatformUser | null> =>
+    this.repository.findByExternalId(platformId, externalUserId);
+
   updatePlatformUserStatus = (
     id: string,
     status: UpdatePlatformUserData['statusOnPlatform'],

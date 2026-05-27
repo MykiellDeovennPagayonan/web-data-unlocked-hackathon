@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
+import { CurrentPlatform } from '../../../common/decorators/current-platform.decorator';
 import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationStatusDto } from './dto/update-organization-status.dto';
+import { SubmitOrganizationDto } from './dto/submit-organization.dto';
 import { Organization } from './entities/organization.entity';
 
 @Controller()
@@ -36,9 +47,14 @@ export class OrganizationsController {
   }
 
   @Post('v1/organizations')
+  @UseGuards(ApiKeyGuard)
   submitOrganization(
-    @Body() dto: CreateOrganizationDto,
+    @CurrentPlatform() platformId: string,
+    @Body() dto: SubmitOrganizationDto,
   ): Promise<Organization> {
-    return this.organizationsService.createOrganization(dto);
+    return this.organizationsService.createOrganization({
+      ...dto,
+      submittedByPlatformId: platformId,
+    });
   }
 }

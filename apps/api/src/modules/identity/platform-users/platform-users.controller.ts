@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  UseGuards,
+  NotFoundException,
+} from '@nestjs/common';
+import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
+import { CurrentPlatform } from '../../../common/decorators/current-platform.decorator';
 import { PlatformUsersService } from './platform-users.service';
 import { CreatePlatformUserDto } from './dto/create-platform-user.dto';
 import { UpdatePlatformUserStatusDto } from './dto/update-platform-user-status.dto';
@@ -9,32 +20,54 @@ export class PlatformUsersController {
   constructor(private readonly platformUsersService: PlatformUsersService) {}
 
   @Post('v1/platform-users')
+  @UseGuards(ApiKeyGuard)
   createPlatformUser(
+    @CurrentPlatform() platformId: string,
     @Body() dto: CreatePlatformUserDto,
   ): Promise<PlatformUser> {
-    return this.platformUsersService.createPlatformUser(dto);
+    return this.platformUsersService.createPlatformUser({
+      ...dto,
+      platformId,
+    });
   }
 
   @Get('v1/platform-users/:externalId')
-  getPlatformUserByExternalId(
+  @UseGuards(ApiKeyGuard)
+  async getPlatformUserByExternalId(
+    @CurrentPlatform() platformId: string,
     @Param('externalId') externalUserId: string,
-    // TODO: Get platformId from API key context
-  ): Promise<PlatformUser | null> {
-    void externalUserId;
-    throw new Error(
-      'Not implemented - requires API key auth for platform context',
+  ): Promise<PlatformUser> {
+    const user = await this.platformUsersService.getPlatformUserByExternalId(
+      platformId,
+      externalUserId,
     );
+    if (!user) {
+      throw new NotFoundException(
+        `Platform user '${externalUserId}' not found`,
+      );
+    }
+    return user;
   }
 
   @Patch('v1/platform-users/:externalId/status')
-  updatePlatformUserStatus(
+  @UseGuards(ApiKeyGuard)
+  async updatePlatformUserStatus(
+    @CurrentPlatform() platformId: string,
     @Param('externalId') externalUserId: string,
     @Body() dto: UpdatePlatformUserStatusDto,
   ): Promise<PlatformUser> {
-    void externalUserId;
-    void dto;
-    throw new Error(
-      'Not implemented - requires API key auth for platform context',
+    const user = await this.platformUsersService.getPlatformUserByExternalId(
+      platformId,
+      externalUserId,
+    );
+    if (!user) {
+      throw new NotFoundException(
+        `Platform user '${externalUserId}' not found`,
+      );
+    }
+    return this.platformUsersService.updatePlatformUserStatus(
+      user.id,
+      dto.statusOnPlatform,
     );
   }
 }
