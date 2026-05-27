@@ -45,8 +45,9 @@ export class EvaluateAccessDto {
   @IsEnum(AccessEventType)
   eventType!: AccessEventType;
 
+  @IsOptional()
   @IsNumber()
-  trustScore!: number;
+  trustScore?: number;
 
   @IsArray()
   @ValidateNested({ each: true })

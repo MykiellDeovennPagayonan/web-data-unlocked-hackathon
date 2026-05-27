@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { DeviceIntelligenceModule } from '../device-intelligence/device-intelligence.module';
+import { TrustEngineModule } from '../trust-engine/trust-engine.module';
 import { AccessEventsController } from './access-events/access-events.controller';
 import { SessionsController } from './sessions/sessions.controller';
 import { BehavioralEventsController } from './behavioral-events/behavioral-events.controller';
@@ -12,7 +13,7 @@ import { SessionsRepository } from './sessions/sessions.repository';
 import { BehavioralEventsRepository } from './behavioral-events/behavioral-events.repository';
 
 @Module({
-  imports: [DeviceIntelligenceModule],
+  imports: [DeviceIntelligenceModule, TrustEngineModule],
   controllers: [
     AccessEventsController,
     SessionsController,
