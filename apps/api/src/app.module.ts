@@ -9,6 +9,8 @@ import { DeviceIntelligenceModule } from './modules/device-intelligence/device-i
 import { AccessSessionsModule } from './modules/access-sessions/access-sessions.module';
 import { BackgroundChecksModule } from './modules/background-checks/background-checks.module';
 import { TrustEngineModule } from './modules/trust-engine/trust-engine.module';
+import { RegistryModule } from './modules/registry/registry.module';
+import { ComplianceModule } from './modules/compliance/compliance.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { TrustEngineModule } from './modules/trust-engine/trust-engine.module';
     AccessSessionsModule,
     BackgroundChecksModule,
     TrustEngineModule,
+    RegistryModule,
+    ComplianceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
