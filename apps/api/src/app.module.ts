@@ -11,6 +11,7 @@ import { BackgroundChecksModule } from './modules/background-checks/background-c
 import { TrustEngineModule } from './modules/trust-engine/trust-engine.module';
 import { RegistryModule } from './modules/registry/registry.module';
 import { ComplianceModule } from './modules/compliance/compliance.module';
+import { AdminDashboardModule } from './modules/admin-dashboard/admin-dashboard.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ComplianceModule } from './modules/compliance/compliance.module';
     TrustEngineModule,
     RegistryModule,
     ComplianceModule,
+    AdminDashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
