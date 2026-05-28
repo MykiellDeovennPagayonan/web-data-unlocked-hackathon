@@ -15,7 +15,8 @@
     "db:migrate": "pnpm --filter api exec prisma migrate dev",
     "db:studio": "pnpm --filter api exec prisma studio",
     "db:generate": "pnpm --filter api exec prisma generate",
-    "lint:api": "pnpm --filter api lint"
+    "lint:api": "pnpm --filter api lint",
+    "dev:demo1": "pnpm --filter social-media-app dev"
   },
   "keywords": [],
   "author": "",

@@ -63,7 +63,10 @@ export async function executeRequest(
   const body = request.body ? interpolateObject(request.body, variables) : null;
 
   // Build headers
-  const headers: Record<string, string> = { ...request.headers };
+  const headers: Record<string, string> = {};
+  for (const [key, value] of Object.entries(request.headers)) {
+    headers[key] = typeof value === 'string' ? interpolateVariables(value, variables) : value;
+  }
 
   const config: AxiosRequestConfig = {
     method: request.method as AxiosRequestConfig['method'],
@@ -148,7 +151,8 @@ export function generateCurlCommand(
   const headers = { ...request.headers };
 
   for (const [key, value] of Object.entries(headers)) {
-    cmd += ` \\\n  -H "${key}: ${value}"`;
+    const interpolatedValue = typeof value === 'string' ? interpolateVariables(value, variables) : value;
+    cmd += ` \\\n  -H "${key}: ${interpolatedValue}"`;
   }
   
   // Add body
