@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsEmail } from 'class-validator';
 import { TargetType } from '../../../../generated/client';
 
 export class CreateRegistryTargetDto {
@@ -25,6 +25,6 @@ export class CreateRegistryTargetDto {
   deviceId?: string;
 
   @IsOptional()
-  @IsString()
-  emailHash?: string;
+  @IsEmail()
+  email?: string;
 }

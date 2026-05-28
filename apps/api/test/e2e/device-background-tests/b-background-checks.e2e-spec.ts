@@ -38,7 +38,7 @@ describe('B. Background Checks (e2e)', () => {
     const identityRes = await request(testApp.app.getHttpServer())
       .post('/admin/identities')
       .send({
-        emailHash: 'bg-hash-001',
+        email: 'bg-user-001@example.com',
         encryptedEmail: 'ENC(test1@example.com)',
         encryptedFullName: 'ENC(Test User One)',
         trustStatus: 'clean',
@@ -314,16 +314,16 @@ describe('B. Background Checks (e2e)', () => {
 
     beforeAll(async () => {
       const identities = [
-        { emailHash: 'clean-hash', suffix: 'clean' },
-        { emailHash: 'blocked-hash', suffix: 'blocked' },
-        { emailHash: 'flagged-hash', suffix: 'flagged' },
+        { email: 'clean@example.com', suffix: 'clean' },
+        { email: 'blocked@example.com', suffix: 'blocked' },
+        { email: 'flagged@example.com', suffix: 'flagged' },
       ];
 
       for (const item of identities) {
         const res = await request(testApp.app.getHttpServer())
           .post('/admin/identities')
           .send({
-            emailHash: item.emailHash,
+            email: item.email,
             encryptedEmail: `ENC(${item.suffix}@example.com)`,
             encryptedFullName: `ENC(${item.suffix})`,
             trustStatus: 'clean',

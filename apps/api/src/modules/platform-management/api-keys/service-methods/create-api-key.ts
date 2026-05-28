@@ -14,6 +14,7 @@ export async function createApiKey(
   auditLogsService: AuditLogsService,
   platformId: string,
   input: CreateApiKeyData,
+  auditMeta?: { actorType: AuditActorType; actorId: string },
 ): Promise<CreateApiKeyResult> {
   // Generate a secure random key
   const rawKey = `tl_${randomBytes(32).toString('hex')}`;
@@ -30,8 +31,8 @@ export async function createApiKey(
   await repository.update(apiKey.id, { keyHash });
 
   await auditLogsService.logAction({
-    actorType: AuditActorType.system,
-    actorId: 'system',
+    actorType: auditMeta?.actorType ?? AuditActorType.system,
+    actorId: auditMeta?.actorId ?? 'system',
     action: 'api_key_created',
     targetType: 'api_key',
     targetId: apiKey.id,

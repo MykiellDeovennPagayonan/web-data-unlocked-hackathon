@@ -43,7 +43,7 @@ describe('B. Access & Sessions (e2e)', () => {
     const identityRes = await request(testApp.app.getHttpServer())
       .post('/admin/identities')
       .send({
-        emailHash: unique('hash-access'),
+        email: `${unique('access-email')}@example.com`,
         encryptedEmail: 'ENC(access@example.com)',
         encryptedFullName: 'ENC(Access User)',
         trustStatus: 'clean',

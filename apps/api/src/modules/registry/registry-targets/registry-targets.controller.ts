@@ -12,6 +12,7 @@ import { RegistryTargetsService } from './registry-targets.service';
 import { CreateRegistryTargetDto } from './dto/create-registry-target.dto';
 import { RegistryTarget } from './entities/registry-target.entity';
 import { RegistryEntry } from '../registry-entries/entities/registry-entry.entity';
+import { hashEmail } from '../../../common/crypto/hash';
 import { TargetType } from '../../../generated/client';
 
 @Controller()
@@ -30,7 +31,7 @@ export class RegistryTargetsController {
       orgId: dto.orgId,
       ipId: dto.ipId,
       deviceId: dto.deviceId,
-      emailHash: dto.emailHash,
+      emailHash: dto.email ? hashEmail(dto.email) : undefined,
     });
   }
 
@@ -47,7 +48,7 @@ export class RegistryTargetsController {
     @Query('orgId') orgId?: string,
     @Query('ipId') ipId?: string,
     @Query('deviceId') deviceId?: string,
-    @Query('emailHash') emailHash?: string,
+    @Query('email') email?: string,
   ): Promise<RegistryEntry[]> {
     return this.registryTargetsService.findEntriesByEntity({
       targetType,
@@ -55,7 +56,7 @@ export class RegistryTargetsController {
       orgId,
       ipId,
       deviceId,
-      emailHash,
+      emailHash: email ? hashEmail(email) : undefined,
     });
   }
 }

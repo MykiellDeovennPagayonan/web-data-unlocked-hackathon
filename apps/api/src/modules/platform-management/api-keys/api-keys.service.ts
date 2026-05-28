@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
+import { AuditActorType } from '../../../generated/client';
 import { ApiKeysRepository } from './api-keys.repository';
 import {
   createApiKey,
@@ -25,8 +26,15 @@ export class ApiKeysService {
   createApiKey = (
     platformId: string,
     input: CreateApiKeyData,
+    auditMeta?: { actorType: AuditActorType; actorId: string },
   ): Promise<CreateApiKeyResult> =>
-    createApiKey(this.repository, this.auditLogsService, platformId, input);
+    createApiKey(
+      this.repository,
+      this.auditLogsService,
+      platformId,
+      input,
+      auditMeta,
+    );
 
   getApiKeyByHash = (keyHash: string): Promise<ApiKey | null> =>
     getApiKeyByHash(this.repository, keyHash);

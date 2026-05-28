@@ -48,7 +48,7 @@ describe('E. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-kyc'),
+          email: `${unique('kyc-email')}@example.com`,
           encryptedEmail: 'ENC(kyc@example.com)',
           encryptedFullName: 'ENC(KYC User)',
           trustStatus: 'clean',
@@ -219,7 +219,7 @@ describe('E. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-shared'),
+          email: `${unique('shared-email')}@example.com`,
           encryptedEmail: 'ENC(shared@example.com)',
           encryptedFullName: 'ENC(Shared User)',
           trustStatus: 'clean',
@@ -309,7 +309,7 @@ describe('E. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-consent'),
+          email: `${unique('consent-email')}@example.com`,
           encryptedEmail: 'ENC(consent@example.com)',
           encryptedFullName: 'ENC(Consent User)',
           trustStatus: 'clean',
@@ -444,7 +444,7 @@ describe('E. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-strict'),
+          email: `${unique('strict-email')}@example.com`,
           encryptedEmail: 'ENC(strict@example.com)',
           encryptedFullName: 'ENC(Strict User)',
           trustStatus: 'clean',
@@ -556,13 +556,13 @@ describe('E. Integration Scenarios (e2e)', () => {
       const apiKey = keyResult.rawKey;
       tracker.trackApiKey(keyResult.apiKey.id);
 
-      const emailHash = unique('alias-hash');
+      const email = `${unique('alias-email')}@example.com`;
 
       // Create identity + alias
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash,
+          email,
           encryptedEmail: 'ENC(alias@example.com)',
           encryptedFullName: 'ENC(Alias User)',
           trustStatus: 'clean',
@@ -596,14 +596,14 @@ describe('E. Integration Scenarios (e2e)', () => {
         .send({
           registryEntryId: entryId,
           targetType: 'email',
-          emailHash,
+          email,
         })
         .expect(201);
 
       // Lookup by email → assert blacklist
       const lookupRes = await request(testApp.app.getHttpServer())
         .get('/admin/registry/lookup')
-        .query({ targetType: 'email', emailHash })
+        .query({ targetType: 'email', email })
         .expect(200);
 
       expect(lookupRes.body.length).toBeGreaterThan(0);
@@ -639,7 +639,7 @@ describe('E. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-reg'),
+          email: `${unique('reg-email')}@example.com`,
           encryptedEmail: 'ENC(reg@example.com)',
           encryptedFullName: 'ENC(Reg User)',
           trustStatus: 'clean',
@@ -853,7 +853,7 @@ describe('E. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-expiry'),
+          email: `${unique('expiry-email')}@example.com`,
           encryptedEmail: 'ENC(expiry@example.com)',
           encryptedFullName: 'ENC(Expiry User)',
           trustStatus: 'clean',
@@ -963,7 +963,7 @@ describe('E. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-behavioral'),
+          email: `${unique('behavioral-email')}@example.com`,
           encryptedEmail: 'ENC(behavioral@example.com)',
           encryptedFullName: 'ENC(Behavioral User)',
           trustStatus: 'clean',

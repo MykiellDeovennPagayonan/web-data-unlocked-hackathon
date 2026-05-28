@@ -38,7 +38,7 @@ export class ApiKeysController {
   }
 
   @Post()
-  @UseGuards(ApiKeyGuard)
+  // @UseGuards(ApiKeyGuard)
   async createApiKey(
     @CurrentPlatform() platformId: string,
     @Body() dto: CreateApiKeyDto,

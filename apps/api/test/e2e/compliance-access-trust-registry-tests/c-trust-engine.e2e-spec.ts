@@ -42,7 +42,7 @@ describe('C. Trust Engine (e2e)', () => {
     const identityRes = await request(testApp.app.getHttpServer())
       .post('/admin/identities')
       .send({
-        emailHash: unique('hash-trust'),
+        email: `${unique('trust-email')}@example.com`,
         encryptedEmail: 'ENC(trust@example.com)',
         encryptedFullName: 'ENC(Trust User)',
         trustStatus: 'clean',
@@ -123,7 +123,7 @@ describe('C. Trust Engine (e2e)', () => {
       const freshIdentityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-baseline'),
+          email: `${unique('baseline-email')}@example.com`,
           encryptedEmail: 'ENC(baseline@example.com)',
           encryptedFullName: 'ENC(Baseline User)',
           trustStatus: 'clean',
@@ -206,7 +206,7 @@ describe('C. Trust Engine (e2e)', () => {
       const upperIdRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-upper'),
+          email: `${unique('upper-email')}@example.com`,
           encryptedEmail: 'ENC(upper@example.com)',
           encryptedFullName: 'ENC(Upper User)',
           trustStatus: 'clean',
@@ -240,7 +240,7 @@ describe('C. Trust Engine (e2e)', () => {
       const lowerIdRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-lower'),
+          email: `${unique('lower-email')}@example.com`,
           encryptedEmail: 'ENC(lower@example.com)',
           encryptedFullName: 'ENC(Lower User)',
           trustStatus: 'clean',
@@ -278,7 +278,7 @@ describe('C. Trust Engine (e2e)', () => {
       const freshIdRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-expiry'),
+          email: `${unique('expiry-email')}@example.com`,
           encryptedEmail: 'ENC(expiry@example.com)',
           encryptedFullName: 'ENC(Expiry User)',
           trustStatus: 'clean',
@@ -370,7 +370,7 @@ describe('C. Trust Engine (e2e)', () => {
       const freshIdRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-history'),
+          email: `${unique('history-email')}@example.com`,
           encryptedEmail: 'ENC(history@example.com)',
           encryptedFullName: 'ENC(History User)',
           trustStatus: 'clean',

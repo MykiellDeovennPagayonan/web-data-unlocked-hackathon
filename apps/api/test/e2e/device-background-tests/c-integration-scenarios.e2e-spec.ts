@@ -52,7 +52,7 @@ describe('C. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash'),
+          email: `${unique('email')}@example.com`,
           encryptedEmail: 'ENC(email@eshop-gamma.example.com)',
           encryptedFullName: 'ENC(Jane Doe)',
           trustStatus: 'clean',
@@ -233,7 +233,7 @@ describe('C. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('sus-hash'),
+          email: `${unique('sus-email')}@example.com`,
           encryptedEmail: 'ENC(sus@example.com)',
           encryptedFullName: 'ENC(Suspicious User)',
           trustStatus: 'clean',
@@ -544,7 +544,7 @@ describe('C. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('orch-hash'),
+          email: `${unique('orch-email')}@example.com`,
           encryptedEmail: 'ENC(orch@example.com)',
           encryptedFullName: 'ENC(Orchestrator Test)',
           trustStatus: 'clean',

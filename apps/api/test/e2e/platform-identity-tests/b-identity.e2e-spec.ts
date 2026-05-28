@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { createTestApp, TestApp } from '../../helpers/setup-e2e';
 import { TestDataTracker } from '../../helpers/test-data-tracker';
+import { hashEmail } from '../../../src/common/crypto/hash';
 
 function unique(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
@@ -45,13 +46,13 @@ describe('B. Identity (e2e)', () => {
 
   describe('B.1 Identities', () => {
     let identityId: string;
-    const emailHash = unique('hash');
+    const email = `${unique('email')}@example.com`;
 
     it('B.1.1 creates an identity', async () => {
       const res = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash,
+          email,
           encryptedEmail: 'ENC(email@example.com)',
           encryptedFullName: 'ENC(Jane Doe)',
           trustStatus: 'clean',
@@ -59,7 +60,7 @@ describe('B. Identity (e2e)', () => {
         .expect(201);
 
       expect(res.body).toHaveProperty('id');
-      expect(res.body.emailHash).toBe(emailHash);
+      expect(res.body.emailHash).toBe(hashEmail(email));
       expect(res.body.trustStatus).toBe('clean');
       expect(res.body.isHumanVerified).toBe(false);
 
@@ -77,10 +78,10 @@ describe('B. Identity (e2e)', () => {
 
     it('B.1.3 gets identity by email hash', async () => {
       const res = await request(testApp.app.getHttpServer())
-        .get(`/admin/identities/by-email/${emailHash}`)
+        .get(`/admin/identities/by-email/${hashEmail(email)}`)
         .expect(200);
 
-      expect(res.body.emailHash).toBe(emailHash);
+      expect(res.body.emailHash).toBe(hashEmail(email));
     });
 
     it('B.1.4 updates trust status', async () => {
@@ -168,13 +169,13 @@ describe('B. Identity (e2e)', () => {
     let identityId: string;
     let platformUserId: string;
     const externalUserId = unique('user');
-    const emailHash = unique('pu-hash');
+    const email = `${unique('pu-email')}@example.com`;
 
     beforeAll(async () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash,
+          email,
           encryptedEmail: 'ENC(test@example.com)',
           encryptedFullName: 'ENC(Test User)',
           trustStatus: 'clean',

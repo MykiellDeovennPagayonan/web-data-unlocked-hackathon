@@ -1,9 +1,9 @@
-import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsEmail } from 'class-validator';
 import { TrustStatus } from '../../../../generated/client';
 
 export class CreateIdentityDto {
-  @IsString()
-  emailHash!: string;
+  @IsEmail()
+  email!: string;
 
   @IsString()
   encryptedEmail!: string;

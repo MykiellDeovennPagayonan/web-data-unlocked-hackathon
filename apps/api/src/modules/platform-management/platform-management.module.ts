@@ -5,6 +5,7 @@ import { PlatformsController } from './platforms/platforms.controller';
 import { PlatformsService } from './platforms/platforms.service';
 import { PlatformsRepository } from './platforms/platforms.repository';
 import { ApiKeysController } from './api-keys/api-keys.controller';
+import { AdminApiKeysController } from './api-keys/admin-api-keys.controller';
 import { ApiKeysService } from './api-keys/api-keys.service';
 import { ApiKeysRepository } from './api-keys/api-keys.repository';
 import { PlatformRulesController } from './platform-rules/platform-rules.controller';
@@ -20,6 +21,7 @@ import { WebhooksRepository } from './webhooks/webhooks.repository';
   controllers: [
     PlatformsController,
     ApiKeysController,
+    AdminApiKeysController,
     PlatformRulesController,
     WebhooksController,
   ],

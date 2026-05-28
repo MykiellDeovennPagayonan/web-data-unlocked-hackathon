@@ -6,7 +6,7 @@ import {
 export type Identity = PrismaIdentity;
 
 export interface CreateIdentityData {
-  emailHash: string;
+  email: string;
   encryptedEmail: string;
   encryptedFullName: string;
   trustStatus?: TrustStatus;

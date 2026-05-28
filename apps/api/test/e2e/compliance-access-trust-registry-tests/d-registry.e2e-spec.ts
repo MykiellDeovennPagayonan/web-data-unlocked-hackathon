@@ -44,7 +44,7 @@ describe('D. Registry (e2e)', () => {
     const identityRes = await request(testApp.app.getHttpServer())
       .post('/admin/identities')
       .send({
-        emailHash: unique('hash-registry'),
+        email: `${unique('registry-email')}@example.com`,
         encryptedEmail: 'ENC(registry@example.com)',
         encryptedFullName: 'ENC(Registry User)',
         trustStatus: 'clean',
@@ -326,16 +326,16 @@ describe('D. Registry (e2e)', () => {
     });
 
     it('D.2.6 fraud ring lookup', async () => {
-      const emailHash = unique('fraud@example.com');
+      const email = `${unique('fraud')}@example.com`;
 
-      // Create target with email hash
+      // Create target with email
       const emailTarget = await request(testApp.app.getHttpServer())
         .post('/v1/registry/targets')
         .set('x-api-key', apiKey)
         .send({
           registryEntryId: blacklistEntryId,
           targetType: 'email',
-          emailHash,
+          email,
         })
         .expect(201);
 
@@ -343,7 +343,7 @@ describe('D. Registry (e2e)', () => {
 
       const emailLookup = await request(testApp.app.getHttpServer())
         .get('/admin/registry/lookup')
-        .query({ targetType: 'email', emailHash })
+        .query({ targetType: 'email', email })
         .expect(200);
 
       expect(emailLookup.body.length).toBeGreaterThan(0);
@@ -517,7 +517,7 @@ describe('D. Registry (e2e)', () => {
       const freshIdRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash-reject'),
+          email: `${unique('reject-email')}@example.com`,
           encryptedEmail: 'ENC(reject@example.com)',
           encryptedFullName: 'ENC(Reject User)',
           trustStatus: 'clean',

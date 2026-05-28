@@ -13,6 +13,7 @@ import { CommunityReportsService } from './community-reports.service';
 import { CreateCommunityReportDto } from './dto/create-community-report.dto';
 import { UpdateCommunityReportStatusDto } from './dto/update-community-report-status.dto';
 import { CommunityReport } from './entities/community-report.entity';
+import { hashEmail } from '../../../common/crypto/hash';
 import {
   ReportStatus,
   TargetType,
@@ -34,7 +35,7 @@ export class CommunityReportsController {
       identityId: dto.identityId,
       orgId: dto.orgId,
       ipId: dto.ipId,
-      emailHash: dto.emailHash,
+      emailHash: dto.email ? hashEmail(dto.email) : undefined,
       severity: dto.severity,
       category: dto.category,
       description: dto.description,

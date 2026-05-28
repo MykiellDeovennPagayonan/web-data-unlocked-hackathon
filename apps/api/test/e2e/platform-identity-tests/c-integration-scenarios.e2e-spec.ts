@@ -60,7 +60,7 @@ describe('C. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('hash'),
+          email: `${unique('email')}@example.com`,
           encryptedEmail: 'ENC(email@eshop-beta.example.com)',
           encryptedFullName: 'ENC(Jane Doe)',
           trustStatus: 'clean',
@@ -141,7 +141,7 @@ describe('C. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('fresh-hash'),
+          email: `${unique('fresh-email')}@example.com`,
           encryptedEmail: 'ENC(fresh_user@example.com)',
           encryptedFullName: 'ENC(Fresh User)',
           trustStatus: 'clean',
@@ -152,7 +152,7 @@ describe('C. Integration Scenarios (e2e)', () => {
       tracker.trackIdentity(freshIdentityId);
 
       // Step 2: Create a platform user for that identity
-      await request(testApp.app.getHttpServer())
+      const puRes = await request(testApp.app.getHttpServer())
         .post('/v1/platform-users')
         .set('x-api-key', apiKey)
         .send({
@@ -162,6 +162,8 @@ describe('C. Integration Scenarios (e2e)', () => {
           statusOnPlatform: 'active',
         })
         .expect(201);
+
+      tracker.trackPlatformUser(puRes.body.id);
 
       // Step 3: Admin blocks the identity
       const blockRes = await request(testApp.app.getHttpServer())
@@ -328,7 +330,7 @@ describe('C. Integration Scenarios (e2e)', () => {
       const identityRes = await request(testApp.app.getHttpServer())
         .post('/admin/identities')
         .send({
-          emailHash: unique('alice-hash'),
+          email: `${unique('alice-email')}@example.com`,
           encryptedEmail: 'ENC(alice@example.com)',
           encryptedFullName: 'ENC(Alice Smith)',
           trustStatus: 'clean',

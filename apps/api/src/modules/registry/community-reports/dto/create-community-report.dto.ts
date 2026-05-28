@@ -1,4 +1,10 @@
-import { IsEnum, IsOptional, IsString, IsArray } from 'class-validator';
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsArray,
+  IsEmail,
+} from 'class-validator';
 import {
   TargetType,
   ReportSeverity,
@@ -25,8 +31,8 @@ export class CreateCommunityReportDto {
   ipId?: string;
 
   @IsOptional()
-  @IsString()
-  emailHash?: string;
+  @IsEmail()
+  email?: string;
 
   @IsEnum(ReportSeverity)
   severity!: ReportSeverity;

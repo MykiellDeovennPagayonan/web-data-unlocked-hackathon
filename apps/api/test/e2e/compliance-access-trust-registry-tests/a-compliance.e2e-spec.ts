@@ -41,7 +41,7 @@ describe('A. Compliance (e2e)', () => {
     const identityRes = await request(testApp.app.getHttpServer())
       .post('/admin/identities')
       .send({
-        emailHash: unique('hash-compliance'),
+        email: `${unique('compliance-email')}@example.com`,
         encryptedEmail: 'ENC(compliance@example.com)',
         encryptedFullName: 'ENC(Compliance User)',
         trustStatus: 'clean',
