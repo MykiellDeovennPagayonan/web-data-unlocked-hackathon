@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TrustLayer Command Center",
+  title: "Tunai Command Center",
   description: "Trust intelligence and access risk operations dashboard",
 };
 

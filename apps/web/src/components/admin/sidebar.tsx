@@ -95,7 +95,7 @@ export function Sidebar() {
           <ShieldCheck className="size-6 stroke-[2]" aria-hidden="true" />
         </span>
         <span className="text-[18px] font-bold tracking-[0.12em] text-[var(--dashboard-text)]">
-          TRUSTLAYER
+          TUNAI
         </span>
       </div>
 

@@ -570,7 +570,7 @@ async function seedReviews(
         identityId: identityRecords[6].id,
         platformId,
         verificationType: VerificationType.email,
-        provider: 'TrustLayer',
+        provider: 'Tunai',
         status: VerificationStatus.pending,
         createdAt: minutesAgo(26),
       },
