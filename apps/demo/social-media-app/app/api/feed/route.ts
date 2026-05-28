@@ -2,9 +2,31 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { tl } from "@/lib/trustlayer"
 
 export async function GET(request: NextRequest) {
   try {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      "127.0.0.1"
+
+    try {
+      const velocity = await tl.trackRequestVelocity(ip)
+      if (velocity.thresholdExceeded || velocity.isBlacklisted) {
+        return NextResponse.json(
+          {
+            error: "Rate limit exceeded",
+            message:
+              "Too many requests detected from your IP. Access has been restricted.",
+          },
+          { status: 429 }
+        )
+      }
+    } catch {
+      // Non-fatal — continue serving if TrustLayer unreachable
+    }
+
     const session = await getServerSession(authOptions)
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get("page") || "1")

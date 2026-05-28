@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "1.0.7",
+    "@fingerprintjs/fingerprintjs": "^5.2.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "7.8.0",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -19,6 +20,7 @@
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tabs": "^1.1.13",
+    "@trust-layer/tunai": "workspace:*",
     "@uploadthing/react": "^7.3.3",
     "bcryptjs": "2.4.3",
     "class-variance-authority": "^0.7.1",

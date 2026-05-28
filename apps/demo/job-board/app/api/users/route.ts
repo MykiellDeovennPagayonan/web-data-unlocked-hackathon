@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { tl } from "@/lib/trustlayer"
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,6 +60,48 @@ export async function POST(request: NextRequest) {
         createdAt: true,
       }
     })
+
+    if (role === "INDIVIDUAL") {
+      const deviceSignals = (profileData.deviceFingerprint as Array<{ signalType: string; value: string }> | undefined) ?? []
+      try {
+        await tl.enrollIndividual({
+          email,
+          fullName: name,
+          externalUserId: user.id,
+        })
+        if (deviceSignals.length > 0) {
+          await tl.resolveDevice(
+            deviceSignals.map((s) => ({
+              signalType: s.signalType as "canvas_hash" | "webgl_hash" | "screen_resolution" | "os" | "timezone" | "user_agent" | "language",
+              value: s.value,
+            }))
+          )
+        }
+      } catch (tlErr) {
+        console.error("[TrustLayer] registerUser failed (non-fatal):", tlErr)
+      }
+    }
+
+    if (role === "ORGANIZATION") {
+      // Fire-and-forget — job-board is low-strictness, don't block registration
+      tl.enrollOrganization({
+        legalName: name,
+        domain: profileData.domain ?? "",
+        registrationNumber: profileData.regNumber ?? "",
+        country: "US",
+        industry: "general",
+        externalUserId: user.id,
+      }).then((org) =>
+        tl.runBackgroundCheck({
+          entityType: "organization",
+          orgId: org.orgId,
+          triggeredBy: "registration",
+          entityName: name,
+        })
+      ).catch((tlErr) => {
+        console.error("[TrustLayer] org background check failed (non-fatal):", tlErr)
+      })
+    }
 
     return NextResponse.json(user, { status: 201 })
   } catch (error) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { tl } from "@/lib/trustlayer"
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,6 +60,25 @@ export async function POST(request: NextRequest) {
         createdAt: true,
       }
     })
+
+    const deviceSignals = (profileData.deviceFingerprint as Array<{ signalType: string; value: string }> | undefined) ?? []
+    try {
+      await tl.enrollIndividual({
+        email,
+        fullName: name,
+        externalUserId: user.id,
+      })
+      if (deviceSignals.length > 0) {
+        await tl.resolveDevice(
+          deviceSignals.map((s) => ({
+            signalType: s.signalType as "canvas_hash" | "webgl_hash" | "screen_resolution" | "os" | "timezone" | "user_agent" | "language",
+            value: s.value,
+          }))
+        )
+      }
+    } catch (tlErr) {
+      console.error("[TrustLayer] registerUser failed (non-fatal):", tlErr)
+    }
 
     return NextResponse.json(user, { status: 201 })
   } catch (error) {

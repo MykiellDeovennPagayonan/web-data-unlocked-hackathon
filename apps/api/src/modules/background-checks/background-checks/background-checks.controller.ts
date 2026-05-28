@@ -35,6 +35,17 @@ export class BackgroundChecksController {
     });
   }
 
+  @Post('v1/background-checks/run')
+  @UseGuards(ApiKeyGuard)
+  run(@Body() dto: CreateBackgroundCheckDto): Promise<BackgroundCheck> {
+    return this.backgroundChecksService.runBackgroundCheck({
+      entityType: dto.entityType,
+      identityId: dto.identityId,
+      orgId: dto.orgId,
+      triggeredBy: dto.triggeredBy,
+    });
+  }
+
   @Get('v1/background-checks/:id')
   @UseGuards(ApiKeyGuard)
   getById(@Param('id') id: string): Promise<BackgroundCheck | null> {

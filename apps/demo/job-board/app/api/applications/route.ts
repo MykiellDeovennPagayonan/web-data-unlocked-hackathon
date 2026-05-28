@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { tl } from "@/lib/trustlayer"
 
 export async function GET() {
   try {
@@ -115,6 +116,26 @@ export async function POST(request: NextRequest) {
         { message: "You have already applied to this job" },
         { status: 400 }
       )
+    }
+
+    // Step 10: Trust gate — check identity score before allowing application
+    try {
+      const tlUser = await tl.getPlatformUser(session.user.id)
+      if (tlUser.identityId) {
+        const score = await tl.getTrustScore("identity", tlUser.identityId)
+        if (score.score < 30) {
+          return NextResponse.json(
+            {
+              message:
+                "Your account has been flagged for suspicious activity. You have been throttled from submitting applications. Please contact support.",
+              trustScore: score.score,
+            },
+            { status: 429 }
+          )
+        }
+      }
+    } catch {
+      // Non-fatal — allow application if TrustLayer is unreachable
     }
 
     const application = await prisma.application.create({

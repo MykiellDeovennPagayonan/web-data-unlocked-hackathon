@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { tl } from "@/lib/trustlayer"
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,6 +60,73 @@ export async function POST(request: NextRequest) {
         createdAt: true,
       }
     })
+
+    if (role === "INDIVIDUAL") {
+      const deviceSignals = (profileData.deviceFingerprint as Array<{ signalType: string; value: string }> | undefined) ?? []
+      try {
+        await tl.enrollIndividual({
+          email,
+          fullName: name,
+          externalUserId: user.id,
+        })
+        if (deviceSignals.length > 0) {
+          await tl.resolveDevice(
+            deviceSignals.map((s) => ({
+              signalType: s.signalType as "canvas_hash" | "webgl_hash" | "screen_resolution" | "os" | "timezone" | "user_agent" | "language",
+              value: s.value,
+            }))
+          )
+        }
+      } catch (tlErr) {
+        console.error("[TrustLayer] registerUser failed (non-fatal):", tlErr)
+      }
+    }
+
+    if (role === "ORGANIZATION") {
+      try {
+        const org = await tl.enrollOrganization({
+          legalName: name,
+          domain: profileData.domain ?? "",
+          registrationNumber: profileData.regNumber ?? "",
+          country: "US",
+          industry: "general",
+          externalUserId: user.id,
+        })
+
+        const check = await tl.runBackgroundCheck({
+          entityType: "organization",
+          orgId: org.orgId,
+          triggeredBy: "registration",
+          entityName: name,
+        })
+
+        if (check.overallVerdict === "blocked") {
+          await prisma.user.delete({ where: { id: user.id } })
+          return NextResponse.json(
+            {
+              message:
+                "Your organization could not be verified. It appears on sanctions or fraud lists. Please contact support.",
+              verdict: check.overallVerdict,
+            },
+            { status: 403 }
+          )
+        }
+
+        if (check.overallVerdict === "flagged") {
+          await prisma.user.delete({ where: { id: user.id } })
+          return NextResponse.json(
+            {
+              message:
+                "Your organization could not be verified. No credible web presence was found. Please contact support.",
+              verdict: check.overallVerdict,
+            },
+            { status: 403 }
+          )
+        }
+      } catch (tlErr) {
+        console.error("[TrustLayer] org registration/background check failed:", tlErr)
+      }
+    }
 
     return NextResponse.json(user, { status: 201 })
   } catch (error) {

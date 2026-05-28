@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { RedisModule } from './config/redis.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PlatformManagementModule } from './modules/platform-management/platform-management.module';
 import { IdentityModule } from './modules/identity/identity.module';
@@ -15,6 +16,7 @@ import { ComplianceModule } from './modules/compliance/compliance.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    RedisModule,
     PrismaModule,
     PlatformManagementModule,
     IdentityModule,

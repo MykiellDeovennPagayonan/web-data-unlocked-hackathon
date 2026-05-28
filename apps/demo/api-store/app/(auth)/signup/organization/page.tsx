@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default function OrganizationSignup() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isVerifying, setIsVerifying] = useState(false)
   const [error, setError] = useState("")
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -31,6 +32,8 @@ export default function OrganizationSignup() {
       description: (formData.get("description") as string) || undefined,
     }
 
+    setIsVerifying(true)
+
     try {
       const response = await fetch("/api/users", {
         method: "POST",
@@ -41,8 +44,8 @@ export default function OrganizationSignup() {
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        setError(error.message || "Something went wrong")
+        const errorBody = await response.json()
+        setError(errorBody.message || "Something went wrong")
         return
       }
 
@@ -51,6 +54,7 @@ export default function OrganizationSignup() {
       setError("Something went wrong")
     } finally {
       setIsLoading(false)
+      setIsVerifying(false)
     }
   }
 
@@ -140,8 +144,13 @@ export default function OrganizationSignup() {
           {error && (
             <div className="text-sm text-danger text-center">{error}</div>
           )}
+          {isVerifying && (
+            <p className="text-sm text-center text-text-muted">
+              🔍 Verifying your organization with TrustLayer… this may take a moment.
+            </p>
+          )}
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Sign Up as Organization"}
+            {isVerifying ? "Verifying organization..." : isLoading ? "Creating account..." : "Sign Up as Organization"}
           </Button>
         </form>
         <div className="mt-4 text-center text-sm text-text-muted">
