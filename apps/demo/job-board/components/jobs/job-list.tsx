@@ -32,14 +32,15 @@ interface JobListProps {
 export function JobList({ jobs }: JobListProps) {
   if (jobs.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">No jobs found</p>
+      <div className="bg-white border border-border-strong rounded-lg p-12 text-center">
+        <p className="text-text-muted text-lg mb-2">No jobs found</p>
+        <p className="text-text-muted text-sm">Try adjusting your search or filters</p>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="bg-white border border-border-strong rounded-lg overflow-hidden">
       {jobs.map((job) => (
         <JobCard key={job.id} job={job} />
       ))}

@@ -5,8 +5,6 @@ import { useParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { PostCard } from "@/components/posts/PostCard"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { Header } from "@/components/layout/Header"
 
 interface UserProfile {
@@ -40,6 +38,8 @@ interface Post {
   _count: { comments: number; likes: number }
 }
 
+const tabs = ["Home", "About", "Lists"]
+
 export default function ProfilePage() {
   const params = useParams()
   const name = decodeURIComponent(params.name as string)
@@ -53,6 +53,7 @@ export default function ProfilePage() {
   const [postsLoading, setPostsLoading] = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
   const [notFound, setNotFound] = useState(false)
+  const [activeTab, setActiveTab] = useState("Home")
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -116,11 +117,11 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#F7F4ED]">
         <Header />
-        <div className="max-w-2xl mx-auto px-4 py-8 space-y-4">
-          <div className="h-32 rounded-lg bg-muted animate-pulse" />
-          <div className="h-24 rounded-lg bg-muted animate-pulse" />
+        <div className="max-w-[1192px] mx-auto px-6 py-8 space-y-4">
+          <div className="h-40 bg-[#F2F2F2] animate-pulse rounded" />
+          <div className="h-24 bg-[#F2F2F2] animate-pulse rounded" />
         </div>
       </div>
     )
@@ -128,10 +129,10 @@ export default function ProfilePage() {
 
   if (notFound || !profile) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#F7F4ED]">
         <Header />
-        <div className="max-w-2xl mx-auto px-4 py-20 text-center text-muted-foreground">
-          <p className="text-lg font-medium">User not found</p>
+        <div className="max-w-[1192px] mx-auto px-6 py-20 text-center text-[#6B6B6B]">
+          <p className="text-lg font-medium" style={{ fontFamily: '"GT Super", Georgia, serif' }}>User not found</p>
         </div>
       </div>
     )
@@ -140,105 +141,143 @@ export default function ProfilePage() {
   const isOwnProfile = session?.user?.id === profile.id
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#F7F4ED]">
       <Header />
-      <main className="max-w-2xl mx-auto px-4 py-8">
-        {/* Profile card */}
-        <div className="mb-6 p-5 border border-border rounded-lg bg-surface">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-xl font-bold text-foreground">{profile.name}</h1>
-                {profile.isVerified && (
-                  <Badge className="text-xs px-1.5 py-0 bg-accent text-white">✓</Badge>
-                )}
-                <Badge variant="secondary" className="text-xs">
-                  {profile.role === "ORGANIZATION" ? "Organization" : "Individual"}
-                </Badge>
+      <main className="max-w-[1192px] mx-auto px-6 py-8">
+        {/* Profile header */}
+        <div className="mb-10">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+            <div className="flex items-center gap-6">
+              <span className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-[#F2F2F2] flex items-center justify-center text-[40px] md:text-[48px] font-bold text-[#242424]">
+                {profile.name.charAt(0).toUpperCase()}
+              </span>
+              <div>
+                <h1
+                  className="text-[28px] md:text-[32px] font-bold text-[#242424] mb-2"
+                  style={{ fontFamily: '"GT Super", Georgia, serif' }}
+                >
+                  {profile.name}
+                </h1>
+                <p className="text-[14px] text-[#6B6B6B]">
+                  {profile._count.followers} followers · {profile._count.following} following
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">{profile.email}</p>
             </div>
             {!isOwnProfile && session && (
-              <Button
-                variant={profile.isFollowing ? "outline" : "default"}
-                size="sm"
+              <button
                 onClick={handleFollow}
                 disabled={followLoading}
+                className={`px-5 py-2 text-[13px] rounded-full transition-colors duration-150 self-start ${
+                  profile.isFollowing
+                    ? "text-[#1A8917] border border-[#1A8917] hover:bg-[#F2F2F2]"
+                    : "bg-[#1A8917] text-white hover:bg-[#146d12]"
+                }`}
               >
-                {profile.isFollowing ? "Unfollow" : "Follow"}
-              </Button>
+                {profile.isFollowing ? "Following" : "Follow"}
+              </button>
             )}
           </div>
 
-          {/* Bio / description */}
+          {/* Bio */}
           {profile.individualProfile?.bio && (
-            <p className="mt-3 text-sm text-foreground">{profile.individualProfile.bio}</p>
+            <p className="text-[16px] text-[#242424] max-w-[600px] mb-3 leading-relaxed">{profile.individualProfile.bio}</p>
           )}
           {profile.organizationProfile?.description && (
-            <p className="mt-3 text-sm text-foreground">{profile.organizationProfile.description}</p>
+            <p className="text-[16px] text-[#242424] max-w-[600px] mb-3 leading-relaxed">{profile.organizationProfile.description}</p>
           )}
 
-          {/* Meta info */}
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          {/* Meta */}
+          <div className="flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-[#6B6B6B]">
             {profile.individualProfile?.location && (
-              <span>📍 {profile.individualProfile.location}</span>
+              <span>{profile.individualProfile.location}</span>
             )}
             {profile.individualProfile?.website && (
-              <a href={profile.individualProfile.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-accent">
-                🔗 {profile.individualProfile.website}
+              <a href={profile.individualProfile.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-[#1A8917]">
+                {profile.individualProfile.website}
               </a>
             )}
             {profile.organizationProfile?.domain && (
-              <a href={`https://${profile.organizationProfile.domain}`} target="_blank" rel="noopener noreferrer" className="hover:underline text-accent">
-                🌐 {profile.organizationProfile.domain}
+              <a href={`https://${profile.organizationProfile.domain}`} target="_blank" rel="noopener noreferrer" className="hover:underline text-[#1A8917]">
+                {profile.organizationProfile.domain}
               </a>
             )}
             {profile.organizationProfile?.address && (
-              <span>📍 {profile.organizationProfile.address}</span>
+              <span>{profile.organizationProfile.address}</span>
             )}
-          </div>
-
-          {/* Stats */}
-          <Separator className="my-3" />
-          <div className="flex gap-6 text-sm">
-            <span><span className="font-semibold text-foreground">{profile._count.posts}</span> <span className="text-muted-foreground">posts</span></span>
-            <span><span className="font-semibold text-foreground">{profile._count.followers}</span> <span className="text-muted-foreground">followers</span></span>
-            <span><span className="font-semibold text-foreground">{profile._count.following}</span> <span className="text-muted-foreground">following</span></span>
           </div>
         </div>
 
+        {/* Tabs */}
+        <div className="flex gap-6 mb-8 border-b border-[#E5E5E5]">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`pb-3 text-[14px] transition-colors duration-150 ${
+                activeTab === tab
+                  ? "text-[#242424] border-b border-[#242424] -mb-[1px]"
+                  : "text-[#6B6B6B] hover:text-[#242424]"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
         {/* Posts */}
-        <h2 className="text-base font-semibold text-foreground mb-4">Posts</h2>
-        {posts.length === 0 && !postsLoading ? (
-          <p className="text-sm text-muted-foreground text-center py-12">No posts yet.</p>
-        ) : (
-          <div className="space-y-4">
-            {posts.map((post) => (
-              <PostCard
-                key={post.id}
-                id={post.id}
-                content={post.content}
-                author={post.author}
-                createdAt={post.createdAt}
-                commentCount={post._count.comments}
-                likeCount={post._count.likes}
-                isLiked={post.isLiked}
-              />
-            ))}
-            {postsLoading && (
-              <div className="h-24 rounded-lg bg-muted animate-pulse" />
-            )}
-            {hasMore && !postsLoading && (
-              <div className="flex justify-center pt-2">
-                <Button variant="outline" size="sm" onClick={() => {
-                  const next = page + 1
-                  setPage(next)
-                  fetchPosts(next, profile.id)
-                }}>
-                  Load more
-                </Button>
+        {activeTab === "Home" && (
+          <>
+            {posts.length === 0 && !postsLoading ? (
+              <p className="text-[14px] text-[#757575] text-center py-12">No posts yet.</p>
+            ) : (
+              <div className="space-y-8">
+                {posts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    id={post.id}
+                    content={post.content}
+                    author={post.author}
+                    createdAt={post.createdAt}
+                    commentCount={post._count.comments}
+                    likeCount={post._count.likes}
+                    isLiked={post.isLiked}
+                  />
+                ))}
+                {postsLoading && (
+                  <div className="h-24 bg-[#F2F2F2] animate-pulse rounded" />
+                )}
+                {hasMore && !postsLoading && (
+                  <div className="flex justify-center pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const next = page + 1
+                        setPage(next)
+                        fetchPosts(next, profile.id)
+                      }}
+                      className="rounded-full px-6 border-[#242424] text-[#242424] hover:bg-[#F2F2F2]"
+                    >
+                      Load more
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
+          </>
+        )}
+
+        {activeTab === "About" && (
+          <div className="max-w-[680px]">
+            <p className="text-[16px] text-[#6B6B6B]">
+              {profile.individualProfile?.bio || profile.organizationProfile?.description || "No bio available."}
+            </p>
+          </div>
+        )}
+
+        {activeTab === "Lists" && (
+          <div className="text-center py-12">
+            <p className="text-[14px] text-[#757575]">No lists yet.</p>
           </div>
         )}
       </main>

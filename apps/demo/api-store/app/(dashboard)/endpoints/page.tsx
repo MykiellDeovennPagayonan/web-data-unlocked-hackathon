@@ -55,13 +55,13 @@ export default function EndpointsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold">My Endpoints</h1>
-          <p className="text-muted-foreground">Manage your API endpoints</p>
+          <h1 className="text-3xl font-bold text-text-primary tracking-tight">My Endpoints</h1>
+          <p className="text-text-secondary mt-1">Manage your API endpoints</p>
         </div>
-        <Button asChild>
+        <Button asChild className="bg-kaggle-blue hover:bg-kaggle-blue-hover text-white h-10">
           <Link href="/endpoints/new">
             <Plus className="h-4 w-4 mr-2" />
             New Endpoint
@@ -70,100 +70,99 @@ export default function EndpointsPage() {
       </div>
 
       {endpoints.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-4">You haven&apos;t created any endpoints yet.</p>
-            <Button asChild>
-              <Link href="/endpoints/new">Create your first endpoint</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-border-light rounded-xl py-16 text-center">
+          <p className="text-text-secondary mb-4">You haven&apos;t created any endpoints yet.</p>
+          <Button asChild className="bg-kaggle-blue hover:bg-kaggle-blue-hover text-white">
+            <Link href="/endpoints/new">Create your first endpoint</Link>
+          </Button>
+        </div>
       ) : (
         <div className="space-y-4">
           {endpoints.map((ep) => (
-            <Card key={ep.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <CardTitle className="text-lg">{ep.name}</CardTitle>
-                      <Badge variant={ep.isActive ? "default" : "secondary"}>
-                        {ep.isActive ? "Active" : "Inactive"}
-                      </Badge>
-                    </div>
-                    {ep.description && (
-                      <CardDescription>{ep.description}</CardDescription>
-                    )}
-                  </div>
+            <div key={ep.id} className="bg-white border border-border-light rounded-xl p-5 hover:bg-surface transition-colors">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      title="Copy proxy URL"
-                      onClick={() => copyProxyUrl(ep.id)}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      title={ep.isActive ? "Deactivate" : "Activate"}
-                      onClick={() => toggleActive(ep)}
-                    >
-                      {ep.isActive ? (
-                        <ToggleRight className="h-4 w-4 text-primary" />
-                      ) : (
-                        <ToggleLeft className="h-4 w-4" />
-                      )}
-                    </Button>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/endpoints/${ep.id}/edit`}>
-                        <Pencil className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setDeleteId(ep.id)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                    <h3 className="text-lg font-semibold text-text-primary">{ep.name}</h3>
+                    <Badge className={ep.isActive ? "bg-green-50 text-green-700 border-0 text-xs font-medium" : "bg-gray-100 text-gray-600 border-0 text-xs font-medium"}>
+                      {ep.isActive ? "Active" : "Inactive"}
+                    </Badge>
                   </div>
+                  {ep.description && (
+                    <p className="text-sm text-text-secondary">{ep.description}</p>
+                  )}
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
+                <div className="flex items-center gap-1 shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label="Copy proxy URL"
+                    onClick={() => copyProxyUrl(ep.id)}
+                    className="h-8 w-8 p-0 text-text-muted hover:text-text-primary"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label={ep.isActive ? "Deactivate" : "Activate"}
+                    onClick={() => toggleActive(ep)}
+                    className="h-8 w-8 p-0 text-text-muted hover:text-text-primary"
+                  >
+                    {ep.isActive ? (
+                      <ToggleRight className="h-4 w-4 text-kaggle-blue" />
+                    ) : (
+                      <ToggleLeft className="h-4 w-4" />
+                    )}
+                  </Button>
+                  <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 text-text-muted hover:text-text-primary">
+                    <Link href={`/endpoints/${ep.id}/edit`}>
+                      <Pencil className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDeleteId(ep.id)}
+                    className="h-8 w-8 p-0 text-text-muted hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-border-subtle space-y-2">
                 <div className="flex items-center gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Price: </span>
-                    <span className="font-medium">${ep.pricePer1k}/1k calls</span>
+                    <span className="text-text-muted">Price: </span>
+                    <span className="font-medium text-text-primary">${ep.pricePer1k}/1k calls</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-muted-foreground">Forward URL: </span>
-                    <code className="text-xs bg-muted px-1 rounded truncate">{ep.forwardUrl}</code>
+                    <span className="text-text-muted">Forward URL: </span>
+                    <code className="text-xs bg-surface-muted px-1.5 py-0.5 rounded font-mono text-text-primary">{ep.forwardUrl}</code>
                   </div>
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-text-muted">
                   Proxy URL:{" "}
-                  <code className="bg-muted px-1 rounded">
+                  <code className="bg-surface-muted px-1.5 py-0.5 rounded font-mono text-text-primary">
                     {typeof window !== "undefined" ? window.location.origin : ""}/api/proxy/{ep.id}
                   </code>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}
 
       <Dialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-sm bg-white border-border-light">
           <DialogHeader>
-            <DialogTitle>Delete Endpoint?</DialogTitle>
+            <DialogTitle className="text-text-primary">Delete Endpoint?</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-text-secondary">
             This will permanently delete this endpoint and all associated usage logs.
           </p>
           <div className="flex gap-2 mt-4">
-            <Button variant="outline" className="flex-1" onClick={() => setDeleteId(null)}>
+            <Button variant="outline" className="flex-1 border-border-light text-text-secondary hover:bg-surface-muted" onClick={() => setDeleteId(null)}>
               Cancel
             </Button>
             <Button variant="destructive" className="flex-1" onClick={confirmDelete}>

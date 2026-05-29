@@ -6,10 +6,15 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Header } from "@/components/layout/Header"
 
-const MAX_CHARS = 1000
+const MAX_CHARS = 2000
+
+function estimateReadTime(text: string) {
+  const words = text.trim().split(/\s+/).length
+  const minutes = Math.max(1, Math.ceil(words / 200))
+  return `${minutes} min read`
+}
 
 export default function CreatePostPage() {
   const router = useRouter()
@@ -20,10 +25,11 @@ export default function CreatePostPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#F7F4ED]">
         <Header />
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          <div className="h-48 rounded-lg bg-muted animate-pulse" />
+        <div className="max-w-[740px] mx-auto px-6 pt-20">
+          <div className="h-12 bg-[#F2F2F2] animate-pulse rounded mb-4" />
+          <div className="h-64 bg-[#F2F2F2] animate-pulse rounded" />
         </div>
       </div>
     )
@@ -31,11 +37,11 @@ export default function CreatePostPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#F7F4ED]">
         <Header />
-        <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-          <p className="text-muted-foreground mb-4">You must be signed in to create a post.</p>
-          <Button asChild>
+        <div className="max-w-[740px] mx-auto px-6 py-20 text-center">
+          <p className="text-[#6B6B6B] mb-4">You must be signed in to write a story.</p>
+          <Button asChild className="rounded-full bg-[#FFC017] text-[#242424] hover:bg-[#E5AC00] border-none">
             <Link href="/login">Sign In</Link>
           </Button>
         </div>
@@ -69,57 +75,59 @@ export default function CreatePostPage() {
   }
 
   const remaining = MAX_CHARS - content.length
+  const readTime = estimateReadTime(content)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#F7F4ED]">
       <Header />
-      <main className="max-w-2xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Create Post</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Share something with the community</p>
+      <main className="max-w-[740px] mx-auto px-6 pt-10 pb-20">
+        {/* Top bar */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="text-[13px] text-[#6B6B6B]">
+            Draft in <span className="text-[#242424] font-medium">{session.user.name}</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-[13px] text-[#6B6B6B]">{readTime}</span>
+            <Button
+              type="submit"
+              onClick={handleSubmit}
+              disabled={isSubmitting || content.trim().length === 0}
+              className="rounded-full px-6 h-9 text-[13px] bg-[#1A8917] hover:bg-[#146d12] text-white"
+            >
+              {isSubmitting ? "Publishing..." : "Publish"}
+            </Button>
+          </div>
         </div>
 
-        <Card className="border border-border shadow-none">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground font-normal">
-              Posting as <span className="font-semibold text-foreground">{session.user.name}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Textarea
-                placeholder="What's on your mind?"
-                value={content}
-                onChange={(e) => setContent(e.target.value.slice(0, MAX_CHARS))}
-                rows={6}
-                className="resize-none text-sm border-border focus-visible:ring-accent"
+        {/* Editor */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Textarea
+            placeholder="Tell your story..."
+            value={content}
+            onChange={(e) => setContent(e.target.value.slice(0, MAX_CHARS))}
+            rows={12}
+            className="resize-none text-[20px] leading-[1.6] border-none shadow-none focus-visible:ring-0 bg-transparent p-0 placeholder:text-[#757575]"
+            disabled={isSubmitting}
+          />
+
+          <div className="flex items-center justify-between pt-4 border-t border-[#E5E5E5]">
+            <span className={`text-[13px] ${remaining < 100 ? "text-[#CC0000]" : "text-[#6B6B6B]"}`}>
+              {remaining} characters remaining
+            </span>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => router.back()}
                 disabled={isSubmitting}
-              />
-              <div className="flex items-center justify-between">
-                <span className={`text-xs ${remaining < 50 ? "text-danger" : "text-muted-foreground"}`}>
-                  {remaining} characters remaining
-                </span>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => router.back()}
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || content.trim().length === 0}
-                  >
-                    {isSubmitting ? "Posting..." : "Post"}
-                  </Button>
-                </div>
-              </div>
-              {error && <p className="text-sm text-danger">{error}</p>}
-            </form>
-          </CardContent>
-        </Card>
+                className="text-[13px] rounded-full"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+          {error && <p className="text-[14px] text-[#CC0000]">{error}</p>}
+        </form>
       </main>
     </div>
   )

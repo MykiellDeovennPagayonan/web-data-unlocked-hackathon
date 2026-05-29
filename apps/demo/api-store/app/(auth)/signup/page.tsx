@@ -70,92 +70,94 @@ export default function IndividualSignup() {
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Create Account</CardTitle>
-        <CardDescription className="text-center">
-          Sign up as an individual user
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Full name"
-              required
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Email"
-              required
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Password"
-              required
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
-            <Input
-              id="bio"
-              name="bio"
-              type="text"
-              placeholder="Bio (optional)"
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
-            <Input
-              id="location"
-              name="location"
-              type="text"
-              placeholder="Location (optional)"
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
-            <Input
-              id="website"
-              name="website"
-              type="url"
-              placeholder="Website (optional)"
-              disabled={isLoading}
-            />
-          </div>
-          {error && (
-            <div className="text-sm text-danger text-center">{error}</div>
-          )}
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Sign Up"}
-          </Button>
-        </form>
-        <div className="mt-4 text-center text-sm text-text-muted">
-          Already have an account?{" "}
-          <Link href="/login" className="text-primary hover:underline">
-            Sign in
-          </Link>
+    <div className="w-full bg-white border border-border-light rounded-xl p-6">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-text-primary">Create Account</h2>
+        <p className="text-sm text-text-secondary mt-1">Sign up as an individual user</p>
+      </div>
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Input
+            id="name"
+            name="name"
+            type="text"
+            placeholder="Full name"
+            required
+            disabled={isLoading}
+            className="bg-surface-muted border-border-light focus:border-kaggle-blue h-10"
+          />
         </div>
-        <div className="mt-2 text-center text-sm text-text-muted">
-          Want to sign up as an organization?{" "}
-          <Link href="/signup/organization" className="text-primary hover:underline">
-            Organization signup
-          </Link>
+        <div className="space-y-2">
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Email"
+            required
+            disabled={isLoading}
+            className="bg-surface-muted border-border-light focus:border-kaggle-blue h-10"
+          />
         </div>
-      </CardContent>
-    </Card>
+        <div className="space-y-2">
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            required
+            disabled={isLoading}
+            className="bg-surface-muted border-border-light focus:border-kaggle-blue h-10"
+          />
+        </div>
+        <div className="space-y-2">
+          <Input
+            id="bio"
+            name="bio"
+            type="text"
+            placeholder="Bio (optional)"
+            disabled={isLoading}
+            className="bg-surface-muted border-border-light focus:border-kaggle-blue h-10"
+          />
+        </div>
+        <div className="space-y-2">
+          <Input
+            id="location"
+            name="location"
+            type="text"
+            placeholder="Location (optional)"
+            disabled={isLoading}
+            className="bg-surface-muted border-border-light focus:border-kaggle-blue h-10"
+          />
+        </div>
+        <div className="space-y-2">
+          <Input
+            id="website"
+            name="website"
+            type="url"
+            placeholder="Website (optional)"
+            disabled={isLoading}
+            className="bg-surface-muted border-border-light focus:border-kaggle-blue h-10"
+          />
+        </div>
+        {error && (
+          <div className="text-sm text-destructive text-center">{error}</div>
+        )}
+        <Button type="submit" className="w-full bg-kaggle-blue hover:bg-kaggle-blue-hover text-white h-10" disabled={isLoading}>
+          {isLoading ? "Creating account..." : "Sign Up"}
+        </Button>
+      </form>
+      <div className="mt-4 text-center text-sm text-text-muted">
+        Already have an account?{" "}
+        <Link href="/login" className="text-kaggle-blue hover:underline font-medium">
+          Sign in
+        </Link>
+      </div>
+      <div className="mt-2 text-center text-sm text-text-muted">
+        Want to sign up as an organization?{" "}
+        <Link href="/signup/organization" className="text-kaggle-blue hover:underline font-medium">
+          Organization signup
+        </Link>
+      </div>
+    </div>
   )
 }

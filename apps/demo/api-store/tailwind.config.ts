@@ -42,7 +42,7 @@ const config: Config = {
   			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--primary-foreground))'
+  				foreground: 'hsl(var(--destructive-foreground))'
   			},
   			sidebar: {
   				DEFAULT: 'hsl(var(--sidebar))',
@@ -54,16 +54,21 @@ const config: Config = {
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
   			},
-  			// Custom Notion/Newspaper semantic aliases
-  			surface: '#FFFFFF',
-  			'surface-alt': '#F7F7F5',
-  			'border-strong': '#D3D1CB',
-  			'text-primary': '#000000',
-  			'text-secondary': '#37352F',
-  			'text-muted': '#9F9E9B',
-  			success: '#16A34A',
-  			warning: '#D97706',
-  			danger: '#DC2626',
+  			// Kaggle custom semantic aliases
+  			'kaggle-blue': '#20BEFF',
+  			'kaggle-blue-hover': '#169BD6',
+  			'surface': '#FAFAFA',
+  			'surface-muted': '#F4F4F4',
+  			'text-primary': '#222222',
+  			'text-secondary': '#6C757D',
+  			'text-muted': '#8E8E8E',
+  			'text-link': '#20BEFF',
+  			'border-light': '#E1E1E1',
+  			'border-subtle': '#F0F0F0',
+  			'success': '#20BEFF',
+  			'warning': '#FFC107',
+  			'info': '#17A2B8',
+  			'premium': '#FFD700',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
