@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { resolve } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RedisModule } from './config/redis.module';
@@ -16,7 +17,13 @@ import { AdminDashboardModule } from './modules/admin-dashboard/admin-dashboard.
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [
+        resolve(__dirname, '../../.env'),
+        resolve(__dirname, '../../../../.env'),
+      ],
+    }),
     RedisModule,
     PrismaModule,
     PlatformManagementModule,
