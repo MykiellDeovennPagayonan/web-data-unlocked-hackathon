@@ -38,7 +38,7 @@ services:
       BRIGHT_DATA_API_KEY: "574904d4-a8e4-4286-b723-df8ac6f603bd"
       BRIGHT_DATA_SERP_URL: https://api.brightdata.com/serp/google
       BRIGHT_DATA_SANCTIONS_URL: https://api.brightdata.com/datasets/v3/trigger
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: "${CHOKIDAR_USEPOLLING:-false}"
     ports:
       - "8090:8090"
     depends_on:
@@ -87,7 +87,7 @@ services:
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://api:8090
       TUNAI_API_BASE_URL: http://api:8090
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: "${CHOKIDAR_USEPOLLING:-false}"
     ports:
       - "3000:3000"
     depends_on:
@@ -124,7 +124,7 @@ services:
       NEXTAUTH_URL: http://localhost:3001
       NEXTAUTH_SECRET: your-secret-key-change-this-in-production
       SEED_SECRET: dev-seed-secret
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: "${CHOKIDAR_USEPOLLING:-false}"
     ports:
       - "3001:3001"
     depends_on:
@@ -162,7 +162,7 @@ services:
       DATABASE_URL: postgresql://user:trustlayer123@postgres:5432/demo-api-store
       NEXTAUTH_URL: http://localhost:3002
       NEXTAUTH_SECRET: your-secret-key-change-this-in-production
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: "${CHOKIDAR_USEPOLLING:-false}"
     ports:
       - "3002:3002"
     depends_on:
@@ -201,7 +201,7 @@ services:
       NEXTAUTH_URL: http://localhost:3003
       NEXTAUTH_SECRET: your-secret-key-change-this-in-production
       UPLOADTHING_TOKEN: "eyJhcGlLZXkiOiJza19saXZlXzk1NmYxMTBjMDI3MWVlNmMwOTBjZWI4NTkxNzIzNjhhZjQyM2VhZjI1NTZjNjkyYmQ0ZDdlYTJmYTNmMjYxNzEiLCJhcHBJZCI6InMxODNlZWVsbHgiLCJyZWdpb25zIjpbInNlYTEiXX0="
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: "${CHOKIDAR_USEPOLLING:-false}"
     ports:
       - "3003:3003"
     depends_on:

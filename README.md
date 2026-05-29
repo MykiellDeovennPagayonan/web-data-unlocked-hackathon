@@ -46,3 +46,16 @@ docker compose up --build
 ```
 
 The compose stack starts PostgreSQL, Redis, the backend, the main web app, and all three demos. It also runs the TrustLayer demo seeding step so the demo apps receive real API keys and platform IDs.
+
+### Lower-resource mode (WSL)
+
+By default, file watcher polling is disabled in `docker-compose.yml` to avoid high WSL CPU/RAM/disk usage on Windows-mounted paths.
+
+- Default (recommended): keep `CHOKIDAR_USEPOLLING` unset.
+- Only if file changes are not detected: set `CHOKIDAR_USEPOLLING=true` for your session.
+
+For routine development, start only required services instead of the full stack:
+
+```bash
+docker compose up -d postgres redis api web
+```
