@@ -3,11 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "playwright test",
-    "test:headed": "playwright test --headed",
+    "test": "PLAYWRIGHT_OUTPUT_DIR=/tmp/playwright-output E2E_DEBUG_ARTIFACTS=false E2E_HEADED=false playwright test --reporter=list",
+    "test:low-io": "PLAYWRIGHT_OUTPUT_DIR=/tmp/playwright-output E2E_DEBUG_ARTIFACTS=false E2E_HEADED=false playwright test --reporter=list",
+    "test:headed": "E2E_HEADED=true playwright test --headed",
+    "test:debug": "E2E_DEBUG_ARTIFACTS=true playwright test",
     "test:ui": "playwright test --ui",
     "seed:social": "tsx seed/seed-social-media.ts",
-    "cleanup:all": "tsx utils/cleanup.ts"
+    "cleanup:all": "tsx utils/cleanup.ts",
+    "demo:flow1": "tsx demo-e2e-run.ts --scenario flow-1",
+    "demo:flow2": "tsx demo-e2e-run.ts --scenario flow-2",
+    "demo:flow3": "tsx demo-e2e-run.ts --scenario flow-3",
+    "demo:flow45": "tsx demo-e2e-run.ts --scenario flow-4-5",
+    "demo:stress": "tsx demo-e2e-run.ts --scenario abuse-stress",
+    "demo:all": "tsx demo-e2e-run.ts --scenario all"
   },
   "devDependencies": {
     "@playwright/test": "^1.41.0",

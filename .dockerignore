@@ -1,0 +1,16 @@
+.git
+.vscode
+.codegraph
+node_modules
+dist
+build
+.next
+coverage
+test-results
+tmp
+*.log
+.env
+.env.local
+.env.docker
+.env.*.local
+.env.*.docker

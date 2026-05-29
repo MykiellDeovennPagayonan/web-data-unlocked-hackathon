@@ -21,7 +21,7 @@ export type DashboardLoadResult = {
 const apiBaseUrl =
   process.env.TUNAI_API_BASE_URL ??
   process.env.NEXT_PUBLIC_API_BASE_URL ??
-  "http://localhost:3000";
+  "http://localhost:8090";
 
 export async function getAdminDashboardData(): Promise<DashboardLoadResult> {
   try {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { Prisma } from "@/generated/client"
 import { prisma } from "@/lib/prisma"
 
 const FREE_TRIAL_LIMIT = 50
@@ -121,7 +122,7 @@ async function handleProxy(request: NextRequest, endpointId: string) {
     return NextResponse.json({ error: "Failed to reach upstream endpoint" }, { status: 502 })
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     if (isFree) {
       await tx.freeTrial.upsert({
         where: { userId_endpointId: { userId: user.id, endpointId } },

@@ -1,21 +1,25 @@
 import { defineConfig, devices } from '@playwright/test'
 
+const headed = process.env.E2E_HEADED === 'true'
+const debugArtifacts = process.env.E2E_DEBUG_ARTIFACTS === 'true'
+
 export default defineConfig({
   testDir: '.',
   fullyParallel: false,
   workers: 1,
-  reporter: [['html', { open: 'never' }], ['list']],
+  reporter: debugArtifacts ? [['html', { open: 'never' }], ['list']] : [['list']],
+  outputDir: process.env.PLAYWRIGHT_OUTPUT_DIR ?? '/tmp/playwright-output',
   use: {
     baseURL: 'http://localhost:3001',
     browserName: 'chromium',
     launchOptions: {
-      slowMo: 200,
-      headless: false,
+      slowMo: headed ? 200 : 0,
+      headless: !headed,
     },
     viewport: { width: 1280, height: 720 },
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-    trace: 'retain-on-failure',
+    screenshot: debugArtifacts ? 'only-on-failure' : 'off',
+    video: debugArtifacts ? 'retain-on-failure' : 'off',
+    trace: debugArtifacts ? 'retain-on-failure' : 'off',
   },
   projects: [
     {
