@@ -10,6 +10,8 @@ node_modules
 .env.*.docker
 apps/demo/*/generated/
 .claude
+.codegraph/
+.tmp/
 
 # Build outputs
 dist

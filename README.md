@@ -59,3 +59,55 @@ For routine development, start only required services instead of the full stack:
 ```bash
 docker compose up -d postgres redis api web
 ```
+
+For E2E in constrained machines, run low-I/O mode:
+
+```bash
+bash scripts/e2e-low-io.sh
+```
+
+This avoids `--build`, disables polling, runs headless, and writes Playwright artifacts to `/tmp` instead of `/mnt/d`.
+
+Inside `test/e2e`, the default `pnpm test` now uses low-I/O settings automatically.
+Use `pnpm run test:debug` only when you need HTML report/video/trace artifacts.
+
+### Demo flow commands
+
+Use these when you want to check only one demo scenario instead of the full matrix:
+
+```bash
+pnpm demo:e2e:help
+pnpm demo:e2e:cleanup
+pnpm demo:e2e:flow1
+pnpm demo:e2e:flow2
+pnpm demo:e2e:flow3
+pnpm demo:e2e:flow45
+pnpm demo:e2e:stress
+pnpm demo:e2e:all
+```
+
+Each flow command runs cleanup first, then writes results to `.tmp/demo-e2e-results.json` and evidence files under `.tmp/demo-evidence/`.
+
+Command summary:
+
+- `pnpm demo:e2e:help` - print the available demo commands with one-line descriptions
+- `pnpm demo:e2e:cleanup` - clear stale demo data before a run
+- `pnpm demo:e2e:flow1` - run Flow 1 free-tier abuse
+- `pnpm demo:e2e:flow2` - run Flow 2 fake job company
+- `pnpm demo:e2e:flow3` - run Flow 3 bot scraper attack
+- `pnpm demo:e2e:flow45` - run Flow 4 and Flow 5 certificate verification
+- `pnpm demo:e2e:stress` - run the abuse and stress probes
+- `pnpm demo:e2e:all` - run the full demo matrix
+
+### Important for WSL performance
+
+Running large monorepos from `/mnt/d/...` causes high metadata I/O in WSL. For heavy E2E/agent runs, prefer a Linux-native path:
+
+```bash
+mkdir -p ~/work
+cd ~/work
+git clone /mnt/d/projects/work/reelist8/web-data-unlocked-hackathon web-data-unlocked-hackathon
+cd web-data-unlocked-hackathon
+```
+
+Then run your E2E commands from `~/work/...` to reduce host disk active time.
