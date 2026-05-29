@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  name        String
+  role        UserRole @default(INDIVIDUAL)
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  individualProfile IndividualProfile?
+  organizationProfile OrganizationProfile?
+
+  // NextAuth
+  accounts Account[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+model IndividualProfile {
+  id      String  @id @default(cuid())
+  userId  String  @unique
+  bio     String?
+  location String?
+  website String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications Application[]
+
+  @@map("individual_profiles")
+}
+
+model OrganizationProfile {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  domain        String?
+  linkedin      String?
+  regNumber     String?
+  address       String?
+  description   String?
+  isKycVerified Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs Job[]
+
+  @@map("organization_profiles")
+}
+
+// NextAuth required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+enum UserRole {
+  INDIVIDUAL
+  ORGANIZATION
+}
+
+enum ApplicationStatus {
+  PENDING
+  INTERVIEWING
+  ACCEPTED
+  REJECTED
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+}
+
+enum JobStatus {
+  ACTIVE
+  CLOSED
+}
+
+model Job {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  location    String?
+  salaryMin   Int?
+  salaryMax   Int?
+  jobType     JobType    @default(FULL_TIME)
+  requirements String?
+  status      JobStatus  @default(ACTIVE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  organizationId String
+  organization   OrganizationProfile @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applications   Application[]
+
+  @@map("jobs")
+}
+
+model Application {
+  id            String            @id @default(cuid())
+  coverLetter   String?
+  expectedSalary Int?
+  availability  String?
+  resumeUrl     String
+  status        ApplicationStatus @default(PENDING)
+  appliedAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relations
+  jobId        String
+  job          Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  individualId String
+  individual   IndividualProfile   @relation(fields: [individualId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, individualId])
+  @@map("applications")
+}

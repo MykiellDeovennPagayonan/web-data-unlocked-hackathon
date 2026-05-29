@@ -24,11 +24,28 @@ interface ApiKeyResponse {
   lastUsedAt: Date | null;
 }
 
-@Controller('v1/platform/api-keys')
+@Controller()
 export class ApiKeysController {
   constructor(private readonly apiKeysService: ApiKeysService) {}
 
-  @Get()
+  @Post('admin/platforms/:platformId/api-keys')
+  async createApiKeyForPlatform(
+    @Param('platformId') platformId: string,
+    @Body() dto: CreateApiKeyDto,
+  ): Promise<{ apiKey: ApiKeyResponse; rawKey: string }> {
+    const result = await this.apiKeysService.createApiKey(platformId, {
+      platformId,
+      name: dto.name,
+      scopes: dto.scopes ?? [],
+      expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : undefined,
+    });
+    return {
+      apiKey: this.mapToResponse(result.apiKey),
+      rawKey: result.rawKey,
+    };
+  }
+
+  @Get('v1/platform/api-keys')
   @UseGuards(ApiKeyGuard)
   async listApiKeys(
     @CurrentPlatform() platformId: string,
@@ -37,8 +54,8 @@ export class ApiKeysController {
     return keys.map((key) => this.mapToResponse(key));
   }
 
-  @Post()
-  // @UseGuards(ApiKeyGuard)
+  @Post('v1/platform/api-keys')
+  @UseGuards(ApiKeyGuard)
   async createApiKey(
     @CurrentPlatform() platformId: string,
     @Body() dto: CreateApiKeyDto,

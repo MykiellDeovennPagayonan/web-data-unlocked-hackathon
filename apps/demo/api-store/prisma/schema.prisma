@@ -1,0 +1,194 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  password        String
+  name            String
+  role            UserRole @default(INDIVIDUAL)
+  isVerified      Boolean  @default(false)
+  creditBalance   Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  individualProfile   IndividualProfile?
+  organizationProfile OrganizationProfile?
+  apiKey              UserApiKey?
+  freeTrials          FreeTrial[]
+  usageLogs           ApiUsageLog[]
+  creditTransactions  CreditTransaction[]
+
+  // NextAuth
+  accounts Account[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+model IndividualProfile {
+  id       String  @id @default(cuid())
+  userId   String  @unique
+  bio      String?
+  location String?
+  website  String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("individual_profiles")
+}
+
+model OrganizationProfile {
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  domain          String?
+  linkedin        String?
+  regNumber       String?
+  address         String?
+  description     String?
+  isKycVerified   Boolean @default(false)
+  earningsBalance Float   @default(0)
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoints ApiEndpoint[]
+
+  @@map("organization_profiles")
+}
+
+model ApiEndpoint {
+  id              String   @id @default(cuid())
+  orgProfileId    String
+  name            String
+  description     String?
+  forwardUrl      String
+  method          String   @default("POST")
+  samplePayload   String?  @db.Text
+  sampleResponse  String?  @db.Text
+  pricePer1k      Float    @default(1.0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  orgProfile  OrganizationProfile @relation(fields: [orgProfileId], references: [id], onDelete: Cascade)
+  freeTrials  FreeTrial[]
+  usageLogs   ApiUsageLog[]
+
+  @@map("api_endpoints")
+}
+
+model UserApiKey {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  key       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usageLogs ApiUsageLog[]
+
+  @@map("user_api_keys")
+}
+
+model FreeTrial {
+  id         String   @id @default(cuid())
+  userId     String
+  endpointId String
+  usedCount  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint ApiEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpointId])
+  @@map("free_trials")
+}
+
+model ApiUsageLog {
+  id          String   @id @default(cuid())
+  userId      String
+  endpointId  String
+  apiKeyId    String
+  isFree      Boolean  @default(false)
+  costCharged Float    @default(0)
+  statusCode  Int?
+  createdAt   DateTime @default(now())
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint ApiEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  apiKey   UserApiKey  @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@map("api_usage_logs")
+}
+
+model CreditTransaction {
+  id          String                  @id @default(cuid())
+  userId      String
+  amount      Float
+  type        CreditTransactionType
+  description String?
+  createdAt   DateTime                @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("credit_transactions")
+}
+
+enum CreditTransactionType {
+  TOPUP
+  DEDUCTION
+}
+
+// NextAuth required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+enum UserRole {
+  INDIVIDUAL
+  ORGANIZATION
+}

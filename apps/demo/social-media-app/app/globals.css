@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    /* Notion/Newspaper color scheme — hsl values */
+    --background: 0 0% 100%;
+    --foreground: 28 7% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 28 7% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 28 7% 20%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 6% 96%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 40 6% 96%;
+    --muted-foreground: 28 2% 61%;
+    --accent: 0 0% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --border: 36 5% 89%;
+    --input: 36 5% 89%;
+    --ring: 0 0% 45%;
+    --radius: 0.5rem;
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 28 7% 20%;
+    --sidebar-primary: 0 0% 0%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 40 6% 96%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 36 5% 89%;
+    --sidebar-ring: 0 0% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

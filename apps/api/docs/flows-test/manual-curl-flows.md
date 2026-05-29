@@ -5,14 +5,6 @@
 
 ---
 
-## Quick Reference: Base URL & Headers
-
-```bash
-CONTENT_JSON='Content-Type: application/json'
-```
-
----
-
 # CORE FLOWS
 
 ---
@@ -25,7 +17,7 @@ CONTENT_JSON='Content-Type: application/json'
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/platforms" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "name": "E-Shop Gamma",
     "domain": "eshop-gamma.example.com",
@@ -53,7 +45,7 @@ Save `PLATFORM_A_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/api-keys/platforms/$PLATFORM_A_ID" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{ "name": "Bootstrap Key", "scopes": ["read", "write"] }' | jq
 ```
 
@@ -73,7 +65,7 @@ API_KEY_A="<RAW_KEY>"
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/identities" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "email": "reg@example.com",
     "encryptedEmail": "ENC(reg@example.com)",
@@ -100,7 +92,7 @@ Save `IDENTITY_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/intelligence/device" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{
     "signals": [
@@ -137,7 +129,7 @@ Save `DEVICE_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/intelligence/ip" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{ "ipAddress": "8.8.8.8" }' | jq
 ```
@@ -161,7 +153,7 @@ Save `IP_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/platform-users" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"identityId\": \"$IDENTITY_ID\",
@@ -187,7 +179,7 @@ curl -s -X POST "http://localhost:8090/v1/platform-users" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/background-checks" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"entityType\": \"identity\",
@@ -215,7 +207,7 @@ Save `CHECK_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/background-checks/$CHECK_ID/results" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{
     "source": "serp",
@@ -232,7 +224,7 @@ curl -s -X POST "http://localhost:8090/v1/background-checks/$CHECK_ID/results" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/background-checks/$CHECK_ID/complete" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{ "overallVerdict": "flagged" }' | jq
 ```
@@ -267,7 +259,7 @@ curl -s -X GET "http://localhost:8090/v1/trust-score/identity/$IDENTITY_ID" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/access/events" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"platformId\": \"$PLATFORM_A_ID\",
@@ -318,7 +310,7 @@ Same as Flow 1 Steps 3–7. Save `IDENTITY_ID` and `CHECK_ID`.
 ```bash
 for SRC in ofac linkedin opensanctions serp; do
   curl -s -X POST "http://localhost:8090/v1/background-checks/$CHECK_ID/results" \
-    -H "$CONTENT_JSON" \
+    -H "Content-Type: application/json" \
     -H "x-api-key: $API_KEY_A" \
     -d "{
       \"source\": \"$SRC\",
@@ -336,7 +328,7 @@ done
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/background-checks/$CHECK_ID/complete" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{ "overallVerdict": "clean" }' | jq
 ```
@@ -347,7 +339,7 @@ curl -s -X POST "http://localhost:8090/v1/background-checks/$CHECK_ID/complete" 
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/trust-certificates" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"entityType\": \"identity\",
@@ -377,7 +369,7 @@ Save `CERTIFICATE_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/platforms" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "name": "Verifier Platform",
     "domain": "verifier.example.com",
@@ -390,7 +382,7 @@ Save `PLATFORM_B_ID`. Then create its first API key:
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/api-keys/platforms/$PLATFORM_B_ID" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{ "name": "Bootstrap Key", "scopes": ["read", "write"] }' | jq '.rawKey'
 ```
 
@@ -402,7 +394,7 @@ API_KEY_B="<RAW_KEY_FROM_ABOVE>"
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/certificate-verifications/$CERTIFICATE_ID" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_B" \
   -d "{ \"verifiedByPlatformId\": \"$PLATFORM_B_ID\" }" | jq
 ```
@@ -422,7 +414,7 @@ curl -s -X POST "http://localhost:8090/v1/certificate-verifications/$CERTIFICATE
 
 ```bash
 curl -s -X PATCH "http://localhost:8090/v1/trust-certificates/$CERTIFICATE_ID/revoke" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{ "reason": "compromised" }' | jq
 ```
@@ -440,7 +432,7 @@ curl -s -X PATCH "http://localhost:8090/v1/trust-certificates/$CERTIFICATE_ID/re
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/certificate-verifications/$CERTIFICATE_ID" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_B" \
   -d "{ \"verifiedByPlatformId\": \"$PLATFORM_B_ID\" }" | jq
 ```
@@ -451,7 +443,7 @@ curl -s -X POST "http://localhost:8090/v1/certificate-verifications/$CERTIFICATE
 
 ```bash
 curl -s -X GET "http://localhost:8090/admin/compliance/audit-logs" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d "{ \"targetType\": \"trust_certificate\", \"targetId\": \"$CERTIFICATE_ID\" }" | jq
 ```
 
@@ -471,7 +463,7 @@ Repeat the platform creation 3 times. Save `PLATFORM_X_ID`, `PLATFORM_Y_ID`, `PL
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/identities" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "email": "bad@actor.com",
     "encryptedEmail": "ENC(bad@actor.com)",
@@ -499,7 +491,7 @@ curl -s -X GET "http://localhost:8090/v1/trust-score/identity/$SHARED_IDENTITY_I
 ```bash
 for KEY in "$API_KEY_X" "$API_KEY_Y" "$API_KEY_Z"; do
   curl -s -X POST "http://localhost:8090/v1/registry/community-reports" \
-    -H "$CONTENT_JSON" \
+    -H "Content-Type: application/json" \
     -H "x-api-key: $KEY" \
     -d "{
       \"reportingPlatformId\": \"$PLATFORM_X_ID\",
@@ -521,7 +513,7 @@ Save each returned ID as `REPORT_X_ID`, `REPORT_Y_ID`, `REPORT_Z_ID`.
 ```bash
 for RID in "$REPORT_X_ID" "$REPORT_Y_ID" "$REPORT_Z_ID"; do
   curl -s -X POST "http://localhost:8090/admin/community-reports/$RID/accept" \
-    -H "$CONTENT_JSON" \
+    -H "Content-Type: application/json" \
     -d '{ "severity": "orange_watch" }' | jq '.registryEntryId'
 done
 ```
@@ -552,7 +544,7 @@ curl -s -X GET "http://localhost:8090/admin/registry/entries?listType=blacklist&
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/background-checks" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_Z" \
   -d "{
     \"entityType\": \"identity\",
@@ -581,7 +573,7 @@ Platform `PLATFORM_A_ID` + `API_KEY_A`, identity `IDENTITY_ID`, device `DEVICE_I
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/access/sessions" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"identityId\": \"$IDENTITY_ID\",
@@ -612,7 +604,7 @@ Save `SESSION_ID`.
 ```bash
 for i in 1 2 3 4; do
   curl -s -X POST "http://localhost:8090/v1/access/behavioral" \
-    -H "$CONTENT_JSON" \
+    -H "Content-Type: application/json" \
     -H "x-api-key: $API_KEY_A" \
     -d "{
       \"sessionId\": \"$SESSION_ID\",
@@ -632,7 +624,7 @@ done
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/access/behavioral" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"sessionId\": \"$SESSION_ID\",
@@ -660,7 +652,7 @@ curl -s -X POST "http://localhost:8090/v1/access/behavioral" \
 
 ```bash
 curl -s -X PATCH "http://localhost:8090/v1/access/sessions/$SESSION_ID/end" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{
     "riskScoreAtEnd": 45,
@@ -683,7 +675,7 @@ curl -s -X PATCH "http://localhost:8090/v1/access/sessions/$SESSION_ID/end" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/trust-signals" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"entityType\": \"identity\",
@@ -720,7 +712,7 @@ Same as Flow 1 Step 1. Save `PLATFORM_A_ID` and `API_KEY_A`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/organizations" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{
     "legalName": "Partner Logistics Inc",
@@ -749,7 +741,7 @@ Save `ORG_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/background-checks" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"entityType\": \"organization\",
@@ -767,7 +759,7 @@ for PAYLOAD in \
   '{"source":"business_registry","rawResult":{"found":true},"normalizedVerdict":"clear","confidenceScore":0.95,"llmSummary":"Verified in business registry."}' \
   '{"source":"ofac","rawResult":{"matches":[]},"normalizedVerdict":"clear","confidenceScore":0.99,"llmSummary":"No sanctions matches."}'; do
   curl -s -X POST "http://localhost:8090/v1/background-checks/$ORG_CHECK_ID/results" \
-    -H "$CONTENT_JSON" \
+    -H "Content-Type: application/json" \
     -H "x-api-key: $API_KEY_A" \
     -d "$PAYLOAD" | jq '.id'
 done
@@ -777,7 +769,7 @@ done
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/background-checks/$ORG_CHECK_ID/complete" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{ "overallVerdict": "clean" }' | jq
 ```
@@ -798,7 +790,7 @@ curl -s -X GET "http://localhost:8090/v1/trust-score/organization/$ORG_ID" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/trust-certificates" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"entityType\": \"organization\",
@@ -812,7 +804,7 @@ curl -s -X POST "http://localhost:8090/v1/trust-certificates" \
 
 ```bash
 curl -s -X PATCH "http://localhost:8090/admin/organizations/$ORG_ID/status" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{ "trustStatus": "flagged" }' | jq
 ```
 
@@ -842,7 +834,7 @@ curl -s -X GET "http://localhost:8090/admin/organizations/by-domain/partner-logi
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/platforms" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "name": "Community Forum",
     "domain": "forum.example.com",
@@ -855,7 +847,7 @@ Save `PLATFORM_LOW_ID`. Then create its first API key:
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/api-keys/platforms/$PLATFORM_LOW_ID" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{ "name": "Bootstrap Key", "scopes": ["read", "write"] }' | jq '.rawKey'
 ```
 
@@ -867,7 +859,7 @@ API_KEY_LOW="<RAW_KEY_FROM_ABOVE>"
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/platforms" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "name": "Trading Platform",
     "domain": "trading.example.com",
@@ -880,7 +872,7 @@ Save `PLATFORM_HIGH_ID`. Then create its first API key:
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/api-keys/platforms/$PLATFORM_HIGH_ID" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{ "name": "Bootstrap Key", "scopes": ["read", "write"] }' | jq '.rawKey'
 ```
 
@@ -893,13 +885,13 @@ API_KEY_HIGH="<RAW_KEY_FROM_ABOVE>"
 ```bash
 # Low
 curl -s -X POST "http://localhost:8090/v1/platform/rules/apply-preset" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_LOW" \
   -d '{ "strictnessLevel": "low" }' | jq
 
 # High
 curl -s -X POST "http://localhost:8090/v1/platform/rules/apply-preset" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_HIGH" \
   -d '{ "strictnessLevel": "high" }' | jq
 ```
@@ -922,7 +914,7 @@ curl -s -X GET "http://localhost:8090/v1/platform/rules" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/identities" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "email": "border@example.com",
     "encryptedEmail": "ENC(border@example.com)",
@@ -937,7 +929,7 @@ Save `BORDERLINE_IDENTITY_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/trust-signals" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_LOW" \
   -d "{
     \"entityType\": \"identity\",
@@ -961,7 +953,7 @@ curl -s -X GET "http://localhost:8090/v1/trust-score/identity/$BORDERLINE_IDENTI
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/access/events" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_LOW" \
   -d "{
     \"platformId\": \"$PLATFORM_LOW_ID\",
@@ -981,7 +973,7 @@ curl -s -X POST "http://localhost:8090/v1/access/events" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/access/events" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_HIGH" \
   -d "{
     \"platformId\": \"$PLATFORM_HIGH_ID\",
@@ -1011,7 +1003,7 @@ Same as Flow 1. Save `PLATFORM_A_ID`, `API_KEY_A`, `ALICE_IDENTITY_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/intelligence/device" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{
     "signals": [
@@ -1035,7 +1027,7 @@ Save `DEVICE_A_ID` and `STABLE_HASH`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/identities" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "email": "bob@example.com",
     "encryptedEmail": "ENC(bob@example.com)",
@@ -1050,7 +1042,7 @@ Save `BOB_IDENTITY_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/intelligence/device" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{
     "signals": [
@@ -1081,7 +1073,7 @@ curl -s -X POST "http://localhost:8090/v1/intelligence/device" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/aliases" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d "{
     \"canonicalEntityType\": \"identity\",
     \"canonicalEntityId\": \"$ALICE_IDENTITY_ID\",
@@ -1099,7 +1091,7 @@ curl -s -X POST "http://localhost:8090/admin/aliases" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/aliases/resolve" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "aliasType": "email",
     "aliasValueHash": "hash-bob-001"
@@ -1127,7 +1119,7 @@ curl -s -X POST "http://localhost:8090/admin/aliases/resolve" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/platforms" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "name": "Test Platform",
     "domain": "test.example.com",
@@ -1142,7 +1134,7 @@ Save `PLATFORM_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/api-keys/platforms/$PLATFORM_ID" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{ "name": "Bootstrap Key", "scopes": ["read", "write"] }' | jq
 ```
 
@@ -1164,7 +1156,7 @@ With an existing key for that platform, you can now curl the self-service endpoi
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/platform/api-keys" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $RAW_KEY" \
   -d '{ "name": "Production Key", "scopes": ["read", "write"] }' | jq
 ```
@@ -1201,7 +1193,7 @@ curl -s -X GET "http://localhost:8090/v1/platform/api-keys" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/platform/api-keys/$KEY_ID/rotate" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $RAW_KEY" \
   -d '{ "name": "Rotated Key" }' | jq
 ```
@@ -1241,7 +1233,7 @@ curl -s -X DELETE "http://localhost:8090/v1/platform/api-keys/$KEY_ID" \
 
 ```bash
 curl -s -X PATCH "http://localhost:8090/v1/platform/strictness" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $NEW_RAW_KEY" \
   -d '{ "strictnessLevel": "high" }' | jq
 ```
@@ -1256,7 +1248,7 @@ curl -s -X PATCH "http://localhost:8090/v1/platform/strictness" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/admin/identities" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{
     "email": "cross@example.com",
     "encryptedEmail": "ENC(cross@example.com)",
@@ -1271,7 +1263,7 @@ Save `CROSS_IDENTITY_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/platform-users" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"identityId\": \"$CROSS_IDENTITY_ID\",
@@ -1296,7 +1288,7 @@ curl -s -X GET "http://localhost:8090/v1/platform-users/user_001" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/platform-users" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_B" \
   -d "{
     \"identityId\": \"$CROSS_IDENTITY_ID\",
@@ -1310,7 +1302,7 @@ curl -s -X POST "http://localhost:8090/v1/platform-users" \
 
 ```bash
 curl -s -X PATCH "http://localhost:8090/admin/identities/$CROSS_IDENTITY_ID/status" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d '{ "trustStatus": "blocked" }' | jq
 ```
 
@@ -1333,7 +1325,7 @@ curl -s -X GET "http://localhost:8090/v1/platform-users/user_001" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/background-checks" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"entityType\": \"identity\",
@@ -1353,7 +1345,7 @@ for PAYLOAD in \
   '{"source":"opensanctions","rawResult":{"hits":[]},"normalizedVerdict":"clear","confidenceScore":0.9,"llmSummary":"Clean."}' \
   '{"source":"serp","rawResult":{"results":[]},"normalizedVerdict":"clear","confidenceScore":0.85,"llmSummary":"No adverse news."}'; do
   curl -s -X POST "http://localhost:8090/v1/background-checks/$MANUAL_CHECK_ID/results" \
-    -H "$CONTENT_JSON" \
+    -H "Content-Type: application/json" \
     -H "x-api-key: $API_KEY_A" \
     -d "$PAYLOAD" | jq '.id'
 done
@@ -1363,7 +1355,7 @@ done
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/background-checks/$MANUAL_CHECK_ID/complete" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{ "overallVerdict": "clean" }' | jq
 ```
@@ -1396,7 +1388,7 @@ curl -s -X GET "http://localhost:8090/v1/trust-score/identity/$IDENTITY_ID" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/registry/entries" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d '{
     "listType": "blacklist",
@@ -1411,7 +1403,7 @@ Save `REGISTRY_ENTRY_ID`.
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/registry/targets" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"registryEntryId\": \"$REGISTRY_ENTRY_ID\",
@@ -1424,7 +1416,7 @@ curl -s -X POST "http://localhost:8090/v1/registry/targets" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/registry/targets" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"registryEntryId\": \"$REGISTRY_ENTRY_ID\",
@@ -1437,7 +1429,7 @@ curl -s -X POST "http://localhost:8090/v1/registry/targets" \
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/registry/targets" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"registryEntryId\": \"$REGISTRY_ENTRY_ID\",
@@ -1450,7 +1442,7 @@ curl -s -X POST "http://localhost:8090/v1/registry/targets" \
 
 ```bash
 curl -s -X GET "http://localhost:8090/admin/registry/lookup" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -d "{ \"targetType\": \"email\", \"email\": \"reg@example.com\" }" | jq
 ```
 
@@ -1473,7 +1465,7 @@ curl -s -X POST "http://localhost:8090/v1/registry/entries/$REGISTRY_ENTRY_ID/es
 
 ```bash
 curl -s -X POST "http://localhost:8090/v1/compliance/consent" \
-  -H "$CONTENT_JSON" \
+  -H "Content-Type: application/json" \
   -H "x-api-key: $API_KEY_A" \
   -d "{
     \"identityId\": \"$IDENTITY_ID\",
