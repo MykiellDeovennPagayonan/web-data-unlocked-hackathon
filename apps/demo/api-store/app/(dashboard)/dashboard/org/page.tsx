@@ -37,8 +37,8 @@ export default function OrgDashboard() {
       .finally(() => setLoading(false))
   }, [])
 
-  const totalCalls = stats?.endpoints.reduce((s, e) => s + e.totalCalls, 0) ?? 0
-  const totalEarned = stats?.endpoints.reduce((s, e) => s + e.totalEarned, 0) ?? 0
+  const totalCalls = (stats?.endpoints ?? []).reduce((s, e) => s + e.totalCalls, 0)
+  const totalEarned = (stats?.endpoints ?? []).reduce((s, e) => s + e.totalEarned, 0)
 
   if (loading) {
     return <div className="text-muted-foreground">Loading dashboard...</div>
@@ -90,7 +90,7 @@ export default function OrgDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalEarned.toFixed(4)}</div>
-            <p className="text-xs text-muted-foreground mt-1">From {stats?.endpoints.length ?? 0} endpoint(s)</p>
+            <p className="text-xs text-muted-foreground mt-1">From {(stats?.endpoints ?? []).length} endpoint(s)</p>
           </CardContent>
         </Card>
       </div>
@@ -112,7 +112,7 @@ export default function OrgDashboard() {
           </div>
         </CardHeader>
         <CardContent>
-          {!stats || stats.endpoints.length === 0 ? (
+          {!stats || (stats.endpoints ?? []).length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground mb-4">No endpoints yet.</p>
               <Button asChild>

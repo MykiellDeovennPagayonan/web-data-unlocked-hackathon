@@ -25,7 +25,10 @@ export async function PATCH(
   }
 
   const body = await request.json()
-  const { name, description, forwardUrl, samplePayload, sampleResponse, pricePer1k, isActive } = body
+  const { name, description, forwardUrl, method, samplePayload, sampleResponse, pricePer1k, isActive } = body
+
+  const validMethods = ["GET", "POST", "PUT", "DELETE"]
+  const httpMethod = method !== undefined && validMethods.includes(method) ? method : undefined
 
   const updated = await prisma.apiEndpoint.update({
     where: { id: params.id },
@@ -33,6 +36,7 @@ export async function PATCH(
       ...(name !== undefined && { name }),
       ...(description !== undefined && { description }),
       ...(forwardUrl !== undefined && { forwardUrl }),
+      ...(httpMethod !== undefined && { method: httpMethod }),
       ...(samplePayload !== undefined && { samplePayload }),
       ...(sampleResponse !== undefined && { sampleResponse }),
       ...(pricePer1k !== undefined && { pricePer1k }),

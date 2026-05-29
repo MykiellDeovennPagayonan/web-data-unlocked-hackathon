@@ -24,6 +24,7 @@ export default function NewEndpointPage() {
       name: fd.get("name") as string,
       description: (fd.get("description") as string) || undefined,
       forwardUrl: fd.get("forwardUrl") as string,
+      method: fd.get("method") as string,
       samplePayload: (fd.get("samplePayload") as string) || undefined,
       sampleResponse: (fd.get("sampleResponse") as string) || undefined,
       pricePer1k: parseFloat(fd.get("pricePer1k") as string) || 1.0,
@@ -91,6 +92,21 @@ export default function NewEndpointPage() {
               <p className="text-xs text-muted-foreground">
                 Incoming requests will be proxied to this URL.
               </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">HTTP Method</label>
+              <select
+                name="method"
+                defaultValue="POST"
+                disabled={isLoading}
+                className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              >
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
             </div>
 
             <div className="space-y-2">

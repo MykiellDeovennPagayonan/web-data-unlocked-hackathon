@@ -1,12 +1,18 @@
 /**
- * Seed script: creates the 3 demo platforms in TrustLayer and generates an API key per platform.
- * Run with: npx ts-node -r tsconfig-paths/register scripts/seed-demo-platforms.ts
+ * Seed script: creates the 3 demo platforms in TrustLayer, generates API keys,
+ * and writes TRUSTLAYER_* vars directly into each demo app's .env.local.
+ *
+ * Run from the monorepo root:
+ *   npx ts-node -r tsconfig-paths/register apps/api/scripts/seed-demo-platforms.ts
  *
  * Requires apps/api to be running on http://localhost:8090
- * Paste the printed keys into each demo app's .env.local
  */
 
-const BASE_URL = 'http://localhost:8090';
+import * as fs from 'fs';
+import * as path from 'path';
+
+const BASE_URL = process.env.TRUSTLAYER_API_URL ?? 'http://localhost:8090';
+const REPO_ROOT = path.resolve(__dirname, '../../..');
 
 interface Platform {
   id: string;
@@ -49,7 +55,7 @@ async function createApiKey(
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, scopes: [] }),
+      body: JSON.stringify({ name, scopes: ['read', 'write'] }),
     },
   );
   if (!res.ok) {
@@ -61,20 +67,36 @@ async function createApiKey(
   return res.json() as Promise<ApiKeyResult>;
 }
 
+function writeEnvVars(envFilePath: string, vars: Record<string, string>): void {
+  let content = fs.readFileSync(envFilePath, 'utf-8');
+
+  for (const [key, value] of Object.entries(vars)) {
+    const line = `${key}="${value}"`;
+    const regex = new RegExp(`^${key}=.*$`, 'm');
+    if (regex.test(content)) {
+      content = content.replace(regex, line);
+    } else {
+      content = content.trimEnd() + `\n${line}\n`;
+    }
+  }
+
+  fs.writeFileSync(envFilePath, content, 'utf-8');
+}
+
 async function main() {
-  console.log('🚀 Seeding demo platforms...\n');
+  console.log(`\n🚀 Seeding demo platforms against ${BASE_URL}\n`);
 
   const demos = [
     {
       name: 'API Store',
       domain: 'api-store.demo',
-      strictnessLevel: 'medium',
+      strictnessLevel: 'high',
       envFile: 'apps/demo/api-store/.env.local',
     },
     {
       name: 'Job Board',
       domain: 'job-board.demo',
-      strictnessLevel: 'low',
+      strictnessLevel: 'medium',
       envFile: 'apps/demo/job-board/.env.local',
     },
     {
@@ -86,6 +108,8 @@ async function main() {
   ];
 
   for (const demo of demos) {
+    process.stdout.write(`  ${demo.name}... `);
+
     let platform: Platform;
     try {
       platform = await createPlatform({
@@ -93,9 +117,8 @@ async function main() {
         domain: demo.domain,
         strictnessLevel: demo.strictnessLevel,
       });
-      console.log(`✅ Created platform: ${demo.name} (id: ${platform.id})`);
     } catch (err) {
-      console.error(`❌ ${String(err)}`);
+      console.error(`\n  ❌ ${String(err)}`);
       continue;
     }
 
@@ -103,20 +126,24 @@ async function main() {
     try {
       keyResult = await createApiKey(platform.id, `${demo.name} Demo Key`);
     } catch (err) {
-      console.error(`❌ ${String(err)}`);
+      console.error(`\n  ❌ ${String(err)}`);
       continue;
     }
 
-    console.log(`\n📋 Add to ${demo.envFile}:`);
-    console.log(`   TRUSTLAYER_API_URL=http://localhost:8090`);
-    console.log(`   TRUSTLAYER_API_KEY=${keyResult.rawKey}`);
-    console.log(`   TRUSTLAYER_PLATFORM_ID=${platform.id}`);
-    console.log('');
+    const envFilePath = path.join(REPO_ROOT, demo.envFile);
+    writeEnvVars(envFilePath, {
+      TRUSTLAYER_API_URL: BASE_URL,
+      TRUSTLAYER_API_KEY: keyResult.rawKey,
+      TRUSTLAYER_PLATFORM_ID: platform.id,
+    });
+
+    console.log(`✅`);
+    console.log(`     platform_id : ${platform.id}`);
+    console.log(`     api_key     : ${keyResult.rawKey}`);
+    console.log(`     written to  : ${demo.envFile}\n`);
   }
 
-  console.log(
-    '✅ Done. Copy the env vars above into each demo app .env.local file.',
-  );
+  console.log('✅ All done — demo apps are ready to start.\n');
 }
 
 main().catch((err) => {

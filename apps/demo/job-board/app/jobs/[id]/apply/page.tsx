@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
@@ -14,17 +14,19 @@ import { ArrowLeft } from "lucide-react"
 export default function ApplyPage() {
   const params = useParams()
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [loading, setLoading] = useState(false)
   const [resumeUrl, setResumeUrl] = useState("")
   const [error, setError] = useState("")
 
-  if (!session || session.user.role !== "INDIVIDUAL") {
-    return (
-      <div className="container mx-auto py-8 px-4">
-        <p>Please sign in as an individual to apply for jobs.</p>
-      </div>
-    )
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login")
+    }
+  }, [status, router])
+
+  if (status === "loading" || !session || session.user.role !== "INDIVIDUAL") {
+    return <div className="container mx-auto py-8 px-4">Loading...</div>
   }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,9 +25,16 @@ interface Applicant {
 
 export default function JobApplicantsPage() {
   const params = useParams()
-  const { data: session } = useSession()
+  const router = useRouter()
+  const { data: session, status } = useSession()
   const [applicants, setApplicants] = useState<Applicant[]>([])
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login")
+    }
+  }, [status, router])
 
   useEffect(() => {
     async function fetchApplicants() {
@@ -61,8 +68,8 @@ export default function JobApplicantsPage() {
     }
   }
 
-  if (!session || session.user.role !== "ORGANIZATION") {
-    return <div className="container mx-auto py-8 px-4">Please sign in as an organization.</div>
+  if (status === "loading" || !session || session.user.role !== "ORGANIZATION") {
+    return <div className="container mx-auto py-8 px-4">Loading...</div>
   }
 
   return (

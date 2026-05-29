@@ -45,6 +45,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
           isVerified: user.isVerified,
+          orgProfileId: user.organizationProfile?.id,
         }
       }
     })
@@ -57,6 +58,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = user.role
         token.isVerified = user.isVerified
+        token.orgProfileId = user.orgProfileId
       }
       return token
     },
@@ -65,6 +67,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub!
         session.user.role = token.role as string
         session.user.isVerified = token.isVerified as boolean
+        session.user.orgProfileId = token.orgProfileId as string | undefined
       }
       return session
     }

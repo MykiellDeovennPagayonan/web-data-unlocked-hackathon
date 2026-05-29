@@ -32,11 +32,14 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { name, description, forwardUrl, samplePayload, sampleResponse, pricePer1k } = body
+  const { name, description, forwardUrl, method, samplePayload, sampleResponse, pricePer1k } = body
 
   if (!name || !forwardUrl) {
     return NextResponse.json({ message: "name and forwardUrl are required" }, { status: 400 })
   }
+
+  const validMethods = ["GET", "POST", "PUT", "DELETE"]
+  const httpMethod = validMethods.includes(method) ? method : "POST"
 
   const endpoint = await prisma.apiEndpoint.create({
     data: {
@@ -44,6 +47,7 @@ export async function POST(request: NextRequest) {
       name,
       description,
       forwardUrl,
+      method: httpMethod,
       samplePayload,
       sampleResponse,
       pricePer1k: pricePer1k ?? 1.0,

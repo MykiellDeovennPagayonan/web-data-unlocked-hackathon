@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { signIn } from "next-auth/react"
+import { signIn, getSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,7 +37,12 @@ function LoginForm() {
         return
       }
 
-      router.push("/")
+      const session = await getSession()
+      if (session?.user?.role === "ORGANIZATION") {
+        router.push("/dashboard/jobs")
+      } else {
+        router.push("/jobs")
+      }
       router.refresh()
     } catch {
       setError("Something went wrong")

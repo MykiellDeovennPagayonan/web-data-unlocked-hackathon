@@ -16,7 +16,11 @@
     "db:studio": "pnpm --filter api exec prisma studio",
     "db:generate": "pnpm --filter api exec prisma generate",
     "lint:api": "pnpm --filter api lint",
-    "dev:demo1": "pnpm --filter social-media-app dev"
+    "dev:demo1": "pnpm --filter social-media-app dev",
+    "dev:demo2": "pnpm --filter demo-api-store dev",
+    "dev:demo3": "pnpm --filter demo-job-board dev",
+    "dev:demos": "concurrently \"pnpm --filter social-media-app dev\" \"pnpm --filter demo-api-store dev\" \"pnpm --filter demo-job-board dev\"",
+    "seed:platforms": "apps/api/node_modules/.bin/ts-node --project apps/api/tsconfig.scripts.json apps/api/scripts/seed-demo-platforms.ts"
   },
   "keywords": [],
   "author": "",

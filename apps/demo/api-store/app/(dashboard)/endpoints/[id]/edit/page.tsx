@@ -14,6 +14,7 @@ interface ApiEndpoint {
   name: string
   description: string | null
   forwardUrl: string
+  method: string
   samplePayload: string | null
   sampleResponse: string | null
   pricePer1k: number
@@ -44,6 +45,7 @@ export default function EditEndpointPage() {
       name: fd.get("name") as string,
       description: (fd.get("description") as string) || undefined,
       forwardUrl: fd.get("forwardUrl") as string,
+      method: fd.get("method") as string,
       samplePayload: (fd.get("samplePayload") as string) || undefined,
       sampleResponse: (fd.get("sampleResponse") as string) || undefined,
       pricePer1k: parseFloat(fd.get("pricePer1k") as string) || 1.0,
@@ -106,6 +108,21 @@ export default function EditEndpointPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Forward URL *</label>
               <Input name="forwardUrl" type="url" defaultValue={endpoint.forwardUrl} required disabled={isLoading} />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">HTTP Method</label>
+              <select
+                name="method"
+                defaultValue={endpoint.method || "POST"}
+                disabled={isLoading}
+                className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              >
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
             </div>
 
             <div className="space-y-2">

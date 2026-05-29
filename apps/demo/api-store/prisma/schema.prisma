@@ -70,6 +70,7 @@ model ApiEndpoint {
   name            String
   description     String?
   forwardUrl      String
+  method          String   @default("POST")
   samplePayload   String?  @db.Text
   sampleResponse  String?  @db.Text
   pricePer1k      Float    @default(1.0)

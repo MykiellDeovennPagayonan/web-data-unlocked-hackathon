@@ -89,7 +89,7 @@ export default function JobDetailPage() {
   }
 
   const isOrganization = session?.user?.role === "ORGANIZATION"
-  const isJobOwner = isOrganization && job.organizationId === session?.user?.id
+  const isJobOwner = isOrganization && job.organizationId === session?.user?.orgProfileId
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">

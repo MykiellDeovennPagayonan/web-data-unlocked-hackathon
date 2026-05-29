@@ -1,0 +1,26 @@
+{
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "seed:social": "tsx seed/seed-social-media.ts",
+    "cleanup:all": "tsx utils/cleanup.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.41.0",
+    "@types/bcryptjs": "2.4.6",
+    "@types/node": "^20",
+    "bcryptjs": "2.4.3",
+    "dotenv": "^17.4.2",
+    "pg": "^8.21.0",
+    "prisma": "7.8.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@prisma/client": "7.8.0"
+  }
+}

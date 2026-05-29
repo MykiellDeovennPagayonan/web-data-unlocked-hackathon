@@ -8,6 +8,7 @@ declare module "next-auth" {
       name: string
       role: string
       isVerified: boolean
+      orgProfileId?: string
     }
   }
 
@@ -17,6 +18,7 @@ declare module "next-auth" {
     name: string
     role: string
     isVerified: boolean
+    orgProfileId?: string
   }
 }
 
@@ -24,5 +26,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     role: string
     isVerified: boolean
+    orgProfileId?: string
   }
 }

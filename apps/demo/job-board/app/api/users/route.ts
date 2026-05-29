@@ -83,24 +83,24 @@ export async function POST(request: NextRequest) {
     }
 
     if (role === "ORGANIZATION") {
-      // Fire-and-forget — job-board is low-strictness, don't block registration
-      tl.enrollOrganization({
-        legalName: name,
-        domain: profileData.domain ?? "",
-        registrationNumber: profileData.regNumber ?? "",
-        country: "US",
-        industry: "general",
-        externalUserId: user.id,
-      }).then((org) =>
-        tl.runBackgroundCheck({
+      try {
+        const org = await tl.enrollOrganization({
+          legalName: name,
+          domain: profileData.domain ?? "",
+          registrationNumber: profileData.regNumber ?? "",
+          country: "US",
+          industry: "general",
+          externalUserId: user.id,
+        })
+        await tl.runBackgroundCheck({
           entityType: "organization",
           orgId: org.orgId,
           triggeredBy: "registration",
           entityName: name,
         })
-      ).catch((tlErr) => {
-        console.error("[TrustLayer] org background check failed (non-fatal):", tlErr)
-      })
+      } catch (tlErr) {
+        console.error("[TrustLayer] org enrollment/background check failed (non-fatal):", tlErr)
+      }
     }
 
     return NextResponse.json(user, { status: 201 })

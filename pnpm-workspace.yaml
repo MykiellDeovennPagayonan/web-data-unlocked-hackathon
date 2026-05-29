@@ -2,3 +2,4 @@ packages:
   - "apps/*"
   - "apps/demo/*"
   - "packages/*"
+  - "test/*"
