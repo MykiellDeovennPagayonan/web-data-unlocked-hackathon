@@ -12,6 +12,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const BASE_URL = process.env.TRUSTLAYER_API_URL ?? 'http://localhost:8090';
+const ENV_FILE_SUFFIX = process.env.TRUSTLAYER_DEMO_ENV_SUFFIX ?? '.local';
 const REPO_ROOT = path.resolve(__dirname, '../../..');
 
 interface Platform {
@@ -68,7 +69,11 @@ async function createApiKey(
 }
 
 function writeEnvVars(envFilePath: string, vars: Record<string, string>): void {
-  let content = fs.readFileSync(envFilePath, 'utf-8');
+  fs.mkdirSync(path.dirname(envFilePath), { recursive: true });
+
+  let content = fs.existsSync(envFilePath)
+    ? fs.readFileSync(envFilePath, 'utf-8')
+    : '';
 
   for (const [key, value] of Object.entries(vars)) {
     const line = `${key}="${value}"`;
@@ -91,19 +96,19 @@ async function main() {
       name: 'API Store',
       domain: 'api-store.demo',
       strictnessLevel: 'high',
-      envFile: 'apps/demo/api-store/.env.local',
+      envFile: `apps/demo/api-store/.env${ENV_FILE_SUFFIX}`,
     },
     {
       name: 'Job Board',
       domain: 'job-board.demo',
       strictnessLevel: 'medium',
-      envFile: 'apps/demo/job-board/.env.local',
+      envFile: `apps/demo/job-board/.env${ENV_FILE_SUFFIX}`,
     },
     {
       name: 'Social Media App',
       domain: 'social-media.demo',
       strictnessLevel: 'medium',
-      envFile: 'apps/demo/social-media-app/.env.local',
+      envFile: `apps/demo/social-media-app/.env${ENV_FILE_SUFFIX}`,
     },
   ];
 

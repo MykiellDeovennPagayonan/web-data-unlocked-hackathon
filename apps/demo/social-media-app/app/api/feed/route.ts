@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         where: { followerId: session.user.id },
         select: { followingId: true },
       })
-      const followedIds = followedUsers.map((f) => f.followingId)
+      const followedIds = followedUsers.map((f: { followingId: string }) => f.followingId)
       const feedUserIds = [...followedIds, session.user.id]
 
       posts = await prisma.post.findMany({

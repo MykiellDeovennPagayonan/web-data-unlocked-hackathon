@@ -1,0 +1,255 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: trustlayer123
+      POSTGRES_DB: trust-later
+    ports:
+      - "5501:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init-databases.sql:/docker-entrypoint-initdb.d/10-init-databases.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "56380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+    working_dir: /workspace
+    command: pnpm --filter api start:dev
+    environment:
+      PORT: 8090
+      DATABASE_URL: postgresql://user:trustlayer123@postgres:5432/trust-later
+      REDIS_URL: redis://redis:6379
+      BRIGHT_DATA_API_KEY: "574904d4-a8e4-4286-b723-df8ac6f603bd"
+      BRIGHT_DATA_SERP_URL: https://api.brightdata.com/serp/google
+      BRIGHT_DATA_SANCTIONS_URL: https://api.brightdata.com/datasets/v3/trigger
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "8090:8090"
+    depends_on:
+      db-setup:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/workspace
+      - node-modules:/workspace/node_modules
+      - api-node-modules:/workspace/apps/api/node_modules
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:8090').then((res) => process.exit(res.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  seed-demo-platforms:
+    build:
+      context: .
+    working_dir: /workspace
+    command: pnpm --filter api exec ts-node --project tsconfig.scripts.json scripts/seed-demo-platforms.ts
+    environment:
+      TRUSTLAYER_API_URL: http://api:8090
+      TRUSTLAYER_DEMO_ENV_SUFFIX: .docker
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - .:/workspace
+      - node-modules:/workspace/node_modules
+      - api-node-modules:/workspace/apps/api/node_modules
+    restart: "no"
+
+  web:
+    build:
+      context: .
+    working_dir: /workspace
+    command: pnpm --filter web dev:host
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://api:8090
+      TUNAI_API_BASE_URL: http://api:8090
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - .:/workspace
+      - node-modules:/workspace/node_modules
+      - web-node-modules:/workspace/apps/web/node_modules
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3000').then((res) => process.exit(res.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  social-media-app:
+    build:
+      context: .
+    working_dir: /workspace
+    command: >
+      sh -lc
+      'if [ -f apps/demo/social-media-app/.env.docker ]; then
+         set -a;
+         . apps/demo/social-media-app/.env.docker;
+         set +a;
+       fi;
+       exec pnpm --filter social-media-app dev:host'
+    environment:
+      DATABASE_URL: postgresql://user:trustlayer123@postgres:5432/demo-social-media
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: your-secret-key-change-this-in-production
+      SEED_SECRET: dev-seed-secret
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3001:3001"
+    depends_on:
+      db-setup:
+        condition: service_completed_successfully
+      seed-demo-platforms:
+        condition: service_completed_successfully
+    volumes:
+      - .:/workspace
+      - node-modules:/workspace/node_modules
+      - social-node-modules:/workspace/apps/demo/social-media-app/node_modules
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3001').then((res) => process.exit(res.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  demo-api-store:
+    build:
+      context: .
+    working_dir: /workspace
+    command: >
+      sh -lc
+      'if [ -f apps/demo/api-store/.env.docker ]; then
+         set -a;
+         . apps/demo/api-store/.env.docker;
+         set +a;
+       fi;
+       exec pnpm --filter demo-api-store dev:host'
+    environment:
+      DATABASE_URL: postgresql://user:trustlayer123@postgres:5432/demo-api-store
+      NEXTAUTH_URL: http://localhost:3002
+      NEXTAUTH_SECRET: your-secret-key-change-this-in-production
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3002:3002"
+    depends_on:
+      db-setup:
+        condition: service_completed_successfully
+      seed-demo-platforms:
+        condition: service_completed_successfully
+    volumes:
+      - .:/workspace
+      - node-modules:/workspace/node_modules
+      - api-store-node-modules:/workspace/apps/demo/api-store/node_modules
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3002').then((res) => process.exit(res.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  demo-job-board:
+    build:
+      context: .
+    working_dir: /workspace
+    command: >
+      sh -lc
+      'if [ -f apps/demo/job-board/.env.docker ]; then
+         set -a;
+         . apps/demo/job-board/.env.docker;
+         set +a;
+       fi;
+       exec pnpm --filter demo-job-board dev:host'
+    environment:
+      DATABASE_URL: postgresql://user:trustlayer123@postgres:5432/demo-job-board
+      NEXTAUTH_URL: http://localhost:3003
+      NEXTAUTH_SECRET: your-secret-key-change-this-in-production
+      UPLOADTHING_TOKEN: "eyJhcGlLZXkiOiJza19saXZlXzk1NmYxMTBjMDI3MWVlNmMwOTBjZWI4NTkxNzIzNjhhZjQyM2VhZjI1NTZjNjkyYmQ0ZDdlYTJmYTNmMjYxNzEiLCJhcHBJZCI6InMxODNlZWVsbHgiLCJyZWdpb25zIjpbInNlYTEiXX0="
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3003:3003"
+    depends_on:
+      db-setup:
+        condition: service_completed_successfully
+      seed-demo-platforms:
+        condition: service_completed_successfully
+    volumes:
+      - .:/workspace
+      - node-modules:/workspace/node_modules
+      - job-board-node-modules:/workspace/apps/demo/job-board/node_modules
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3003').then((res) => process.exit(res.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  db-setup:
+    build:
+      context: .
+    working_dir: /workspace
+    command: >
+      sh -lc
+      'env DATABASE_URL=postgresql://user:trustlayer123@postgres:5432/trust-later pnpm --filter api exec prisma db push &&
+       env DATABASE_URL=postgresql://user:trustlayer123@postgres:5432/demo-social-media pnpm --filter social-media-app exec prisma migrate deploy &&
+       env DATABASE_URL=postgresql://user:trustlayer123@postgres:5432/demo-api-store pnpm --filter demo-api-store exec prisma migrate deploy &&
+       env DATABASE_URL=postgresql://user:trustlayer123@postgres:5432/demo-job-board pnpm --filter demo-job-board exec prisma migrate deploy'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/workspace
+      - node-modules:/workspace/node_modules
+      - api-node-modules:/workspace/apps/api/node_modules
+      - social-node-modules:/workspace/apps/demo/social-media-app/node_modules
+      - api-store-node-modules:/workspace/apps/demo/api-store/node_modules
+      - job-board-node-modules:/workspace/apps/demo/job-board/node_modules
+    restart: "no"
+
+volumes:
+  api-node-modules:
+  web-node-modules:
+  social-node-modules:
+  api-store-node-modules:
+  job-board-node-modules:
+  postgres-data:
+  node-modules:
