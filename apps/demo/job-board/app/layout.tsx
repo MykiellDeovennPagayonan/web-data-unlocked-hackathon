@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AuthSessionProvider } from "@/components/providers/SessionProvider";
 import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,10 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-background text-foreground">
+      <body className="antialiased bg-background text-foreground flex flex-col min-h-screen">
         <AuthSessionProvider>
           <Navbar />
-          {children}
+          <main className="flex-1">{children}</main>
+          <Footer />
         </AuthSessionProvider>
       </body>
     </html>

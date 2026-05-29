@@ -52,113 +52,112 @@ export default function NewEndpointPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="ghost" size="sm" asChild className="text-text-secondary hover:text-text-primary">
           <Link href="/endpoints">
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Create Endpoint</h1>
-          <p className="text-muted-foreground">Add a new API endpoint to the marketplace</p>
+          <h1 className="text-3xl font-bold text-text-primary tracking-tight">Create Endpoint</h1>
+          <p className="text-text-secondary mt-1">Add a new API endpoint to the marketplace</p>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Endpoint Details</CardTitle>
-          <CardDescription>Users will be able to discover and call this endpoint via this platform.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Name *</label>
-              <Input name="name" placeholder="e.g. Weather API" required disabled={isLoading} />
-            </div>
+      <div className="bg-white border border-border-light rounded-xl p-6">
+        <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide mb-1">Endpoint Details</h2>
+        <p className="text-sm text-text-secondary mb-6">Users will be able to discover and call this endpoint via this platform.</p>
+        <form onSubmit={onSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">Name *</label>
+            <Input name="name" placeholder="e.g. Weather API" required disabled={isLoading} className="bg-surface-muted border-border-light focus:border-kaggle-blue" />
+          </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Description</label>
-              <Textarea name="description" placeholder="Brief description of what this API does..." disabled={isLoading} />
-            </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">Description</label>
+            <Textarea name="description" placeholder="Brief description of what this API does..." disabled={isLoading} className="bg-surface-muted border-border-light focus:border-kaggle-blue" />
+          </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Forward URL *</label>
-              <Input
-                name="forwardUrl"
-                type="url"
-                placeholder="https://api.yourservice.com/endpoint"
-                required
-                disabled={isLoading}
-              />
-              <p className="text-xs text-muted-foreground">
-                Incoming requests will be proxied to this URL.
-              </p>
-            </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">Forward URL *</label>
+            <Input
+              name="forwardUrl"
+              type="url"
+              placeholder="https://api.yourservice.com/endpoint"
+              required
+              disabled={isLoading}
+              className="bg-surface-muted border-border-light focus:border-kaggle-blue"
+            />
+            <p className="text-xs text-text-muted">
+              Incoming requests will be proxied to this URL.
+            </p>
+          </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">HTTP Method</label>
-              <select
-                name="method"
-                defaultValue="POST"
-                disabled={isLoading}
-                className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
-                <option value="GET">GET</option>
-                <option value="POST">POST</option>
-                <option value="PUT">PUT</option>
-                <option value="DELETE">DELETE</option>
-              </select>
-            </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">HTTP Method</label>
+            <select
+              name="method"
+              defaultValue="POST"
+              disabled={isLoading}
+              aria-label="HTTP method"
+              className="h-10 w-full rounded border border-border-light bg-surface-muted px-3 py-1 text-sm text-text-primary focus:outline-none focus:border-kaggle-blue"
+            >
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+          </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Price per 1,000 calls (USD)</label>
-              <Input
-                name="pricePer1k"
-                type="number"
-                placeholder="1.00"
-                min="0.001"
-                step="0.001"
-                defaultValue="1.00"
-                disabled={isLoading}
-              />
-            </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">Price per 1,000 calls (USD)</label>
+            <Input
+              name="pricePer1k"
+              type="number"
+              placeholder="1.00"
+              min="0.001"
+              step="0.001"
+              defaultValue="1.00"
+              disabled={isLoading}
+              className="bg-surface-muted border-border-light focus:border-kaggle-blue"
+            />
+          </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Sample Payload (JSON)</label>
-              <Textarea
-                name="samplePayload"
-                placeholder={'{\n  "key": "value"\n}'}
-                className="font-mono text-sm"
-                rows={4}
-                disabled={isLoading}
-              />
-            </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">Sample Payload (JSON)</label>
+            <Textarea
+              name="samplePayload"
+              placeholder={'{\n  "key": "value"\n}'}
+              className="font-mono text-sm bg-surface-muted border-border-light focus:border-kaggle-blue"
+              rows={4}
+              disabled={isLoading}
+            />
+          </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Sample Response (JSON)</label>
-              <Textarea
-                name="sampleResponse"
-                placeholder={'{\n  "result": "success"\n}'}
-                className="font-mono text-sm"
-                rows={4}
-                disabled={isLoading}
-              />
-            </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">Sample Response (JSON)</label>
+            <Textarea
+              name="sampleResponse"
+              placeholder={'{\n  "result": "success"\n}'}
+              className="font-mono text-sm bg-surface-muted border-border-light focus:border-kaggle-blue"
+              rows={4}
+              disabled={isLoading}
+            />
+          </div>
 
-            {error && (
-              <p className="text-sm text-destructive">{error}</p>
-            )}
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
 
-            <div className="flex gap-3 pt-2">
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Creating..." : "Create Endpoint"}
-              </Button>
-              <Button type="button" variant="outline" asChild>
-                <Link href="/endpoints">Cancel</Link>
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          <div className="flex gap-3 pt-2">
+            <Button type="submit" disabled={isLoading} className="bg-kaggle-blue hover:bg-kaggle-blue-hover text-white h-10">
+              {isLoading ? "Creating..." : "Create Endpoint"}
+            </Button>
+            <Button type="button" variant="outline" asChild className="border-border-light text-text-secondary hover:bg-surface-muted h-10">
+              <Link href="/endpoints">Cancel</Link>
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

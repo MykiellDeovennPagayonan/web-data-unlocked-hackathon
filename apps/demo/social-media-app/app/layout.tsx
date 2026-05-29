@@ -3,8 +3,8 @@ import { AuthSessionProvider } from "@/components/providers/SessionProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Social Media App",
-  description: "A social media platform with individual and organization profiles",
+  title: "Publish — Human stories & ideas",
+  description: "A place to read, write, and deepen your understanding.",
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-background text-foreground">
+      <body className="antialiased">
         <AuthSessionProvider>
           {children}
         </AuthSessionProvider>

@@ -7,10 +7,10 @@ interface StatusBadgeProps {
 }
 
 const statusConfig = {
-  PENDING: { label: "Pending", className: "bg-yellow-100 text-yellow-800" },
-  INTERVIEWING: { label: "Interviewing", className: "bg-blue-100 text-blue-800" },
-  ACCEPTED: { label: "Accepted", className: "bg-green-100 text-green-800" },
-  REJECTED: { label: "Rejected", className: "bg-red-100 text-red-800" }
+  PENDING: { label: "Applied", className: "bg-glassdoor-blue/10 text-glassdoor-blue border-0 rounded" },
+  INTERVIEWING: { label: "Interviewing", className: "bg-warning/10 text-warning border-0 rounded" },
+  ACCEPTED: { label: "Accepted", className: "bg-glassdoor-green/10 text-glassdoor-green border-0 rounded" },
+  REJECTED: { label: "Not Selected", className: "bg-danger/10 text-danger border-0 rounded" }
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {

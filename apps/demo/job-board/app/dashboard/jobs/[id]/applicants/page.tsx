@@ -4,10 +4,9 @@ import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
-import { ArrowLeft, Download } from "lucide-react"
+import { ArrowLeft, Download, User, Calendar, DollarSign, Clock } from "lucide-react"
 import { StatusBadge } from "@/components/applications/status-badge"
 
 interface Applicant {
@@ -69,36 +68,73 @@ export default function JobApplicantsPage() {
   }
 
   if (status === "loading" || !session || session.user.role !== "ORGANIZATION") {
-    return <div className="container mx-auto py-8 px-4">Loading...</div>
+    return (
+      <div className="min-h-[calc(100vh-4rem)] bg-surface flex items-center justify-center">
+        <div className="text-text-muted">Loading...</div>
+      </div>
+    )
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Link href="/dashboard/jobs" className="flex items-center text-muted-foreground hover:text-foreground mb-4">
-        <ArrowLeft className="h-4 w-4 mr-1" /> Back to Jobs
-      </Link>
-      <h1 className="text-3xl font-bold mb-6">Job Applicants</h1>
-      {loading ? <p>Loading...</p> : (
-        <div className="grid gap-4">
-          {applicants.map(applicant => (
-            <Card key={applicant.id}>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle className="text-lg">{applicant.individual.user.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{applicant.individual.user.email}</p>
+    <div className="min-h-[calc(100vh-4rem)] bg-surface">
+      <div className="max-w-7xl mx-auto px-4 lg:px-6 py-8">
+        <Link href="/dashboard/jobs" className="inline-flex items-center text-text-secondary hover:text-text-primary text-sm mb-6 font-medium">
+          <ArrowLeft className="h-4 w-4 mr-1.5" /> Back to Jobs
+        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-text-primary">Job Applicants</h1>
+            <p className="text-sm text-text-muted mt-1">{applicants.length} total applicants</p>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="bg-white border border-border-strong rounded-lg p-12 text-center">
+            <div className="text-text-muted">Loading applicants...</div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {applicants.map(applicant => (
+              <div key={applicant.id} className="bg-white border border-border-strong rounded-lg p-5 hover:border-glassdoor-green transition-colors">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-surface rounded flex items-center justify-center flex-shrink-0">
+                      <User className="h-6 w-6 text-text-muted" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-text-primary">{applicant.individual.user.name}</h3>
+                      <p className="text-sm text-text-secondary">{applicant.individual.user.email}</p>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-muted mt-1">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" /> Applied {new Date(applicant.appliedAt).toLocaleDateString()}
+                        </span>
+                        {applicant.expectedSalary && (
+                          <span className="flex items-center gap-1">
+                            <DollarSign className="h-3 w-3" /> ${applicant.expectedSalary.toLocaleString()}
+                          </span>
+                        )}
+                        {applicant.availability && (
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" /> {applicant.availability}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                   <StatusBadge status={applicant.status} />
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-sm text-muted-foreground">Applied: {new Date(applicant.appliedAt).toLocaleDateString()}</p>
-                {applicant.coverLetter && <p className="text-sm"><strong>Cover Letter:</strong> {applicant.coverLetter}</p>}
-                {applicant.expectedSalary && <p className="text-sm"><strong>Expected Salary:</strong> ${applicant.expectedSalary.toLocaleString()}</p>}
-                {applicant.availability && <p className="text-sm"><strong>Availability:</strong> {applicant.availability}</p>}
-                <div className="flex items-center gap-4 pt-2">
+
+                {applicant.coverLetter && (
+                  <div className="mt-3 pt-3 border-t border-surface-alt">
+                    <p className="text-sm text-text-secondary leading-relaxed">{applicant.coverLetter}</p>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-surface-alt">
                   <Select defaultValue={applicant.status} onValueChange={(v) => updateStatus(applicant.id, v)}>
-                    <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-40 h-9 text-xs border-border-strong rounded">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="PENDING">Pending</SelectItem>
                       <SelectItem value="INTERVIEWING">Interviewing</SelectItem>
@@ -107,15 +143,22 @@ export default function JobApplicantsPage() {
                     </SelectContent>
                   </Select>
                   <a href={applicant.resumeUrl} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm"><Download className="h-4 w-4 mr-1" /> Download CSV</Button>
+                    <Button variant="outline" size="sm" className="rounded border-border-strong text-text-secondary hover:bg-surface text-xs">
+                      <Download className="h-3.5 w-3.5 mr-1.5" /> Download CSV
+                    </Button>
                   </a>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-          {applicants.length === 0 && <p>No applicants yet.</p>}
-        </div>
-      )}
+              </div>
+            ))}
+            {applicants.length === 0 && (
+              <div className="bg-white border border-border-strong rounded-lg p-12 text-center">
+                <p className="text-text-muted text-lg mb-2">No applicants yet</p>
+                <p className="text-text-muted text-sm">Applicants will appear here once they apply</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

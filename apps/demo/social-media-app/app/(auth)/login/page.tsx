@@ -6,7 +6,6 @@ import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 function LoginForm() {
   const router = useRouter()
@@ -47,59 +46,69 @@ function LoginForm() {
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-        <CardDescription className="text-center">
-          Enter your credentials to access your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {message && (
-          <div className="text-sm text-success text-center mb-4">{message}</div>
+    <div className="w-full">
+      <div className="text-center mb-8">
+        <h1
+          className="text-[28px] font-bold text-[#242424] mb-3"
+          style={{ fontFamily: '"GT Super", Georgia, serif' }}
+        >
+          Welcome back.
+        </h1>
+        <p className="text-[14px] text-[#6B6B6B]">
+          Sign in to access your personalized feed.
+        </p>
+      </div>
+
+      {message && (
+        <div className="text-[13px] text-[#1A8917] text-center mb-4">{message}</div>
+      )}
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Email"
+            required
+            disabled={isLoading}
+            className="h-11 border-[#E5E5E5] focus-visible:ring-[#242424] rounded text-[14px]"
+          />
+        </div>
+        <div>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            required
+            disabled={isLoading}
+            className="h-11 border-[#E5E5E5] focus-visible:ring-[#242424] rounded text-[14px]"
+          />
+        </div>
+        {error && (
+          <div className="text-[13px] text-[#CC0000] text-center">{error}</div>
         )}
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Email"
-              required
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Password"
-              required
-              disabled={isLoading}
-            />
-          </div>
-          {error && (
-            <div className="text-sm text-danger text-center">{error}</div>
-          )}
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign In"}
-          </Button>
-        </form>
-        <div className="mt-4 text-center text-sm text-text-muted">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-primary hover:underline">
-            Sign up
-          </Link>
-        </div>
-        <div className="mt-2 text-center text-sm text-text-muted">
-          Want to sign up as an organization?{" "}
-          <Link href="/signup/organization" className="text-primary hover:underline">
-            Organization signup
-          </Link>
-        </div>
-      </CardContent>
-    </Card>
+        <Button
+          type="submit"
+          className="w-full h-11 rounded-full bg-[#191919] hover:bg-black text-white text-[14px] font-medium"
+          disabled={isLoading}
+        >
+          {isLoading ? "Signing in..." : "Sign In"}
+        </Button>
+      </form>
+      <div className="mt-6 text-center text-[13px] text-[#757575]">
+        Don&apos;t have an account?{" "}
+        <Link href="/signup" className="text-[#1A8917] hover:underline">
+          Sign up
+        </Link>
+      </div>
+      <div className="mt-2 text-center text-[13px] text-[#757575]">
+        Want to sign up as an organization?{" "}
+        <Link href="/signup/organization" className="text-[#1A8917] hover:underline">
+          Organization signup
+        </Link>
+      </div>
+    </div>
   )
 }
 

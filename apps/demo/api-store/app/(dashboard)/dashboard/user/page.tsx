@@ -91,154 +91,150 @@ export default function UserDashboard() {
   const totalCalls = stats?.byEndpoint.reduce((s, e) => s + e.totalCalls, 0) ?? 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">My Dashboard</h1>
-        <p className="text-muted-foreground">Your API usage and credits overview</p>
+        <h1 className="text-3xl font-bold text-text-primary tracking-tight">My Dashboard</h1>
+        <p className="text-text-secondary mt-1">Your API usage and credits overview</p>
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Credit Balance</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${(stats?.creditBalance ?? 0).toFixed(4)}</div>
-            <Button size="sm" className="mt-2" onClick={() => setTopUpOpen(true)}>
-              Top Up
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white border border-border-light rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-text-secondary">Credit Balance</span>
+            <DollarSign className="h-4 w-4 text-text-muted" />
+          </div>
+          <p className="text-3xl font-bold text-text-primary tracking-tight">${(stats?.creditBalance ?? 0).toFixed(4)}</p>
+          <Button size="sm" className="mt-3 bg-kaggle-blue hover:bg-kaggle-blue-hover text-white h-8" onClick={() => setTopUpOpen(true)}>
+            Top Up
+          </Button>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total API Calls</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalCalls}</div>
-            <p className="text-xs text-muted-foreground mt-1">Across all endpoints</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-border-light rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-text-secondary">Total API Calls</span>
+            <Zap className="h-4 w-4 text-text-muted" />
+          </div>
+          <p className="text-3xl font-bold text-text-primary tracking-tight">{totalCalls}</p>
+          <p className="text-xs text-text-muted mt-1">Across all endpoints</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${totalSpent.toFixed(4)}</div>
-            <p className="text-xs text-muted-foreground mt-1">In paid API calls</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-border-light rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-text-secondary">Total Spent</span>
+            <TrendingUp className="h-4 w-4 text-text-muted" />
+          </div>
+          <p className="text-3xl font-bold text-text-primary tracking-tight">${totalSpent.toFixed(4)}</p>
+          <p className="text-xs text-text-muted mt-1">In paid API calls</p>
+        </div>
       </div>
 
       {/* API Key */}
-      <Card>
-        <CardHeader>
-          <CardTitle>API Key</CardTitle>
-          <CardDescription>Use this key in the x-api-key header when calling endpoints</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {apiKey ? (
-            <div className="flex items-center gap-2">
-              <code className="flex-1 bg-muted px-3 py-2 rounded text-sm font-mono truncate">
-                {apiKey.key}
-              </code>
-              <Button size="sm" variant="outline" onClick={copyKey}>
-                {copiedKey ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              </Button>
-              <Button size="sm" variant="outline" onClick={generateKey}>
-                Regenerate
-              </Button>
-            </div>
-          ) : (
-            <Button onClick={generateKey}>Generate API Key</Button>
-          )}
-        </CardContent>
-      </Card>
+      <div className="bg-white border border-border-light rounded-xl p-6">
+        <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide mb-1">API Key</h2>
+        <p className="text-sm text-text-secondary mb-4">Use this key in the x-api-key header when calling endpoints</p>
+        {apiKey ? (
+          <div className="flex items-center gap-2">
+            <code className="flex-1 bg-surface-muted px-3 py-2.5 rounded text-sm font-mono text-text-primary truncate">
+              {apiKey.key}
+            </code>
+            <Button size="sm" variant="outline" onClick={copyKey} className="h-9 border-border-light hover:bg-surface-muted">
+              {copiedKey ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+            </Button>
+            <Button size="sm" variant="outline" onClick={generateKey} className="h-9 border-border-light hover:bg-surface-muted">
+              Regenerate
+            </Button>
+          </div>
+        ) : (
+          <Button onClick={generateKey} className="bg-kaggle-blue hover:bg-kaggle-blue-hover text-white h-9">
+            Generate API Key
+          </Button>
+        )}
+      </div>
 
       {/* Per-endpoint breakdown */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Usage by Endpoint</CardTitle>
-          <CardDescription>Breakdown of your API calls and spending per endpoint</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!stats || stats.byEndpoint.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No API calls yet. Visit the marketplace to explore endpoints.</p>
-          ) : (
-            <div className="space-y-3">
-              {stats.byEndpoint.map((ep) => (
-                <div key={ep.endpointId} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                  <div>
-                    <p className="font-medium text-sm">{ep.endpointName}</p>
-                    <p className="text-xs text-muted-foreground">{ep.orgName}</p>
+      <div className="bg-white border border-border-light rounded-xl p-6">
+        <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide mb-1">Usage by Endpoint</h2>
+        <p className="text-sm text-text-secondary mb-4">Breakdown of your API calls and spending per endpoint</p>
+        {!stats || stats.byEndpoint.length === 0 ? (
+          <p className="text-text-muted text-sm">No API calls yet. Visit the marketplace to explore endpoints.</p>
+        ) : (
+          <div className="space-y-2">
+            {stats.byEndpoint.map((ep) => (
+              <div key={ep.endpointId} className="flex items-center justify-between p-3 rounded bg-surface-muted hover:bg-surface transition-colors">
+                <div>
+                  <p className="font-medium text-sm text-text-primary">{ep.endpointName}</p>
+                  <p className="text-xs text-text-secondary">{ep.orgName}</p>
+                </div>
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="text-center">
+                    <p className="font-semibold text-text-primary">{ep.totalCalls}</p>
+                    <p className="text-xs text-text-muted">calls</p>
                   </div>
-                  <div className="flex items-center gap-4 text-sm">
-                    <div className="text-center">
-                      <p className="font-semibold">{ep.totalCalls}</p>
-                      <p className="text-xs text-muted-foreground">calls</p>
-                    </div>
-                    <div className="text-center">
-                      <Badge variant="secondary">{ep.freeCalls} free</Badge>
-                    </div>
-                    <div className="text-center">
-                      <p className="font-semibold text-primary">${ep.totalSpent.toFixed(4)}</p>
-                      <p className="text-xs text-muted-foreground">spent</p>
-                    </div>
+                  <div className="text-center">
+                    <Badge className="bg-sky-50 text-sky-600 border-0 text-xs font-medium">{ep.freeCalls} free</Badge>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-semibold text-kaggle-blue">${ep.totalSpent.toFixed(4)}</p>
+                    <p className="text-xs text-text-muted">spent</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Recent activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            Recent Activity
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!stats || stats.recentLogs.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No recent activity.</p>
-          ) : (
-            <div className="space-y-2">
-              {stats.recentLogs.map((log) => (
-                <div key={log.id} className="flex items-center justify-between text-sm py-2 border-b last:border-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{log.endpoint.name}</span>
-                    <Badge variant={log.isFree ? "secondary" : "default"} className="text-xs">
-                      {log.isFree ? "Free" : `$${log.costCharged.toFixed(4)}`}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-3 text-muted-foreground">
-                    <span className={`text-xs ${log.statusCode && log.statusCode < 400 ? "text-green-600" : "text-red-500"}`}>
-                      {log.statusCode ?? "—"}
-                    </span>
-                    <span className="text-xs">{new Date(log.createdAt).toLocaleString()}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <div className="bg-white border border-border-light rounded-xl p-6">
+        <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide mb-4 flex items-center gap-2">
+          <Clock className="h-4 w-4" />
+          Recent Activity
+        </h2>
+        {!stats || stats.recentLogs.length === 0 ? (
+          <p className="text-text-muted text-sm">No recent activity.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border-subtle text-left">
+                  <th className="pb-2 text-text-muted font-medium">Endpoint</th>
+                  <th className="pb-2 text-text-muted font-medium">Cost</th>
+                  <th className="pb-2 text-text-muted font-medium">Status</th>
+                  <th className="pb-2 text-text-muted font-medium text-right">Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats.recentLogs.map((log) => (
+                  <tr key={log.id} className="border-b border-border-subtle last:border-0 hover:bg-surface-muted transition-colors">
+                    <td className="py-3 font-medium text-text-primary">{log.endpoint.name}</td>
+                    <td className="py-3">
+                      <Badge className={log.isFree ? "bg-sky-50 text-sky-600 border-0 text-xs font-medium" : "bg-amber-50 text-amber-700 border-0 text-xs font-medium"}>
+                        {log.isFree ? "Free" : `$${log.costCharged.toFixed(4)}`}
+                      </Badge>
+                    </td>
+                    <td className="py-3">
+                      <span className={`text-xs font-medium ${log.statusCode && log.statusCode < 400 ? "text-green-600" : "text-red-500"}`}>
+                        {log.statusCode ?? "—"}
+                      </span>
+                    </td>
+                    <td className="py-3 text-right text-text-muted text-xs">{new Date(log.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Top Up Modal */}
       <Dialog open={topUpOpen} onOpenChange={setTopUpOpen}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-sm bg-white border-border-light">
           <DialogHeader>
-            <DialogTitle>Top Up Credits</DialogTitle>
+            <DialogTitle className="text-text-primary">Top Up Credits</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">Enter an amount in USD to add to your credit balance (mock payment).</p>
+            <p className="text-sm text-text-secondary">Enter an amount in USD to add to your credit balance (mock payment).</p>
             <Input
               type="number"
               placeholder="Amount in USD (e.g. 10)"
@@ -246,15 +242,16 @@ export default function UserDashboard() {
               onChange={(e) => setTopUpAmount(e.target.value)}
               min="0.01"
               step="0.01"
+              className="bg-surface-muted border-border-light focus:border-kaggle-blue"
             />
             <div className="flex gap-2">
               {[5, 10, 25, 50].map((amt) => (
-                <Button key={amt} variant="outline" size="sm" onClick={() => setTopUpAmount(String(amt))}>
+                <Button key={amt} variant="outline" size="sm" onClick={() => setTopUpAmount(String(amt))} className="border-border-light hover:bg-surface-muted text-text-secondary">
                   ${amt}
                 </Button>
               ))}
             </div>
-            <Button className="w-full" onClick={handleTopUp} disabled={topping}>
+            <Button className="w-full bg-kaggle-blue hover:bg-kaggle-blue-hover text-white" onClick={handleTopUp} disabled={topping}>
               {topping ? "Processing..." : "Confirm Payment (Mock)"}
             </Button>
           </div>

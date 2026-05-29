@@ -52,59 +52,69 @@ function LoginForm() {
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-        <CardDescription className="text-center">
+    <div className="bg-white border border-border-strong rounded-lg shadow-sm p-6 md:p-8">
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold text-text-primary">Sign In</h1>
+        <p className="text-sm text-text-secondary mt-1">
           Enter your credentials to access your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div>
         {message && (
-          <div className="text-sm text-success text-center mb-4">{message}</div>
+          <div className="text-sm text-glassdoor-green text-center mb-4 font-medium">{message}</div>
         )}
         <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">Email</label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="Email"
+              placeholder="you@example.com"
               required
               disabled={isLoading}
+              className="h-11 border-border-strong focus-visible:ring-glassdoor-green"
             />
           </div>
-          <div className="space-y-2">
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">Password</label>
             <Input
               id="password"
               name="password"
               type="password"
-              placeholder="Password"
+              placeholder="Enter your password"
               required
               disabled={isLoading}
+              className="h-11 border-border-strong focus-visible:ring-glassdoor-green"
             />
           </div>
           {error && (
-            <div className="text-sm text-danger text-center">{error}</div>
+            <div className="text-sm text-danger text-center font-medium">{error}</div>
           )}
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full h-11 bg-glassdoor-green hover:bg-glassdoor-green-hover text-white font-bold rounded"
+            disabled={isLoading}
+          >
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
-        <div className="mt-4 text-center text-sm text-text-muted">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-primary hover:underline">
-            Sign up
-          </Link>
+        <div className="mt-5 pt-5 border-t border-surface-alt space-y-2 text-center">
+          <p className="text-sm text-text-secondary">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="text-glassdoor-green font-semibold hover:underline">
+              Sign up
+            </Link>
+          </p>
+          <p className="text-sm text-text-secondary">
+            Want to sign up as an organization?{" "}
+            <Link href="/signup/organization" className="text-glassdoor-green font-semibold hover:underline">
+              Organization signup
+            </Link>
+          </p>
         </div>
-        <div className="mt-2 text-center text-sm text-text-muted">
-          Want to sign up as an organization?{" "}
-          <Link href="/signup/organization" className="text-primary hover:underline">
-            Organization signup
-          </Link>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
