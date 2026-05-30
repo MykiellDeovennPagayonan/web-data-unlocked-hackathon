@@ -12,7 +12,9 @@ export async function createOrUpdateIp(
   if (existing) {
     return repository.update(existing.id, {
       ipType: classification.ipType,
-      riskScore: classification.riskScore,
+      riskScore: existing.isBlacklisted
+        ? Number(existing.riskScore)
+        : classification.riskScore,
       lastEvaluatedAt: new Date(),
     });
   }

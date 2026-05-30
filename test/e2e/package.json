@@ -11,7 +11,7 @@
     "seed:social": "tsx seed/seed-social-media.ts",
     "cleanup:all": "tsx utils/cleanup.ts",
     "demo:flow1": "E2E_DEBUG_ARTIFACTS=true E2E_HEADED=true playwright test demo/flow1-free-tier-abuser.spec.ts --headed --reporter=list",
-    "demo:flow2": "tsx demo-e2e-run.ts --scenario flow-2",
+    "demo:flow2": "E2E_DEBUG_ARTIFACTS=true E2E_HEADED=true playwright test demo/flow2-suspicious-email-block.spec.ts --headed --reporter=list",
     "demo:flow3": "E2E_DEBUG_ARTIFACTS=true E2E_HEADED=true playwright test demo/flow3-bot-scraper-attack.spec.ts --headed --reporter=list",
     "demo:flow4": "E2E_DEBUG_ARTIFACTS=true E2E_HEADED=true playwright test demo/flow4-trusted-org-certificate.spec.ts --headed --reporter=list",
     "demo:flow5": "E2E_DEBUG_ARTIFACTS=true E2E_HEADED=true playwright test demo/flow5-trusted-individual-portable-kyc.spec.ts --headed --reporter=list",

@@ -8,9 +8,12 @@ import {
   CheckVerdict,
   EntityType,
   IpType,
+  ListType,
   PlatformStatus,
   PlatformUserStatus,
   PrismaClient,
+  RegistrySeverity,
+  RegistrySourceType,
   ReportCategory,
   ReportSeverity,
   ReportStatus,
@@ -342,6 +345,7 @@ async function main() {
       ipRecords,
       devices,
     );
+    await seedRegistryEntries(prisma);
 
     console.log(
       `Seeded admin dashboard data for ${platform.name} (${platform.id}).`,
@@ -671,6 +675,64 @@ async function seedSessions(
       startedAt: minutesAgo(18 + index * 7),
     })),
   });
+}
+
+async function seedRegistryEntries(prisma: PrismaClient) {
+  const suspiciousDomains = [
+    { domain: 'test.com', threatScore: 98 },
+    { domain: 'example.com', threatScore: 95 },
+    { domain: 'fakeemail.com', threatScore: 97 },
+    { domain: 'mailinator.com', threatScore: 96 },
+    { domain: 'tempmail.com', threatScore: 94 },
+    { domain: 'guerrillamail.com', threatScore: 93 },
+    { domain: 'yopmail.com', threatScore: 92 },
+    { domain: 'throwaway.com', threatScore: 91 },
+    { domain: 'dispostable.com', threatScore: 90 },
+    { domain: '10minutemail.com', threatScore: 89 },
+  ];
+
+  for (const { domain, threatScore } of suspiciousDomains) {
+    const emailHash = hash(`user@${domain}`);
+
+    const existingEntry = await prisma.registryEntry.findFirst({
+      where: {
+        listType: ListType.blacklist,
+        sourceType: RegistrySourceType.external_db,
+        targets: {
+          some: {
+            targetType: TargetType.email,
+            emailHash,
+          },
+        },
+      },
+    });
+
+    if (existingEntry) {
+      continue;
+    }
+
+    const entry = await prisma.registryEntry.create({
+      data: {
+        listType: ListType.blacklist,
+        severity: RegistrySeverity.red_hard,
+        sourceType: RegistrySourceType.external_db,
+        reportCount: 0,
+        isActive: true,
+      },
+    });
+
+    await prisma.registryTarget.create({
+      data: {
+        registryEntryId: entry.id,
+        targetType: TargetType.email,
+        emailHash,
+      },
+    });
+
+    console.log(
+      `Seeded registry entry for suspicious domain: ${domain} (threat score: ${threatScore})`,
+    );
+  }
 }
 
 function verdictForRisk(riskScore: number): AccessVerdict {

@@ -10,7 +10,9 @@ import { submitCommunityReport } from "./community-report"
 import { logAccessEvent } from "./access-event"
 import { verifyCertificate } from "./certificate"
 import type { LogAccessEventParams } from "./access-event"
+import { TunaiError } from "./fetch"
 
+export { TunaiError }
 export type { TunaiConfig, LogAccessEventParams }
 
 export function createClient(config: TunaiConfig) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { tl } from "@/lib/trustlayer"
+import { TunaiError } from "@trust-layer/tunai"
 
 export async function POST(request: NextRequest) {
   try {
@@ -104,6 +105,14 @@ export async function POST(request: NextRequest) {
             )
           }
         } catch (tlErr) {
+          // Handle hard blocks from TrustLayer (e.g. suspicious email domain or pattern)
+          if (tlErr instanceof TunaiError && tlErr.status === 403) {
+            await prisma.user.delete({ where: { id: user.id } })
+            return NextResponse.json(
+              { message: tlErr.cleanMessage },
+              { status: 403 }
+            )
+          }
           console.error("[TrustLayer] registerUser failed (non-fatal):", tlErr)
         }
 

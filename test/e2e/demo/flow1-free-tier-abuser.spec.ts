@@ -144,6 +144,7 @@ test.describe('Flow 1: Free-Tier Abuser', () => {
     // Account 4 shares the same device → 3 cross-aliases → score = 0.
     // Signup is blocked immediately.
     await expect(page.locator('text=flagged for suspicious activity').first()).toBeVisible()
+    await page.waitForTimeout(3000)
 
     // ========== JOB BOARD: Riley Chen — blocked at signup (cross-platform) ==========
     const riley = FLOW1.jobSeeker

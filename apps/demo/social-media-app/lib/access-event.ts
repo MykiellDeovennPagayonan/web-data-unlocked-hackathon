@@ -43,7 +43,7 @@ export async function logApiAccess({
       deviceId: device.id,
       eventType: "api_call",
       verdict,
-      scoreAtEvent: ipRecord.riskScore,
+      scoreAtEvent: Number(ipRecord.riskScore),
       triggeredRules: {},
     })
   } catch (err) {

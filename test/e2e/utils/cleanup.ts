@@ -35,25 +35,25 @@ async function cleanupDb(name: string, url: string) {
 
     // Delete from child tables first to avoid FK constraint issues
     // NextAuth tables (camelCase columns from adapter)
-    await safeDelete(`DELETE FROM "Account" WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-    await safeDelete(`DELETE FROM "Session" WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
+    await safeDelete(`DELETE FROM "Account" WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+    await safeDelete(`DELETE FROM "Session" WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
     // Also try lowercase table names (some setups use them)
-    await safeDelete(`DELETE FROM accounts WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-    await safeDelete(`DELETE FROM sessions WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
+    await safeDelete(`DELETE FROM accounts WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+    await safeDelete(`DELETE FROM sessions WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
 
     // API Store specific tables
     if (name === 'apiStore') {
-      await safeDelete(`DELETE FROM api_usage_logs WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-      await safeDelete(`DELETE FROM free_trials WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-      await safeDelete(`DELETE FROM credit_transactions WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-      await safeDelete(`DELETE FROM user_api_keys WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-      await safeDelete(`DELETE FROM api_endpoints WHERE "orgProfileId" IN (SELECT id FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local'))`)
+      await safeDelete(`DELETE FROM api_usage_logs WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+      await safeDelete(`DELETE FROM free_trials WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+      await safeDelete(`DELETE FROM credit_transactions WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+      await safeDelete(`DELETE FROM user_api_keys WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+      await safeDelete(`DELETE FROM api_endpoints WHERE "orgProfileId" IN (SELECT id FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%'))`)
     }
 
     // Job Board specific tables
     if (name === 'jobBoard') {
-      await safeDelete(`DELETE FROM applications WHERE "individualId" IN (SELECT id FROM individual_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local'))`)
-      await safeDelete(`DELETE FROM jobs WHERE "organizationId" IN (SELECT id FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local'))`)
+      await safeDelete(`DELETE FROM applications WHERE "individualId" IN (SELECT id FROM individual_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%'))`)
+      await safeDelete(`DELETE FROM jobs WHERE "organizationId" IN (SELECT id FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%'))`)
     }
 
     // Social Media specific tables
@@ -76,18 +76,18 @@ async function cleanupDb(name: string, url: string) {
     }
 
     if (name === 'socialMedia' && !socialMediaCleaned) {
-      await safeDelete(`DELETE FROM comments WHERE "authorId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-      await safeDelete(`DELETE FROM likes WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-      await safeDelete(`DELETE FROM follows WHERE "followerId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local') OR "followingId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-      await safeDelete(`DELETE FROM posts WHERE "authorId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
+      await safeDelete(`DELETE FROM comments WHERE "authorId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+      await safeDelete(`DELETE FROM likes WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+      await safeDelete(`DELETE FROM follows WHERE "followerId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%') OR "followingId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+      await safeDelete(`DELETE FROM posts WHERE "authorId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
     }
 
     // Delete profile tables
-    await safeDelete(`DELETE FROM individual_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
-    await safeDelete(`DELETE FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local')`)
+    await safeDelete(`DELETE FROM individual_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+    await safeDelete(`DELETE FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
 
     // Finally delete users
-    const result = await client.query(`DELETE FROM users WHERE email LIKE '%@e2e.local' RETURNING email`)
+    const result = await client.query(`DELETE FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' RETURNING email`)
     console.log(`[${name}] Deleted ${result.rowCount} test users`)
   } catch (err) {
     console.error(`[${name}] Cleanup error:`, err)
@@ -132,6 +132,9 @@ async function cleanupTrustLayer(url: string) {
     counts.identities = await safeDelete(`DELETE FROM identities`)
     counts.organizations = await safeDelete(`DELETE FROM organizations`)
 
+    // Wipe test IP records (TEST-NET-3 range used by Flow 3)
+    counts.ip_records = await safeDelete(`DELETE FROM ip_records WHERE "ipAddress"::text LIKE '203.0.113.%'`)
+
     const total = Object.values(counts).reduce((sum, c) => sum + c, 0)
     console.log(`[trustLayer] Cleaned up ${total} test records`, counts)
   } catch (err) {
@@ -166,12 +169,26 @@ async function cleanupRedis() {
     })
 
     // Clear all API velocity counters from Redis
-    const keys = await redis.keys('identity_api_velocity:*')
-    if (keys.length > 0) {
-      await redis.del(...keys)
-      console.log(`[redis] Cleared ${keys.length} velocity counter keys`)
-    } else {
-      console.log('[redis] No velocity counter keys to clear')
+    const velocityKeys = await redis.keys('identity_api_velocity:*')
+    if (velocityKeys.length > 0) {
+      await redis.del(...velocityKeys)
+      console.log(`[redis] Cleared ${velocityKeys.length} identity velocity counter keys`)
+    }
+
+    // Clear IP velocity and probe keys (used by Flow 3 bot detection)
+    const ipVelocityKeys = await redis.keys('ip_velocity:*')
+    if (ipVelocityKeys.length > 0) {
+      await redis.del(...ipVelocityKeys)
+      console.log(`[redis] Cleared ${ipVelocityKeys.length} ip_velocity keys`)
+    }
+    const ipProbeKeys = await redis.keys('ip_probe:*')
+    if (ipProbeKeys.length > 0) {
+      await redis.del(...ipProbeKeys)
+      console.log(`[redis] Cleared ${ipProbeKeys.length} ip_probe keys`)
+    }
+
+    if (velocityKeys.length === 0 && ipVelocityKeys.length === 0 && ipProbeKeys.length === 0) {
+      console.log('[redis] No velocity/probe keys to clear')
     }
 
     await redis.quit()

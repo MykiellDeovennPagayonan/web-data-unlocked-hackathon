@@ -6,8 +6,9 @@ export class CreatePlatformUserDto {
   @IsString()
   identityId?: string;
 
+  @IsOptional()
   @IsString()
-  platformId!: string;
+  platformId?: string;
 
   @IsString()
   externalUserId!: string;

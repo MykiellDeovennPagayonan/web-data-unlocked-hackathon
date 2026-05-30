@@ -38,6 +38,8 @@ test.describe('Flow 3: Bot Scraper Attack', () => {
   test('full flow: bot scrapes Social Media feed, gets blacklisted, then blocked on Job Board', async ({
     page,
   }) => {
+    // Use a random IP from TEST-NET-3 so each run starts clean
+    const botIp = `203.0.113.${Math.floor(Math.random() * 254) + 1}`
     // ============================================================
     // ACT 1 — SEED: Fill the Social Media App with content
     // ============================================================
@@ -59,7 +61,7 @@ test.describe('Flow 3: Bot Scraper Attack', () => {
       page.locator('text=Hello from Alice!').first()
     ).toBeVisible()
     await expect(
-      page.locator('text=Bob here!').first()
+      page.locator('text=Bob post three:').first()
     ).toBeVisible()
     await page.screenshot({
       path: 'test-results/flow3-01-feed-visible.png',
@@ -74,7 +76,7 @@ test.describe('Flow 3: Bot Scraper Attack', () => {
       SOCIAL_URL,
       FLOW3.burstCount,
       FLOW3.pagesToScrape,
-      FLOW3.botIp,
+      botIp,
       FLOW3.botUserAgent
     )
 
@@ -125,7 +127,7 @@ test.describe('Flow 3: Bot Scraper Attack', () => {
     // ACT 4 — VERIFY BLACKLIST: TrustLayer caught the bot
     // ============================================================
     const ipCheck = await fetch(
-      `${TRUSTLAYER_API}/admin/ip/${FLOW3.botIp}`,
+      `${TRUSTLAYER_API}/admin/ip/${botIp}`,
       {
         headers: { 'x-api-key': SOCIAL_API_KEY },
       }
@@ -133,17 +135,23 @@ test.describe('Flow 3: Bot Scraper Attack', () => {
     expect(ipCheck.ok).toBe(true)
     const ipRecord = await ipCheck.json()
     expect(ipRecord.isBlacklisted).toBe(true)
-    expect(ipRecord.riskScore).toBeGreaterThanOrEqual(90)
+    expect(Number(ipRecord.riskScore)).toBeGreaterThanOrEqual(90)
 
     // Verify access events were logged
-    const eventsRes = await fetch(
-      `${TRUSTLAYER_API}/admin/access/events/platform/${SOCIAL_PLATFORM_ID}`,
-      {
-        headers: { 'x-api-key': SOCIAL_API_KEY },
-      }
-    )
-    expect(eventsRes.ok).toBe(true)
-    const events = await eventsRes.json()
+    // (logApiAccess is fire-and-forget, so poll briefly for events to land)
+    let events: any[] = []
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const eventsRes = await fetch(
+        `${TRUSTLAYER_API}/admin/access/events/platform/${SOCIAL_PLATFORM_ID}`,
+        {
+          headers: { 'x-api-key': SOCIAL_API_KEY },
+        }
+      )
+      expect(eventsRes.ok).toBe(true)
+      events = await eventsRes.json()
+      if (Array.isArray(events) && events.length > 0) break
+      await page.waitForTimeout(500)
+    }
     expect(Array.isArray(events)).toBe(true)
     expect(events.length).toBeGreaterThan(0)
 
@@ -163,7 +171,7 @@ test.describe('Flow 3: Bot Scraper Attack', () => {
     const jobBoardBot = await botRequest(
       page,
       `${JOB_BOARD_URL}/api/jobs`,
-      FLOW3.botIp,
+      botIp,
       FLOW3.botUserAgent
     )
 

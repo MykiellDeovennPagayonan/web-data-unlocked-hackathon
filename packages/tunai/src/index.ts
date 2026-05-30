@@ -1,5 +1,6 @@
 export { createClient } from "./client"
 export type { TunaiClient, TunaiConfig } from "./client"
+export { TunaiError } from "./fetch"
 
 export type {
   IpRecord,
