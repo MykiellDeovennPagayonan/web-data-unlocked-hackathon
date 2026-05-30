@@ -48,3 +48,9 @@ coverage
 .temp
 tmp
 .cursor/rules/codegraph.mdc
+docs/ui-references/tunai-landing-page/comparisons/01-hero-trust-gateway-implementation.png
+docs/ui-references/tunai-landing-page/comparisons/02-three-step-identity-trust-implementation.png
+docs/ui-references/tunai-landing-page/comparisons/03-trust-certificate-network-implementation.png
+docs/ui-references/tunai-landing-page/comparisons/04-dashboard-preview-implementation.png
+docs/ui-references/tunai-landing-page/comparisons/05-use-cases-implementation.png
+docs/ui-references/tunai-landing-page/comparisons/06-developer-integration-cta-footer-implementation.png

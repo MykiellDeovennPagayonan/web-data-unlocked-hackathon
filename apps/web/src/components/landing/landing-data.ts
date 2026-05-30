@@ -75,10 +75,18 @@ export const incomingEntities = [
 ];
 
 export const gatewayChecks = [
-  { label: "Identity Verification", detail: "Valid and authentic", icon: UserCheck },
+  {
+    label: "Identity Verification",
+    detail: "Valid and authentic",
+    icon: UserCheck,
+  },
   { label: "Risk Analysis", detail: "Behavior and context", icon: Network },
   { label: "Behavior Signals", detail: "Activity patterns", icon: Workflow },
-  { label: "Reputation Check", detail: "Threat intelligence", icon: ShieldAlert },
+  {
+    label: "Reputation Check",
+    detail: "Threat intelligence",
+    icon: ShieldAlert,
+  },
   { label: "Policy Evaluation", detail: "Access policies", icon: LockKeyhole },
 ];
 
@@ -126,7 +134,14 @@ export const decisions: Array<{
   },
 ];
 
-export const partners = ["Microsoft", "aws", "Google Cloud", "okta", "Cloudflare", "Gartner"];
+export const partners = [
+  "Microsoft",
+  "aws",
+  "Google Cloud",
+  "okta",
+  "Cloudflare",
+  "Gartner",
+];
 
 export const trustSteps = [
   {
@@ -146,7 +161,7 @@ export const trustSteps = [
   {
     number: "3",
     title: "Make the Right Call",
-    body: "Automatically recommend the right action-or apply your policy-to allow, verify, review, limit, or block.",
+    body: "Automatically recommend the right action—or apply your policy—to allow, verify, review, limit, or block.",
     pill: "Policy-driven decisions",
     diagram: "fanout",
   },
@@ -194,28 +209,132 @@ export const dashboardFeatures = [
 ];
 
 export const mockMetrics = [
-  { label: "ACCESS EVENTS", value: "1.24M", delta: "12.5%", icon: Network, tone: "blue" },
-  { label: "IDENTITIES", value: "18,392", delta: "8.1%", icon: UserRound, tone: "blue" },
-  { label: "RISKY EVENTS", value: "2,847", delta: "15.3%", icon: ShieldAlert, tone: "red" },
-  { label: "BLOCKED EVENTS", value: "732", delta: "6.2%", icon: LockKeyhole, tone: "red" },
-  { label: "TRUST SCORE (AVG)", value: "78", delta: "5 pts", icon: Gauge, tone: "blue" },
+  {
+    label: "ACCESS EVENTS",
+    value: "1.24M",
+    delta: "12.5%",
+    icon: Network,
+    tone: "blue",
+  },
+  {
+    label: "IDENTITIES",
+    value: "18,392",
+    delta: "8.1%",
+    icon: UserRound,
+    tone: "blue",
+  },
+  {
+    label: "RISKY EVENTS",
+    value: "2,847",
+    delta: "15.3%",
+    icon: ShieldAlert,
+    tone: "red",
+  },
+  {
+    label: "BLOCKED EVENTS",
+    value: "732",
+    delta: "6.2%",
+    icon: LockKeyhole,
+    tone: "red",
+  },
+  {
+    label: "TRUST SCORE (AVG)",
+    value: "78",
+    delta: "5 pts",
+    icon: Gauge,
+    tone: "blue",
+  },
 ];
 
 export const mockEvents = [
-  ["14:32:11", "jane.doe@acme.com", "203.0.113.45", "LOGIN", "CRITICAL", "12", "RU Moscow", "Chrome 125"],
-  ["14:31:45", "service-account-1", "198.51.100.23", "API ACCESS", "LOW", "85", "US New York", "AkamaiWP.21"],
-  ["14:31:02", "mobile_user_392", "45.73.32.11", "LOGIN", "MEDIUM", "56", "GB London", "iOS 17.5"],
-  ["14:30:18", "admin@acme.com", "203.0.113.85", "ADMIN ACTION", "LOW", "92", "US San Francisco", "Chrome 125"],
-  ["14:30:18", "api-user", "185.199.110.153", "API ACCESS", "HIGH", "18", "BR Sao Paulo", "curl/8.5.0"],
-  ["14:28:35", "batch@acme.com", "192.0.2.77", "DATA EXPORT", "MEDIUM", "43", "CA Toronto", "Chrome 125"],
+  [
+    "14:32:11",
+    "jane.doe@acme.com",
+    "203.0.113.45",
+    "LOGIN",
+    "CRITICAL",
+    "12",
+    "RU Moscow",
+    "Chrome 125",
+  ],
+  [
+    "14:31:45",
+    "service-account-1",
+    "198.51.100.23",
+    "API ACCESS",
+    "LOW",
+    "85",
+    "US New York",
+    "AkamaiWP.21",
+  ],
+  [
+    "14:31:02",
+    "mobile_user_392",
+    "45.73.32.11",
+    "LOGIN",
+    "MEDIUM",
+    "56",
+    "GB London",
+    "iOS 17.5",
+  ],
+  [
+    "14:30:18",
+    "admin@acme.com",
+    "203.0.113.85",
+    "ADMIN ACTION",
+    "LOW",
+    "92",
+    "US San Francisco",
+    "Chrome 125",
+  ],
+  [
+    "14:30:18",
+    "api-user",
+    "185.199.110.153",
+    "API ACCESS",
+    "HIGH",
+    "18",
+    "BR Sao Paulo",
+    "curl/8.5.0",
+  ],
+  [
+    "14:28:35",
+    "batch@acme.com",
+    "192.0.2.77",
+    "DATA EXPORT",
+    "MEDIUM",
+    "43",
+    "CA Toronto",
+    "Chrome 125",
+  ],
 ];
 
 export const pendingReviews = [
-  ["Critical login from new ASN", "infra-id@acme.com - 203.0.113.45", "2m ago", "critical"],
-  ["Impossible travel detected", "admin@acme.com - US -> DE", "11m ago", "medium"],
-  ["High volume data export", "backup@acme.com - 192.0.2.77", "11m ago", "critical"],
+  [
+    "Critical login from new ASN",
+    "infra-id@acme.com - 203.0.113.45",
+    "2m ago",
+    "critical",
+  ],
+  [
+    "Impossible travel detected",
+    "admin@acme.com - US -> DE",
+    "11m ago",
+    "medium",
+  ],
+  [
+    "High volume data export",
+    "backup@acme.com - 192.0.2.77",
+    "11m ago",
+    "critical",
+  ],
   ["New device seen", "contractor.user - iPhone iOS 17.5", "26m ago", "medium"],
-  ["Unusual API activity", "service-account-1 - 198.51.100.23", "34m ago", "medium"],
+  [
+    "Unusual API activity",
+    "service-account-1 - 198.51.100.23",
+    "34m ago",
+    "medium",
+  ],
 ];
 
 export const riskRows = [
@@ -318,8 +437,22 @@ export const codeLines = [
 ];
 
 export const footerColumns = [
-  ["PRODUCT", "Trust Gateway", "Risk Signals", "Use Cases", "Integrations", "Pricing"],
+  [
+    "PRODUCT",
+    "Trust Gateway",
+    "Risk Signals",
+    "Use Cases",
+    "Integrations",
+    "Pricing",
+  ],
   ["RESOURCES", "Developer Docs", "API Reference", "Guides", "Blog", "Status"],
   ["COMPANY", "About Tunai", "Careers", "Customers", "Partners", "Contact"],
-  ["LEGAL", "Privacy Policy", "Terms of Service", "Data Processing Agreement", "Security", "Compliance"],
+  [
+    "LEGAL",
+    "Privacy Policy",
+    "Terms of Service",
+    "Data Processing Agreement",
+    "Security",
+    "Compliance",
+  ],
 ];
