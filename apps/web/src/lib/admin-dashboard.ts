@@ -18,7 +18,7 @@ export type DashboardLoadResult = {
   connectionState: DashboardConnectionState;
 };
 
-const apiBaseUrl =
+export const apiBaseUrl =
   process.env.TUNAI_API_BASE_URL ??
   process.env.NEXT_PUBLIC_API_BASE_URL ??
   "http://localhost:8090";
@@ -351,9 +351,9 @@ function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
-function formatSigned(value: number): string {
+export function formatSigned(value: number): string {
   if (value > 0) {
-    return `${value}`;
+    return `+${value}`;
   }
 
   if (value < 0) {

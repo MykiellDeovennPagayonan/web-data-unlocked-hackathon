@@ -27,6 +27,9 @@ export class IdentitiesService {
   getIdentityByEmailHash = (hash: string): Promise<Identity | null> =>
     getIdentityByEmailHash(this.repository, hash);
 
+  listIdentities = (take?: number, skip?: number): Promise<Identity[]> =>
+    this.repository.findMany(take, skip);
+
   updateTrustStatus = (
     id: string,
     status: UpdateIdentityData['trustStatus'],

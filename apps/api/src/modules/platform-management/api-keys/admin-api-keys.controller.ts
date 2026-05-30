@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { ApiKeysService } from './api-keys.service';
 import { CreateApiKeyDto } from './dto/create-api-key.dto';
 import { ApiKey } from './entities/api-key.entity';
@@ -16,6 +16,14 @@ interface ApiKeyResponse {
 @Controller('admin/api-keys')
 export class AdminApiKeysController {
   constructor(private readonly apiKeysService: ApiKeysService) {}
+
+  @Get('platforms/:platformId')
+  async listApiKeysByPlatform(
+    @Param('platformId') platformId: string,
+  ): Promise<ApiKeyResponse[]> {
+    const keys = await this.apiKeysService.listApiKeysByPlatform(platformId);
+    return keys.map((k) => this.mapToResponse(k));
+  }
 
   @Post('platforms/:platformId')
   async createApiKeyForPlatform(

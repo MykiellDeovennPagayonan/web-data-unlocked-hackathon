@@ -162,6 +162,7 @@ describe('A. Platform Management (e2e)', () => {
     it('A.2.3 revokes api key', async () => {
       const res = await request(testApp.app.getHttpServer())
         .delete(`/v1/platform/api-keys/${newKeyId}`)
+        .set('x-api-key', apiKey)
         .expect(200);
 
       expect(res.body.revokedAt).not.toBeNull();

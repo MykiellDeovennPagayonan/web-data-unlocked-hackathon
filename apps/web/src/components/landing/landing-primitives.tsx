@@ -181,10 +181,12 @@ export function StatusPill({
 export function TrustScoreRing({
   value = 78,
   size = 78,
+  showValue = true,
   className,
 }: {
   value?: number;
   size?: number;
+  showValue?: boolean;
   className?: string;
 }) {
   const radius = 31;
@@ -221,9 +223,11 @@ export function TrustScoreRing({
           strokeWidth="8.5"
         />
       </svg>
-      <span className="text-center text-[22px] font-extrabold leading-none text-[#071b4d]">
-        {value}
-      </span>
+      {showValue ? (
+        <span className="text-center text-[22px] font-extrabold leading-none text-[#071b4d]">
+          {value}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -243,33 +247,55 @@ export function DecisionCard({
   icon: ComponentType<{ className?: string }>;
   className?: string;
 }) {
-  const styles: Record<DecisionTone, string> = {
-    allow: "border-emerald-300 bg-emerald-50/40 text-emerald-600",
-    verify: "border-blue-300 bg-blue-50/35 text-blue-600",
-    review: "border-amber-300 bg-amber-50/35 text-amber-500",
-    limit: "border-orange-300 bg-orange-50/40 text-orange-500",
-    block: "border-red-300 bg-red-50/40 text-red-500",
+  const cardBorder: Record<DecisionTone, string> = {
+    allow: "border border-[#bbf7d0]",
+    verify: "border border-[#bfdbfe]",
+    review: "border border-[#fde68a]",
+    limit: "border border-[#fed7aa]",
+    block: "border border-[#fecaca]",
+  };
+
+  const cardBg: Record<DecisionTone, string> = {
+    allow: "",
+    verify: "",
+    review: "",
+    limit: "",
+    block: "",
+  };
+
+  const iconBg: Record<DecisionTone, string> = {
+    allow: "bg-emerald-50 text-emerald-600",
+    verify: "bg-blue-50 text-blue-600",
+    review: "bg-amber-50 text-amber-500",
+    limit: "bg-orange-50 text-orange-500",
+    block: "bg-red-50 text-red-500",
   };
 
   return (
     <article
       className={cn(
-        "flex items-center gap-4 rounded-xl border bg-white px-5 py-4 shadow-[0_8px_24px_rgba(11,27,77,0.035)]",
-        styles[tone],
+        "flex items-center gap-3 rounded-xl bg-white px-4 py-2.5 shadow-[0_8px_24px_rgba(11,27,77,0.035)]",
+        cardBorder[tone],
+        cardBg[tone],
         className,
       )}
     >
-      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-current/10">
-        <Icon className="size-6 stroke-[2.2]" aria-hidden="true" />
+      <span
+        className={cn(
+          "grid size-10 shrink-0 place-items-center rounded-full",
+          iconBg[tone],
+        )}
+      >
+        <Icon className="size-5 stroke-[2.2]" aria-hidden="true" />
       </span>
       <span className="min-w-0">
-        <span className="block text-[14px] font-extrabold text-[#071b4d]">
+        <span className="block text-[13px] font-extrabold text-[#071b4d]">
           {label}
         </span>
-        <span className="mt-1 block text-[12px] font-medium leading-5 text-[#465d8b]">
+        <span className="mt-0.5 block text-[11px] font-medium leading-[1.35] text-[#465d8b]">
           {detail}
         </span>
-        <span className="block text-[12px] font-medium leading-5 text-[#465d8b]">
+        <span className="block text-[11px] font-medium leading-[1.35] text-[#465d8b]">
           {subdetail}
         </span>
       </span>

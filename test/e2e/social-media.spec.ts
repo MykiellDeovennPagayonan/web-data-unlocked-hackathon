@@ -19,7 +19,7 @@ test.describe('Social Media E2E Flow', () => {
     // ========== INDIVIDUAL FLOW ==========
     // 1. Navigate to individual signup
     await page.goto(`${SOCIAL_MEDIA.url}/signup`)
-    await expect(page.locator('text=Create Account').first()).toBeVisible()
+    await expect(page.locator('text=Join Publish.').first()).toBeVisible()
 
     // 2. Fill individual signup form
     await signupIndividual(page, SOCIAL_MEDIA.individual)
@@ -29,7 +29,7 @@ test.describe('Social Media E2E Flow', () => {
     // 3. Login as individual
     await login(page, SOCIAL_MEDIA.individual.email, SOCIAL_MEDIA.individual.password)
     await waitForUrl(page, '/feed')
-    await expect(page.locator('text=Feed').first()).toBeVisible()
+    await expect(page.locator('text=For you').first()).toBeVisible()
 
     // 4. Navigate to Alice's profile to see seeded posts (feed only shows followed users)
     await page.goto(`${SOCIAL_MEDIA.url}/profile/Alice Seed`)
@@ -40,7 +40,7 @@ test.describe('Social Media E2E Flow', () => {
 
     // 5. Like Alice's post from her profile
     const alicePost = page.locator('text=Hello from Alice!').first()
-    const likeButton = alicePost.locator('xpath=ancestor::div[contains(@class,"bg-surface")]//button[contains(.,"♡")]').first()
+    const likeButton = alicePost.locator('xpath=ancestor::article[1]//button').first()
     await likeButton.click()
 
     // 6. Follow Alice
@@ -52,12 +52,12 @@ test.describe('Social Media E2E Flow', () => {
     // 7. Go back to feed to create a new post
     await page.goto(`${SOCIAL_MEDIA.url}/feed`)
     await waitForUrl(page, '/feed')
-    await page.click('text=New Post')
+    await page.click('text=Write a story')
     await waitForUrl(page, '/post/create')
-    await expect(page.locator('text=Create Post').first()).toBeVisible()
+    await expect(page.locator('text=Publish').first()).toBeVisible()
 
-    await page.fill('textarea[placeholder="What\'s on your mind?"]', SOCIAL_MEDIA.newPost.content)
-    await page.click('button:has-text("Post")')
+    await page.fill('textarea[placeholder="Tell your story..."]', SOCIAL_MEDIA.newPost.content)
+    await page.click('button:has-text("Publish")')
     await expect(page.locator(`text=${SOCIAL_MEDIA.newPost.content}`).first()).toBeVisible()
 
     // 8. Logout
@@ -67,7 +67,7 @@ test.describe('Social Media E2E Flow', () => {
     // ========== ORGANIZATION FLOW ==========
     // 11. Navigate to organization signup
     await page.goto(`${SOCIAL_MEDIA.url}/signup/organization`)
-    await expect(page.locator('text=Create Organization Account').first()).toBeVisible()
+    await expect(page.locator('text=Register your organization.').first()).toBeVisible()
 
     // 12. Fill organization signup form
     await signupOrganization(page, SOCIAL_MEDIA.organization)

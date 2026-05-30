@@ -241,7 +241,7 @@ function MobileHeroGatewayDiagram() {
               >
                 <IconTile
                   icon={check.icon}
-                  className="size-7 rounded-md [&_svg]:size-4"
+                  className="size-7 rounded-full [&_svg]:size-4"
                 />
                 <span className="min-w-0 flex-1 text-[11px] font-extrabold text-[#071b4d]">
                   {check.label}
@@ -263,7 +263,7 @@ function MobileHeroGatewayDiagram() {
           <DecisionCard
             key={decision.label}
             {...decision}
-            className="min-h-[86px] px-4 py-3"
+            className="min-h-[86px] px-4 py-3 shadow-none"
           />
         ))}
       </div>
@@ -273,117 +273,65 @@ function MobileHeroGatewayDiagram() {
 
 function HeroTrustGatewayDiagramDesktop() {
   return (
-    <div className="relative hidden min-h-[640px] overflow-visible pb-4 xl:block">
-      <div className="relative grid min-w-[820px] grid-cols-[202px_1fr_266px] items-center gap-[68px]">
+    <div className="relative mx-auto hidden h-full w-[760px] overflow-visible xl:block">
+      <div className="relative grid h-full w-full grid-cols-[180px_260px_220px] items-center gap-[36px]">
         <div>
           <div className="mb-3 text-center text-[12px] font-bold text-[#54658a]">
             Incoming Entities
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {incomingEntities.map((entity) => (
               <IncomingEntityCard key={entity.label} {...entity} />
             ))}
           </div>
         </div>
         <GatewayEvaluationPanel />
-        <div>
-          <div className="mb-5 text-center text-[12px] font-bold text-[#54658a]">
+        <div className="relative z-10">
+          <div className="mb-3 text-center text-[12px] font-bold text-[#54658a]">
             Access Decision
           </div>
-          <div className="space-y-6">
+          <div className="space-y-2">
             {decisions.map((decision) => (
               <DecisionCard
                 key={decision.label}
                 {...decision}
-                className="h-[88px]"
+                className="h-[86px] px-4 py-2 shadow-none"
               />
             ))}
           </div>
         </div>
         <svg
           className="pointer-events-none absolute inset-0 h-full w-full"
-          viewBox="0 0 820 640"
+          viewBox="0 0 760 460"
           aria-hidden="true"
         >
-          <path
-            d="M202 132 H234 Q246 132 246 156 V304 Q246 326 268 326 H286"
-            fill="none"
-            stroke="#72a8ff"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <path
-            d="M202 250 H238 Q246 250 246 272 V304"
-            fill="none"
-            stroke="#72a8ff"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <path
-            d="M202 368 H246"
-            fill="none"
-            stroke="#72a8ff"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <path
-            d="M202 486 H238 Q246 486 246 462 V304"
-            fill="none"
-            stroke="#72a8ff"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <path
-            d="M488 326 H535"
-            fill="none"
-            stroke="#72a8ff"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <path
-            d="M535 326 V142 Q535 120 557 120 H585"
-            fill="none"
-            stroke="#72a8ff"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <path
-            d="M535 326 V242 Q535 220 557 220 H585"
-            fill="none"
-            stroke="#72a8ff"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <path
-            d="M535 326 H585"
-            fill="none"
-            stroke="#72a8ff"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <path
-            d="M535 326 V432 Q535 454 557 454 H585"
-            fill="none"
-            stroke="#ffb27a"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <path
-            d="M535 326 V542 Q535 564 557 564 H585"
-            fill="none"
-            stroke="#ff7d8a"
-            strokeDasharray="4 5"
-            strokeWidth="2"
-          />
-          <circle cx="265" cy="326" r="14" fill="#0b6ff6" />
-          <circle cx="535" cy="326" r="14" fill="#0b6ff6" />
-          <path
-            d="M260 326h10m-4-4 4 4-4 4M530 326h10m-4-4 4 4-4 4"
-            stroke="#fff"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.8"
-          />
+          {/* Entity → Gateway curved converging lines */}
+          <path d="M180 65 H190 Q198 65 198 113 V225" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+          <path d="M180 145 H190 Q198 145 198 185 V225" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+          <path d="M180 225 H198" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+          <path d="M180 305 H190 Q198 305 198 265 V225" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+          <path d="M180 385 H190 Q198 385 198 337 V225" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+
+          {/* Arrow node → Gateway */}
+          <path d="M210 225 L216 225" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+
+          {/* Gateway → Right arrow node */}
+          <path d="M476 225 L482 225" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+
+          {/* Right arrow → Decisions curved diverging lines */}
+          <path d="M494 225 V113 Q494 65 502 65 H512" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+          <path d="M494 225 V185 Q494 145 502 145 H512" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+          <path d="M494 225 H512" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+          <path d="M494 225 V265 Q494 305 502 305 H512" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+          <path d="M494 225 V337 Q494 385 502 385 H512" fill="none" stroke="#155DFC" strokeDasharray="3 3" strokeWidth="1" />
+
+          {/* Left arrow node (rendered last so it's on top) */}
+          <circle cx="198" cy="225" r="12" fill="#3b82f6" />
+          <path d="M194 225 L200 225 M197 222 L200 225 L197 228" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
+          {/* Right arrow node (rendered last so it's on top) */}
+          <circle cx="494" cy="225" r="12" fill="#3b82f6" />
+          <path d="M490 225 L496 225 M493 222 L496 225 L493 228" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
     </div>
@@ -411,21 +359,24 @@ function IncomingEntityCard({
   return (
     <article
       className={cn(
-        "relative z-10 flex items-center gap-4 rounded-xl border border-[#dce8f7] bg-white px-4 shadow-[0_9px_26px_rgba(11,27,77,0.05)]",
-        compact ? "min-h-[82px] py-3" : "h-[96px]",
+        "relative z-10 flex items-center gap-3 rounded-xl border border-[#dce8f7] bg-white px-3.5 shadow-[0_9px_26px_rgba(11,27,77,0.05)]",
+        compact ? "h-[86px] py-2" : "h-[86px] py-2",
       )}
     >
       <IconTile
         icon={icon}
         tone={badgeTone}
-        className="size-[52px] rounded-full"
+        className="size-10 rounded-full"
       />
-      <div>
-        <div className="text-[14px] font-extrabold text-[#071b4d]">{label}</div>
-        <div className="mt-2 whitespace-pre-line text-[11px] font-medium leading-4 text-[#526991]">
+      <div className="min-w-0 flex-1">
+        <div className="text-[13px] font-extrabold text-[#071b4d]">{label}</div>
+        <div className="mt-0.5 whitespace-pre-line text-[10px] font-medium leading-[1.3] text-[#526991]">
           {value}
         </div>
-        <StatusPill tone={badgeTone} className="mt-1 py-0.5 text-[10px]">
+        <StatusPill
+          tone={badgeTone}
+          className="mt-1 w-fit py-0.5 text-[10px]"
+        >
           {badge}
         </StatusPill>
       </div>
@@ -435,18 +386,29 @@ function IncomingEntityCard({
 
 function GatewayEvaluationPanel() {
   return (
-    <article className="relative z-10 h-[596px] rounded-2xl border border-blue-300 bg-white p-5 text-center shadow-[0_16px_44px_rgba(11,111,246,0.09)]">
+    <article className="relative z-10 rounded-2xl border border-blue-300 bg-[#fbfdff] p-4 text-center shadow-[0_16px_44px_rgba(11,111,246,0.09)]">
       <BrandLogo className="justify-center gap-3" />
-      <div className="mt-6 text-[17px] font-bold text-blue-600">
+      <div className="mt-3 text-[16px] font-extrabold text-blue-600">
         Trust Gateway
       </div>
-      <div className="relative mx-auto mt-4 grid h-[170px] place-items-center">
+      <div className="mt-1 text-[11px] font-semibold text-[#607196]">
+        Identity and policy evaluation
+      </div>
+      <div className="relative mx-auto mt-2 grid h-[120px] place-items-center">
         <svg
           className="absolute inset-0 h-full w-full"
           viewBox="0 0 170 170"
           aria-hidden="true"
         >
-          {[36, 52, 68, 84].map((r, index) => (
+          <defs>
+            <filter id="shieldGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="0" stdDeviation="12" floodColor="#155DFC" floodOpacity="0.35" />
+            </filter>
+          </defs>
+          {/* Soft glow behind center with shadow */}
+          <circle cx="85" cy="85" r="36" fill="#eef5ff" opacity="0.6" filter="url(#shieldGlow)" />
+          {/* Outer dashed circles (3 remaining) */}
+          {[52, 68, 84].map((r, index) => (
             <circle
               key={r}
               cx="85"
@@ -459,19 +421,19 @@ function GatewayEvaluationPanel() {
             />
           ))}
         </svg>
-        <span className="grid size-[74px] place-items-center rounded-full bg-white text-blue-600 shadow-[0_12px_28px_rgba(11,27,77,0.08)]">
-          <ShieldCheck className="size-9 stroke-[2.2]" aria-hidden="true" />
+        <span className="grid size-14 place-items-center rounded-full bg-white">
+          <ShieldCheck className="size-7 stroke-[2.2]" style={{ color: '#155DFC' }} aria-hidden="true" />
         </span>
       </div>
-      <div className="mt-3 space-y-2">
+      <div className="mt-2 space-y-1">
         {gatewayChecks.map((check) => (
           <div
             key={check.label}
-            className="flex h-[48px] items-center gap-3 rounded-lg border border-[#e2eaf6] bg-white px-3 text-left shadow-[0_6px_18px_rgba(11,27,77,0.035)]"
+            className="flex items-center gap-3 rounded-lg border border-[#e2eaf6] bg-white px-3 py-1.5 text-left shadow-[0_6px_18px_rgba(11,27,77,0.035)]"
           >
             <IconTile
               icon={check.icon}
-              className="size-7 rounded-md [&_svg]:size-4"
+              className="size-7 rounded-full [&_svg]:size-4"
             />
             <div className="min-w-0 flex-1">
               <div className="text-[12px] font-extrabold text-[#071b4d]">
@@ -485,14 +447,14 @@ function GatewayEvaluationPanel() {
           </div>
         ))}
       </div>
-      <div className="mt-4 flex h-[64px] items-center justify-between rounded-lg bg-[#eef5ff] px-5">
-        <span className="text-[14px] font-extrabold text-[#071b4d]">
+      <div className="mt-2 flex h-11 items-center justify-between rounded-lg bg-[#eef5ff] px-4">
+        <span className="text-[12px] font-extrabold text-[#071b4d]">
           Trust Score
         </span>
         <span className="flex items-center gap-2">
-          <span className="text-[31px] font-extrabold">78</span>
-          <span className="text-[13px] font-bold text-[#607196]">/100</span>
-          <TrustScoreRing value={78} size={54} />
+          <span className="text-[24px] font-extrabold">78</span>
+          <span className="text-[11px] font-bold text-[#607196]">/100</span>
+          <TrustScoreRing value={78} size={40} showValue={false} />
         </span>
       </div>
     </article>

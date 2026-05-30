@@ -37,6 +37,27 @@ export class VerificationRequestsController {
     });
   }
 
+  @Get('admin/compliance/verification-requests')
+  listAdmin(
+    @Query('identityId') identityId?: string,
+    @Query('platformId') platformId?: string,
+    @Query('status') status?: VerificationStatus,
+    @Query('verificationType') verificationType?: VerificationType,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<VerificationRequest[]> {
+    const parsedLimit = limit ? parseInt(limit, 10) : undefined;
+    const parsedOffset = offset ? parseInt(offset, 10) : undefined;
+    return this.verificationRequestsService.listRequests({
+      identityId,
+      platformId,
+      status,
+      verificationType,
+      limit: Number.isFinite(parsedLimit) ? parsedLimit : undefined,
+      offset: Number.isFinite(parsedOffset) ? parsedOffset : undefined,
+    });
+  }
+
   @Get('v1/compliance/verification-requests')
   @UseGuards(ApiKeyGuard)
   list(

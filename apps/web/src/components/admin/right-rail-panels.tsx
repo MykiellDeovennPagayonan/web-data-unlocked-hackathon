@@ -49,7 +49,7 @@ export function PendingReviewsPanel({
           </div>
         )}
       </div>
-      <PanelLink label="View all pending reviews" />
+      <PanelLink label="View all pending reviews" href="/admin/pending-reviews" />
     </section>
   );
 }
@@ -81,7 +81,6 @@ export function AiInsightsPanel({ insights }: { insights: string[] }) {
           </div>
         )}
       </div>
-      <PanelLink label="View all insights" />
     </section>
   );
 }
@@ -122,7 +121,7 @@ export function WebhookDeliveryPanel({ webhook }: { webhook: WebhookHealth }) {
       </div>
 
       <a
-        href="#"
+        href="/admin/webhook-logs"
         className="mt-2 inline-flex items-center gap-2 text-[12px] font-semibold text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
       >
         View webhook logs
@@ -145,10 +144,10 @@ function PanelHeader({ title, trailing }: { title: string; trailing?: string }) 
   );
 }
 
-function PanelLink({ label }: { label: string }) {
+function PanelLink({ label, href = "#" }: { label: string; href?: string }) {
   return (
     <a
-      href="#"
+      href={href}
       className="mx-5 mb-4 inline-flex items-center gap-2 text-[12px] font-semibold text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
     >
       {label}

@@ -171,7 +171,7 @@ export function DistributionPanel({
         </div>
       </div>
       <a
-        href="#"
+        href={type === "cert" ? "/admin/certificates" : "#"}
         className="mt-3 inline-flex items-center gap-2 text-[12px] font-semibold text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
       >
         {linkLabel}

@@ -3,6 +3,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { insertIdentity } from './repository-ops/insert-identity';
 import { findIdentityById } from './repository-ops/find-identity-by-id';
 import { findIdentityByEmailHash } from './repository-ops/find-identity-by-email-hash';
+import { findManyIdentities } from './repository-ops/find-many-identities';
 import { updateIdentity } from './repository-ops/update-identity';
 import {
   CreateIdentityData,
@@ -22,6 +23,9 @@ export class IdentitiesRepository {
 
   findByEmailHash = (hash: string): Promise<Identity | null> =>
     findIdentityByEmailHash(this.prisma, hash);
+
+  findMany = (take?: number, skip?: number): Promise<Identity[]> =>
+    findManyIdentities(this.prisma, take, skip);
 
   update = (id: string, data: UpdateIdentityData): Promise<Identity> =>
     updateIdentity(this.prisma, id, data);

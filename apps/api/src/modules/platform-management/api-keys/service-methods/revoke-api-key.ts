@@ -8,6 +8,11 @@ export async function revokeApiKey(
   auditLogsService: AuditLogsService,
   id: string,
 ): Promise<ApiKey> {
+  const existing = await repository.findById(id);
+  if (!existing) {
+    throw new Error(`API key not found: ${id}`);
+  }
+
   const old = await repository.update(id, { revokedAt: new Date() });
 
   await auditLogsService.logAction({
