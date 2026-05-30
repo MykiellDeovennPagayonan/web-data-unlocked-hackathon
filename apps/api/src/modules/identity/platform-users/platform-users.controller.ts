@@ -36,15 +36,10 @@ export class PlatformUsersController {
         platformId,
       });
     } catch (error) {
-      console.log(
-        `[FLOW2] Controller caught error:`,
-        error instanceof Error ? error.message : error,
-      );
       if (
         error instanceof SuspiciousEmailDomainError ||
         error instanceof SuspiciousEmailPatternError
       ) {
-        console.log(`[FLOW2] Throwing 403: ${(error as Error).message}`);
         throw new ForbiddenException((error as Error).message);
       }
       throw error;

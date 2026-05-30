@@ -52,24 +52,17 @@ export class SuspiciousEmailPatternError extends Error {
 
 function checkEmailDomain(email: string): void {
   const domain = email.split('@')[1]?.toLowerCase();
-  console.log(`[FLOW2] checkEmailDomain: email=${email}, domain=${domain}`);
   if (!domain) return;
   const threatScore = SUSPICIOUS_EMAIL_DOMAINS[domain];
-  console.log(`[FLOW2] domain=${domain}, threatScore=${threatScore ?? 'none'}`);
   if (threatScore !== undefined) {
-    console.log(`[FLOW2] BLOCKING domain=${domain} (score=${threatScore})`);
     throw new SuspiciousEmailDomainError(domain, threatScore);
   }
 }
 
 function checkEmailPattern(email: string): void {
   const localPart = email.split('@')[0]?.toLowerCase();
-  console.log(
-    `[FLOW2] checkEmailPattern: email=${email}, localPart=${localPart}`,
-  );
   if (!localPart) return;
   if (localPart.includes('test')) {
-    console.log(`[FLOW2] BLOCKING pattern 'test' in ${email}`);
     throw new SuspiciousEmailPatternError('test', 85);
   }
 }
@@ -106,8 +99,6 @@ export class PlatformUsersService {
         'Either identityId or email/encryptedEmail/encryptedFullName must be provided',
       );
     }
-
-    console.log(`[FLOW2] createPlatformUser called with email=${input.email}`);
 
     // Check email domain against hardcoded suspicious domain list
     checkEmailDomain(input.email);

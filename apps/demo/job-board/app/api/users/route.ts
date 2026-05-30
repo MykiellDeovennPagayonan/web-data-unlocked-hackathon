@@ -83,8 +83,10 @@ export async function POST(request: NextRequest) {
         // Hard block if trust score drops below threshold
         try {
           const platformUser = await tl.getPlatformUser(user.id)
-          if (platformUser.identityId) {
+          console.log(`[FLOW1-DEBUG] JobBoard platformUser for ${user.id}:`, platformUser)
+          if (platformUser?.identityId) {
             const score = await tl.getTrustScore("identity", platformUser.identityId)
+            console.log(`[FLOW1-DEBUG] JobBoard trust score for identity ${platformUser.identityId}:`, score)
             if (score.score < 10) {
               await prisma.user.delete({ where: { id: user.id } })
               return NextResponse.json(
@@ -92,6 +94,8 @@ export async function POST(request: NextRequest) {
                 { status: 403 }
               )
             }
+          } else {
+            console.log(`[FLOW1-DEBUG] JobBoard platformUser has no identityId`)
           }
         } catch (err) {
           console.error("[TrustLayer] Hard block check failed:", err)

@@ -63,75 +63,49 @@ export async function POST(request: NextRequest) {
     })
 
     if (role === "INDIVIDUAL") {
-      const certificateHash = profileData.certificateHash as string | undefined
-      if (certificateHash) {
-        try {
-          const result = await tl.verifyCertificate(certificateHash, process.env.TRUSTLAYER_PLATFORM_ID ?? "")
-          if (result.valid && result.entityType === "identity") {
-            await prisma.user.update({
-              where: { id: user.id },
-              data: { isVerified: true },
-            })
-          } else {
-            await prisma.user.delete({ where: { id: user.id } })
-            return NextResponse.json(
-              { message: "Invalid or expired certificate." },
-              { status: 400 }
-            )
-          }
-        } catch (tlErr) {
-          console.error("[TrustLayer] certificate verification failed:", tlErr)
-          await prisma.user.delete({ where: { id: user.id } })
-          return NextResponse.json(
-            { message: "Certificate verification failed. Please try again." },
-            { status: 400 }
+      const deviceSignals = (profileData.deviceFingerprint as Array<{ signalType: string; value: string }> | undefined) ?? []
+      try {
+        const enrolled = await tl.enrollIndividual({
+          email,
+          fullName: name,
+          externalUserId: user.id,
+        })
+        if (deviceSignals.length > 0) {
+          await tl.resolveDevice(
+            deviceSignals.map((s) => ({
+              signalType: s.signalType as "canvas_hash" | "webgl_hash" | "screen_resolution" | "os" | "timezone" | "user_agent" | "language",
+              value: s.value,
+            })),
+            enrolled.identityId
           )
         }
-      } else {
-        const deviceSignals = (profileData.deviceFingerprint as Array<{ signalType: string; value: string }> | undefined) ?? []
-        try {
-          const enrolled = await tl.enrollIndividual({
-            email,
-            fullName: name,
-            externalUserId: user.id,
-          })
-          if (deviceSignals.length > 0) {
-            await tl.resolveDevice(
-              deviceSignals.map((s) => ({
-                signalType: s.signalType as "canvas_hash" | "webgl_hash" | "screen_resolution" | "os" | "timezone" | "user_agent" | "language",
-                value: s.value,
-              })),
-              enrolled.identityId
-            )
-          }
-        } catch (tlErr) {
-          // Handle hard blocks from TrustLayer (e.g. suspicious email domain or pattern)
-          if (tlErr instanceof TunaiError && tlErr.status === 403) {
+      } catch (tlErr) {
+        // Handle hard blocks from TrustLayer (e.g. suspicious email domain or pattern)
+        if (tlErr instanceof TunaiError && tlErr.status === 403) {
+          await prisma.user.delete({ where: { id: user.id } })
+          return NextResponse.json(
+            { message: tlErr.cleanMessage },
+            { status: 403 }
+          )
+        }
+        console.error("[TrustLayer] registerUser failed (non-fatal):", tlErr)
+      }
+
+      // Hard block if trust score drops below threshold
+      try {
+        const platformUser = await tl.getPlatformUser(user.id)
+        if (platformUser.identityId) {
+          const score = await tl.getTrustScore("identity", platformUser.identityId)
+          if (score.score < 10) {
             await prisma.user.delete({ where: { id: user.id } })
             return NextResponse.json(
-              { message: tlErr.cleanMessage },
+              { message: "You have been flagged for suspicious activity." },
               { status: 403 }
             )
           }
-          console.error("[TrustLayer] registerUser failed (non-fatal):", tlErr)
         }
-
-        // Hard block if trust score drops below threshold
-        try {
-          const platformUser = await tl.getPlatformUser(user.id)
-          if (platformUser.identityId) {
-            const score = await tl.getTrustScore("identity", platformUser.identityId)
-            if (score.score < 10) {
-              await prisma.user.delete({ where: { id: user.id } })
-              return NextResponse.json(
-                { message: "You have been flagged for suspicious activity." },
-                { status: 403 }
-              )
-            }
-          }
-        } catch (err) {
-          console.error("[TrustLayer] Hard block check failed:", err)
-        }
+      } catch (err) {
+        console.error("[TrustLayer] Hard block check failed:", err)
       }
     }
 

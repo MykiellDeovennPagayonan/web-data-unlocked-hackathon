@@ -43,7 +43,6 @@ export default function IndividualSignup() {
       bio: (formData.get("bio") as string) || undefined,
       location: (formData.get("location") as string) || undefined,
       website: (formData.get("website") as string) || undefined,
-      certificateHash: (formData.get("certificateHash") as string) || undefined,
       deviceFingerprint,
     }
 
@@ -139,19 +138,6 @@ export default function IndividualSignup() {
             disabled={isLoading}
             className="bg-surface-muted border-border-light focus:border-kaggle-blue h-10"
           />
-        </div>
-        <div className="space-y-2">
-          <Input
-            id="certificateHash"
-            name="certificateHash"
-            type="text"
-            placeholder="TrustLayer Certificate Hash (optional)"
-            disabled={isLoading}
-            className="bg-surface-muted border-border-light focus:border-kaggle-blue h-10"
-          />
-          <p className="text-xs text-text-secondary">
-            Already verified? Present your TrustLayer Certificate to skip onboarding friction.
-          </p>
         </div>
         {error && (
           <div className="text-sm text-destructive text-center">{error}</div>

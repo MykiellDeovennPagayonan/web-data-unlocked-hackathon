@@ -1,44 +1,38 @@
 /**
  * Test data for Flow 2 — Suspicious Email Block.
- * Uses randomized local parts so repeated runs don't hit "already exists".
  */
 
 export const TEST_PASSWORD = 'TestPass123!'
 
-const runPrefix = `f2-${Date.now()}`
-
 export const FLOW2 = {
-  runPrefix,
-
-  // Social Media App attempts
   socialAttempts: [
     {
-      name: 'Hacker One',
-      email: `${runPrefix}.hacker@test.com`,
+      name: 'Marcus Webb',
+      email: 'mwebb@test.com',
       password: TEST_PASSWORD,
       expectedError: 'You have been flagged as a suspicious user.',
     },
     {
-      name: 'Hacker Two',
-      email: `${runPrefix}.hacker@example.com`,
+      name: 'Jordan Riley',
+      email: 'j.riley@example.com',
       password: TEST_PASSWORD,
       expectedError: 'You have been flagged as a suspicious user.',
     },
     {
-      name: 'Hacker Three',
-      email: `${runPrefix}.hacker@mailinator.com`,
+      name: 'Priya Nair',
+      email: 'pnair@mailinator.com',
       password: TEST_PASSWORD,
       expectedError: 'You have been flagged as a suspicious user.',
     },
     {
-      name: 'Test User',
-      email: `${runPrefix}.test@gmail.com`,
+      name: 'Daniel Okafor',
+      email: 'testuser123@gmail.com',
       password: TEST_PASSWORD,
       expectedError: 'You have been flagged as a suspicious user.',
     },
     {
-      name: 'Test User 2',
-      email: `${runPrefix}.testuser@gmail.com`,
+      name: 'Sophie Brennan',
+      email: 'example.user99@gmail.com',
       password: TEST_PASSWORD,
       expectedError: 'You have been flagged as a suspicious user.',
     },
@@ -47,14 +41,14 @@ export const FLOW2 = {
   // API Store attempts
   apiStoreAttempts: [
     {
-      name: 'Hacker Four',
-      email: `${runPrefix}.hacker@tempmail.com`,
+      name: 'Elena Marsh',
+      email: 'e.marsh@tempmail.com',
       password: TEST_PASSWORD,
       expectedError: 'You have been flagged as a suspicious user.',
     },
     {
-      name: 'Tester',
-      email: `${runPrefix}.tester@gmail.com`,
+      name: 'Ryan Cho',
+      email: 'test.account88@gmail.com',
       password: TEST_PASSWORD,
       expectedError: 'You have been flagged as a suspicious user.',
     },

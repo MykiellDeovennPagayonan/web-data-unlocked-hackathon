@@ -35,25 +35,25 @@ async function cleanupDb(name: string, url: string) {
 
     // Delete from child tables first to avoid FK constraint issues
     // NextAuth tables (camelCase columns from adapter)
-    await safeDelete(`DELETE FROM "Account" WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-    await safeDelete(`DELETE FROM "Session" WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+    await safeDelete(`DELETE FROM "Account" WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+    await safeDelete(`DELETE FROM "Session" WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
     // Also try lowercase table names (some setups use them)
-    await safeDelete(`DELETE FROM accounts WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-    await safeDelete(`DELETE FROM sessions WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+    await safeDelete(`DELETE FROM accounts WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+    await safeDelete(`DELETE FROM sessions WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
 
     // API Store specific tables
     if (name === 'apiStore') {
-      await safeDelete(`DELETE FROM api_usage_logs WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-      await safeDelete(`DELETE FROM free_trials WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-      await safeDelete(`DELETE FROM credit_transactions WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-      await safeDelete(`DELETE FROM user_api_keys WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-      await safeDelete(`DELETE FROM api_endpoints WHERE "orgProfileId" IN (SELECT id FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%'))`)
+      await safeDelete(`DELETE FROM api_usage_logs WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+      await safeDelete(`DELETE FROM free_trials WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+      await safeDelete(`DELETE FROM credit_transactions WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+      await safeDelete(`DELETE FROM user_api_keys WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+      await safeDelete(`DELETE FROM api_endpoints WHERE "orgProfileId" IN (SELECT id FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com')))`)
     }
 
     // Job Board specific tables
     if (name === 'jobBoard') {
-      await safeDelete(`DELETE FROM applications WHERE "individualId" IN (SELECT id FROM individual_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%'))`)
-      await safeDelete(`DELETE FROM jobs WHERE "organizationId" IN (SELECT id FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%'))`)
+      await safeDelete(`DELETE FROM applications WHERE "individualId" IN (SELECT id FROM individual_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com')))`)
+      await safeDelete(`DELETE FROM jobs WHERE "organizationId" IN (SELECT id FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com')))`)
     }
 
     // Social Media specific tables
@@ -76,18 +76,18 @@ async function cleanupDb(name: string, url: string) {
     }
 
     if (name === 'socialMedia' && !socialMediaCleaned) {
-      await safeDelete(`DELETE FROM comments WHERE "authorId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-      await safeDelete(`DELETE FROM likes WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-      await safeDelete(`DELETE FROM follows WHERE "followerId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%') OR "followingId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-      await safeDelete(`DELETE FROM posts WHERE "authorId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+      await safeDelete(`DELETE FROM comments WHERE "authorId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+      await safeDelete(`DELETE FROM likes WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+      await safeDelete(`DELETE FROM follows WHERE "followerId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com')) OR "followingId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+      await safeDelete(`DELETE FROM posts WHERE "authorId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
     }
 
     // Delete profile tables
-    await safeDelete(`DELETE FROM individual_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
-    await safeDelete(`DELETE FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%')`)
+    await safeDelete(`DELETE FROM individual_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
+    await safeDelete(`DELETE FROM organization_profiles WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com'))`)
 
     // Finally delete users
-    const result = await client.query(`DELETE FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' RETURNING email`)
+    const result = await client.query(`DELETE FROM users WHERE email LIKE '%@e2e.local' OR email LIKE 'f2-%' OR email IN ('alex.morgan@gmail.com', 'alex.morgan92@gmail.com', 'alexmorgan.dev@outlook.com', 'a.morgan.work@icloud.com') RETURNING email`)
     console.log(`[${name}] Deleted ${result.rowCount} test users`)
   } catch (err) {
     console.error(`[${name}] Cleanup error:`, err)

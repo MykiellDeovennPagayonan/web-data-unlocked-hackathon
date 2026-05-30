@@ -23,7 +23,7 @@ test.describe("Flow 2: Suspicious Email Block", () => {
     // ACT 1 — SOCIAL MEDIA APP: Three suspicious domain attempts
     // ============================================================
     await page.goto(SOCIAL_URL);
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(3000);
     for (let i = 0; i < 3; i++) {
       const attempt = FLOW2.socialAttempts[i];
       await page.goto(`${SOCIAL_URL}/signup`);
@@ -64,5 +64,6 @@ test.describe("Flow 2: Suspicious Email Block", () => {
       });
       await page.waitForTimeout(500);
     }
+    await page.waitForTimeout(5000);
   });
 });
