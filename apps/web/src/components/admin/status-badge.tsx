@@ -8,26 +8,28 @@ type StatusBadgeProps = {
   className?: string;
 };
 
-const badgeClasses: Record<StatusBadgeProps["level"], string> = {
-  critical:
-    "border-red-100 bg-red-50 text-red-600 shadow-[inset_0_0_0_1px_rgba(239,68,68,0.08)]",
-  high: "border-red-100 bg-red-50 text-red-600 shadow-[inset_0_0_0_1px_rgba(239,68,68,0.08)]",
-  medium:
-    "border-amber-100 bg-amber-50 text-amber-600 shadow-[inset_0_0_0_1px_rgba(245,158,11,0.12)]",
-  low: "border-emerald-100 bg-emerald-50 text-emerald-600 shadow-[inset_0_0_0_1px_rgba(16,185,129,0.1)]",
-  beta: "border-blue-100 bg-blue-50 text-blue-600 shadow-[inset_0_0_0_1px_rgba(37,99,235,0.08)]",
+const dotColors: Record<StatusBadgeProps["level"], string> = {
+  critical: "bg-red-500",
+  high: "bg-red-500",
+  medium: "bg-amber-500",
+  low: "bg-emerald-500",
+  beta: "bg-blue-500",
 };
 
 export function StatusBadge({ level, children, className }: StatusBadgeProps) {
+  const label = (children ?? level)
+    .toString()
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
   return (
     <span
       className={cn(
-        "inline-flex h-6 items-center justify-center rounded px-2 text-[11px] font-semibold uppercase leading-none",
-        badgeClasses[level],
+        "inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--dashboard-text)]",
         className,
       )}
     >
-      {children ?? level}
+      <span className={cn("size-2 rounded-full", dotColors[level])} />
+      {label}
     </span>
   );
 }

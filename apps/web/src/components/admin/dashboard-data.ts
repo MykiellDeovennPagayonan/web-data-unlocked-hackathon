@@ -182,7 +182,7 @@ export const metrics: Metric[] = [
     comparison: "vs 24h ago",
     icon: "score",
     tone: "blue",
-    chartData: [78],
+    chartData: [72, 76, 78, 80, 82, 85, 87],
   },
 ];
 
@@ -338,19 +338,79 @@ export const riskyAsns: RiskListItem[] = [
 ];
 
 export const riskDistribution: DistributionSegment[] = [
-  { label: "Critical", value: 98, percent: "3.4%", count: "98", color: "#ef4444" },
-  { label: "High", value: 608, percent: "21.2%", count: "608", color: "#f97316" },
-  { label: "Medium", value: 1244, percent: "43.7%", count: "1,244", color: "#f59e0b" },
-  { label: "Low", value: 712, percent: "25.0%", count: "712", color: "#3b82f6" },
-  { label: "Unknown", value: 183, percent: "6.4%", count: "183", color: "#94a3b8" },
+  {
+    label: "Critical",
+    value: 98,
+    percent: "3.4%",
+    count: "98",
+    color: "#ef4444",
+  },
+  {
+    label: "High",
+    value: 608,
+    percent: "21.2%",
+    count: "608",
+    color: "#f97316",
+  },
+  {
+    label: "Medium",
+    value: 1244,
+    percent: "43.7%",
+    count: "1,244",
+    color: "#f59e0b",
+  },
+  {
+    label: "Low",
+    value: 712,
+    percent: "25.0%",
+    count: "712",
+    color: "#3b82f6",
+  },
+  {
+    label: "Unknown",
+    value: 183,
+    percent: "6.4%",
+    count: "183",
+    color: "#94a3b8",
+  },
 ];
 
 export const certificateHealth: DistributionSegment[] = [
-  { label: "Good", value: 185, percent: "14.8%", count: "185", color: "#3b82f6" },
-  { label: "Expiring", value: 234, percent: "18.8%", count: "234", color: "#f59e0b" },
-  { label: "Invalid", value: 250, percent: "20.0%", count: "250", color: "#ef4444" },
-  { label: "Revoked", value: 256, percent: "20.6%", count: "256", color: "#64748b" },
-  { label: "Unknown", value: 323, percent: "25.8%", count: "323", color: "#94a3b8" },
+  {
+    label: "Good",
+    value: 185,
+    percent: "14.8%",
+    count: "185",
+    color: "#3b82f6",
+  },
+  {
+    label: "Expiring",
+    value: 234,
+    percent: "18.8%",
+    count: "234",
+    color: "#f59e0b",
+  },
+  {
+    label: "Invalid",
+    value: 250,
+    percent: "20.0%",
+    count: "250",
+    color: "#ef4444",
+  },
+  {
+    label: "Revoked",
+    value: 256,
+    percent: "20.6%",
+    count: "256",
+    color: "#64748b",
+  },
+  {
+    label: "Unknown",
+    value: 323,
+    percent: "25.8%",
+    count: "323",
+    color: "#94a3b8",
+  },
 ];
 
 export const mockGeoActivity: GeoActivity = {
@@ -513,7 +573,11 @@ mockGeoActivity.callout = mockGeoActivity.points[0];
 export const mockDashboardData: DashboardData = {
   status: "ready",
   generatedAt: new Date().toISOString(),
-  platform: { id: "mock-platform", name: "Acme Corp", domain: "acme.example.com" },
+  platform: {
+    id: "mock-platform",
+    name: "Acme Corp",
+    domain: "acme.example.com",
+  },
   metrics: metrics.map((metric) => ({ ...metric, trendDirection: "up" })),
   accessEvents: { rows: accessEvents, total: 25833, isStreaming: true },
   pendingReviews: { items: pendingReviews, total: 12 },
