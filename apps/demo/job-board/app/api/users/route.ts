@@ -92,8 +92,8 @@ export async function POST(request: NextRequest) {
               )
             }
           }
-        } catch {
-          // Non-fatal — allow registration if TrustLayer is unreachable
+        } catch (err) {
+          console.error("[TrustLayer] Hard block check failed:", err)
         }
       } catch (tlErr) {
         console.error("[TrustLayer] registerUser failed (non-fatal):", tlErr)

@@ -47,7 +47,7 @@ test.describe('Flow 3: Bot Scraper Attack', () => {
         'Content-Type': 'application/json',
         Authorization: 'Bearer dev-seed-secret',
       },
-      body: JSON.stringify({ users: FLOW3.seedUsers }),
+      body: JSON.stringify({ users: [...FLOW3.seedUsers].reverse() }),
     })
     expect(seedRes.ok).toBe(true)
 

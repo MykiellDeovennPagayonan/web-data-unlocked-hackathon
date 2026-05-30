@@ -435,30 +435,42 @@ export default function TryApiPage() {
           </div>
 
           {/* Response */}
-          {response && (
+          {(response || isRunning) && (
             <div className="bg-white border border-border-light rounded-xl p-6 space-y-3">
-              <div className="flex items-center gap-3">
-                <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide">Response</h2>
-                <Badge
-                  className={
-                    response.status >= 200 && response.status < 300
-                      ? "bg-green-50 text-green-700 border-0"
-                      : response.status >= 400 && response.status < 500
-                      ? "bg-amber-50 text-amber-700 border-0"
-                      : "bg-red-50 text-red-700 border-0"
-                  }
-                >
-                  {response.status === 0 ? "Network Error" : `${response.status}`}
-                </Badge>
-              </div>
-              {response.error && (
-                <p className="text-sm text-destructive">{response.error}</p>
-              )}
-              {response.body && (
-                <pre className="bg-surface-muted rounded p-4 text-xs font-mono text-text-primary overflow-auto max-h-96">
-                  {formatResponseBody(response.body)}
-                </pre>
-              )}
+              {isRunning && !response ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide">Response</h2>
+                    <div className="h-5 w-16 bg-surface-muted rounded animate-pulse" />
+                  </div>
+                  <div className="h-12 bg-surface-muted rounded animate-pulse" />
+                </>
+              ) : response ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide">Response</h2>
+                    <Badge
+                      className={
+                        response.status >= 200 && response.status < 300
+                          ? "bg-green-50 text-green-700 border-0"
+                          : response.status >= 400 && response.status < 500
+                          ? "bg-amber-50 text-amber-700 border-0"
+                          : "bg-red-50 text-red-700 border-0"
+                      }
+                    >
+                      {response.status === 0 ? "Network Error" : `${response.status}`}
+                    </Badge>
+                  </div>
+                  {response.error && (
+                    <p className="text-sm text-destructive">{response.error}</p>
+                  )}
+                  {response.body && (
+                    <pre className="bg-surface-muted rounded p-4 text-xs font-mono text-text-primary overflow-auto max-h-96">
+                      {formatResponseBody(response.body)}
+                    </pre>
+                  )}
+                </>
+              ) : null}
             </div>
           )}
         </div>
