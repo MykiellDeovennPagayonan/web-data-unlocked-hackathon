@@ -7,6 +7,7 @@ export interface CreateApiKeyData {
   name: string;
   scopes: string[];
   expiresAt?: Date;
+  keyHash?: string;
 }
 
 export interface UpdateApiKeyData {

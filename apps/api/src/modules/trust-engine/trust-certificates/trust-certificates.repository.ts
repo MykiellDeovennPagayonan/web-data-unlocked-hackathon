@@ -3,6 +3,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { insertCertificate } from './repository-ops/insert-certificate';
 import { findCertificateById } from './repository-ops/find-certificate-by-id';
 import { findCertificatesByEntity } from './repository-ops/find-certificates-by-entity';
+import { findManyCertificates } from './repository-ops/find-many-certificates';
 import { updateCertificate } from './repository-ops/update-certificate';
 import {
   TrustCertificate,
@@ -26,6 +27,9 @@ export class TrustCertificatesRepository {
     entityId: string,
   ): Promise<TrustCertificate[]> =>
     findCertificatesByEntity(this.prisma, entityType, entityId);
+
+  findMany = (take?: number, skip?: number): Promise<TrustCertificate[]> =>
+    findManyCertificates(this.prisma, take, skip);
 
   update = (
     id: string,

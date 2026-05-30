@@ -3,3 +3,7 @@ packages:
   - "apps/demo/*"
   - "packages/*"
   - "test/*"
+
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver

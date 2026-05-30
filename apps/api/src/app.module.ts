@@ -20,6 +20,7 @@ import { AdminDashboardModule } from './modules/admin-dashboard/admin-dashboard.
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [
+        resolve(__dirname, '../.env'),
         resolve(__dirname, '../../.env'),
         resolve(__dirname, '../../../../.env'),
       ],

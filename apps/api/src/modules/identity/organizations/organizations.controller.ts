@@ -5,6 +5,7 @@ import {
   Patch,
   Body,
   Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
@@ -24,6 +25,19 @@ export class OrganizationsController {
     @Body() dto: CreateOrganizationDto,
   ): Promise<Organization> {
     return this.organizationsService.createOrganization(dto);
+  }
+
+  @Get('admin/organizations')
+  listOrganizations(
+    @Query('take') take?: string,
+    @Query('skip') skip?: string,
+  ): Promise<Organization[]> {
+    const parsedTake = take ? parseInt(take, 10) : undefined;
+    const parsedSkip = skip ? parseInt(skip, 10) : undefined;
+    return this.organizationsService.listOrganizations(
+      Number.isFinite(parsedTake) ? parsedTake : undefined,
+      Number.isFinite(parsedSkip) ? parsedSkip : undefined,
+    );
   }
 
   @Get('admin/organizations/:id')

@@ -9,7 +9,7 @@ export async function validateApiKey(
 
   if (!apiKey) return null;
   if (apiKey.revokedAt) return null;
-  if (apiKey.expiresAt && apiKey.expiresAt < new Date()) return null;
+  if (apiKey.expiresAt && apiKey.expiresAt <= new Date()) return null;
 
   return apiKey;
 }

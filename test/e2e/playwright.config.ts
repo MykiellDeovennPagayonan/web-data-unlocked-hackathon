@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
+import { tmpdir } from 'os'
+import { join } from 'path'
 
 const headed = process.env.E2E_HEADED === 'true'
 const debugArtifacts = process.env.E2E_DEBUG_ARTIFACTS === 'true'
@@ -8,7 +10,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: debugArtifacts ? [['html', { open: 'never' }], ['list']] : [['list']],
-  outputDir: process.env.PLAYWRIGHT_OUTPUT_DIR ?? '/tmp/playwright-output',
+  outputDir: process.env.PLAYWRIGHT_OUTPUT_DIR ?? join(tmpdir(), 'playwright-output'),
   use: {
     baseURL: 'http://localhost:3001',
     browserName: 'chromium',

@@ -25,10 +25,8 @@ export async function createApiKey(
     name: input.name,
     scopes: input.scopes,
     expiresAt: input.expiresAt,
+    keyHash,
   });
-
-  // Update with the hash after creation
-  await repository.update(apiKey.id, { keyHash });
 
   await auditLogsService.logAction({
     actorType: auditMeta?.actorType ?? AuditActorType.system,

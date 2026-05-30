@@ -43,6 +43,25 @@ export class CommunityReportsController {
     });
   }
 
+  @Get('admin/community-reports')
+  listAdmin(
+    @Query('reportingPlatformId') reportingPlatformId?: string,
+    @Query('status') status?: ReportStatus,
+    @Query('targetType') targetType?: TargetType,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<CommunityReport[]> {
+    const parsedLimit = limit ? parseInt(limit, 10) : undefined;
+    const parsedOffset = offset ? parseInt(offset, 10) : undefined;
+    return this.communityReportsService.listReports({
+      reportingPlatformId,
+      status,
+      targetType,
+      limit: Number.isFinite(parsedLimit) ? parsedLimit : undefined,
+      offset: Number.isFinite(parsedOffset) ? parsedOffset : undefined,
+    });
+  }
+
   @Get('v1/registry/community-reports')
   @UseGuards(ApiKeyGuard)
   listByPlatform(

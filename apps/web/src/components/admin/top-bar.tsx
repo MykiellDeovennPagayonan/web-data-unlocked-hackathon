@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Bell,
   ChevronDown,
@@ -6,9 +8,23 @@ import {
   Menu,
   Search,
 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 export function TopBar({ platformName = "Acme Corp" }: { platformName?: string }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <header className="flex min-h-[70px] items-center gap-4 border-b border-[var(--dashboard-border)] bg-[var(--dashboard-bg)] px-4 lg:px-6">
       <Button
@@ -29,6 +45,7 @@ export function TopBar({ platformName = "Acme Corp" }: { platformName?: string }
           Search identities, IPs, orgs, certificates
         </label>
         <input
+          ref={inputRef}
           id="global-search"
           type="search"
           placeholder="Search identities, IPs, orgs, certificates..."

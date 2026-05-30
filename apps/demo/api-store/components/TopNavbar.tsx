@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
-import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import {
@@ -12,7 +12,6 @@ import {
   Menu,
   X,
   User,
-  Settings,
   LogOut,
   LayoutDashboard,
   Globe,
@@ -47,7 +46,13 @@ const orgLinks = [
 
 export default function TopNavbar({ role, userName, onMenuClick, sidebarOpen }: TopNavbarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState("")
+
+  useEffect(() => {
+    setSearchQuery(searchParams.get("q") || "")
+  }, [searchParams])
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
 
@@ -84,6 +89,12 @@ export default function TopNavbar({ role, userName, onMenuClick, sidebarOpen }: 
               placeholder="Search APIs, endpoints..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const q = searchQuery.trim()
+                  router.replace(q ? `/marketplace?q=${encodeURIComponent(q)}` : "/marketplace")
+                }
+              }}
               className="w-full h-10 pl-10 pr-4 rounded-full bg-surface-muted border border-transparent focus:border-kaggle-blue focus:outline-none text-sm text-text-primary placeholder:text-text-muted transition-colors"
             />
           </div>

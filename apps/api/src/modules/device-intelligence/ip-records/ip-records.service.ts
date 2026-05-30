@@ -20,6 +20,9 @@ export class IpRecordsService {
   getIpIntelligence = (ipAddress: string): Promise<IpRecord> =>
     getIpIntelligence(this.repository, ipAddress);
 
+  listIpRecords = (take?: number, skip?: number): Promise<IpRecord[]> =>
+    this.repository.findMany(take, skip);
+
   createOrUpdateIp = (ipAddress: string): Promise<IpRecord> =>
     createOrUpdateIp(this.repository, ipAddress);
 

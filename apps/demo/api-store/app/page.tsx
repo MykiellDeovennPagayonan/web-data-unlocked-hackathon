@@ -53,16 +53,17 @@ export default async function Home() {
             </div>
             <span className="text-xl font-bold text-text-primary">API Store</span>
           </Link>
-          <div className="flex-1 max-w-xl mx-4 hidden md:block">
+          <form action="/marketplace" className="flex-1 max-w-xl mx-4 hidden md:block">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
               <input
                 type="text"
+                name="q"
                 placeholder="Search APIs, endpoints..."
                 className="w-full h-10 pl-10 pr-4 rounded-full bg-surface-muted border border-transparent focus:border-kaggle-blue focus:outline-none text-sm text-text-primary placeholder:text-text-muted transition-colors"
               />
             </div>
-          </div>
+          </form>
           <div className="flex items-center gap-2 ml-auto">
             <Button variant="ghost" size="sm" asChild>
               <Link href="/login">Sign In</Link>

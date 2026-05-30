@@ -30,4 +30,9 @@ export class TrustCertificatesService {
     entityId: string,
   ): Promise<TrustCertificate[]> =>
     getCertificatesByEntity(this.repository, entityType, entityId);
+
+  listCertificates = (
+    take?: number,
+    skip?: number,
+  ): Promise<TrustCertificate[]> => this.repository.findMany(take, skip);
 }
