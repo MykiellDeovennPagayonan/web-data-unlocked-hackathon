@@ -87,12 +87,12 @@ export function Sidebar() {
   return (
     <aside className="flex h-dvh flex-col border-r border-[var(--dashboard-border)] bg-white">
       <div className="flex h-[86px] items-center gap-3 px-7">
-        <span className="grid size-9 place-items-center rounded-lg border border-blue-100 bg-blue-50 text-blue-600">
-          <ShieldCheck className="size-6 stroke-[2]" aria-hidden="true" />
-        </span>
-        <span className="text-[18px] font-bold tracking-[0.12em] text-[var(--dashboard-text)]">
-          TUNAI
-        </span>
+        <img
+          src="/TunAI_Logo_Final.png"
+          alt=""
+          className="h-11 w-auto"
+          aria-hidden="true"
+        />
       </div>
 
       <nav className="flex-1 overflow-y-auto px-4 pb-6">

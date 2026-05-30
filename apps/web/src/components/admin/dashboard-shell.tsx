@@ -46,17 +46,11 @@ export function DashboardShell({
           </section>
 
           <section className="mt-4 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_420px] 2xl:grid-cols-[minmax(0,1fr)_520px_500px]">
-            <div className="min-w-0 2xl:col-span-2">
+            <div className="min-w-0 xl:col-span-2 2xl:col-span-1 2xl:col-start-1">
               <LiveEventsTable
                 events={data.accessEvents.rows}
                 total={data.accessEvents.total}
                 isStreaming={data.accessEvents.isStreaming}
-              />
-            </div>
-            <div className="grid gap-4 2xl:col-start-3">
-              <PendingReviewsPanel
-                items={data.pendingReviews.items}
-                total={data.pendingReviews.total}
               />
             </div>
             <div className="min-w-0 xl:col-span-2 2xl:col-span-1 2xl:col-start-1">

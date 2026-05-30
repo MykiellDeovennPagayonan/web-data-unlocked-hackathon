@@ -30,17 +30,12 @@ export function BrandLogo({
       )}
       aria-label="Tunai home"
     >
-      <span className="grid size-8 place-items-center text-blue-600 sm:size-10">
-        <ShieldCheck
-          className="size-8 stroke-[2.2] sm:size-10"
-          aria-hidden="true"
-        />
-      </span>
-      {!compact ? (
-        <span className="text-[20px] font-extrabold tracking-[0.22em] sm:text-[24px]">
-          TUNAI
-        </span>
-      ) : null}
+      <img
+        src="/TunAI_Logo_Final.png"
+        alt=""
+        className="h-11 w-auto sm:h-14"
+        aria-hidden="true"
+      />
     </a>
   );
 }
@@ -504,9 +499,13 @@ export function ExternalTextLink({
   );
 }
 
-export function TinyCheck() {
+export function TinyCheck({ tone = "green" }: { tone?: "green" | "blue" }) {
+  const styles =
+    tone === "blue"
+      ? "bg-blue-100 text-blue-600"
+      : "bg-emerald-100 text-emerald-600";
   return (
-    <span className="grid size-5 place-items-center rounded-full bg-emerald-100 text-emerald-600">
+    <span className={cn("grid size-5 place-items-center rounded-full", styles)}>
       <Check className="size-3.5 stroke-[2.5]" aria-hidden="true" />
     </span>
   );

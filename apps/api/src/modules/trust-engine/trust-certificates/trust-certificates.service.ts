@@ -9,6 +9,7 @@ import {
 } from './service-methods/issue-certificate';
 import { revokeCertificate } from './service-methods/revoke-certificate';
 import { getCertificatesByEntity } from './service-methods/get-certificates-by-entity';
+import { listCertificates } from './service-methods/list-certificates';
 import {
   verifyCertificateByHash,
   VerifyCertificateByHashResult,
@@ -50,4 +51,10 @@ export class TrustCertificatesService {
       hash,
       verifiedByPlatformId,
     );
+
+  listCertificates = (
+    take?: number,
+    skip?: number,
+  ): Promise<TrustCertificate[]> =>
+    listCertificates(this.repository, take, skip);
 }

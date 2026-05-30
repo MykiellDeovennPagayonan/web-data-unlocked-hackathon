@@ -49,7 +49,6 @@ import {
   SocialLinks,
   StatusPill,
   TinyCheck,
-  TrustedPartnersStrip,
   TrustScoreRing,
 } from "./landing-primitives";
 
@@ -60,7 +59,7 @@ export function LandingPage() {
       className="min-h-screen overflow-x-hidden bg-[#f7faff] text-[#071b4d] antialiased"
     >
       <LandingHeader />
-      <main>
+      <main className="px-4 sm:px-12 md:px-20 lg:px-24 ">
         <HeroSection />
         <ThreeStepTrustSection />
         <TrustCertificateSection />
@@ -153,17 +152,17 @@ function HeroSection() {
       id="product"
       className="relative px-4 pb-14 pt-14 sm:px-5 sm:pb-16 sm:pt-[76px] xl:pt-[92px]"
     >
-      <div className="mx-auto grid max-w-[1404px] items-center gap-10 xl:grid-cols-[520px_minmax(0,1fr)] xl:gap-5">
+      <div className="mx-auto grid max-w-[1404px] items-center gap-10 lg:gap-12 xl:grid-cols-[520px_minmax(0,1fr)] xl:gap-5">
         <div>
-          <EyebrowPill icon={Sparkles}>
+          {/* <EyebrowPill icon={Sparkles}>
             AI-Native Identity Trust and Access Security
-          </EyebrowPill>
-          <h1 className="mt-8 max-w-[545px] text-[42px] font-extrabold leading-[1.14] tracking-[-0.02em] text-[#061747] sm:mt-10 sm:text-[54px] lg:text-[60px] xl:mt-11">
-            Know who to trust before access becomes a risk.
+          </EyebrowPill> */}
+          <h1 className="mt-8 max-w-[680px] text-[32px] font-bold leading-[1.12] tracking-[-0.02em] text-[#061747] sm:mt-10 sm:text-[40px] lg:text-[48px] xl:mt-11">
+            A shared intelligence layer for identity trust
           </h1>
           <p className="mt-6 max-w-[520px] text-[18px] font-medium leading-[1.65] text-[#526991] sm:mt-8 sm:text-[20px]">
             Tunai evaluates people, devices, emails, IPs, and organizations in
-            real time—so you can grant the right access with confidence.
+            real time, so you can grant the right access with confidence.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:mt-11 sm:flex-row sm:flex-wrap sm:gap-4">
             <PrimaryButton className="w-full sm:w-auto">
@@ -174,28 +173,28 @@ function HeroSection() {
             </SecondaryButton>
           </div>
           <div className="mt-9 flex max-w-[470px] items-center gap-4 text-[15px] font-semibold leading-6 text-[#607196] sm:mt-12 sm:gap-5 sm:text-[17px] sm:leading-7">
-            <span className="grid size-12 place-items-center rounded-full bg-blue-50 text-blue-600">
+            {/* <span className="grid size-12 place-items-center rounded-full bg-blue-50 text-blue-600">
               <ShieldCheck className="size-6" aria-hidden="true" />
             </span>
             <span>
               Stronger trust decisions. Fewer false positives. No unnecessary
               friction.
-            </span>
+            </span> */}
           </div>
         </div>
         <HeroTrustGatewayDiagram />
       </div>
-      <TrustedPartnersStrip className="mt-12" />
+      {/* <TrustedPartnersStrip className="mt-12" /> */}
     </section>
   );
 }
 
 function HeroTrustGatewayDiagram() {
   return (
-    <>
+    <div className="origin-top scale-[0.75] sm:scale-[0.90]">
       <HeroTrustGatewayDiagramDesktop />
       <MobileHeroGatewayDiagram />
-    </>
+    </div>
   );
 }
 
@@ -212,7 +211,7 @@ function MobileHeroGatewayDiagram() {
           </div>
           <div className="grid gap-3 sm:grid-cols-3 md:grid-cols-1">
             {visibleEntities.map((entity) => (
-              <IncomingEntityCard key={entity.label} {...entity} compact />
+              <IncomingEntityCard key={entity.label} {...entity} compact tone="blue" />
             ))}
           </div>
         </div>
@@ -246,7 +245,7 @@ function MobileHeroGatewayDiagram() {
                 <span className="min-w-0 flex-1 text-[11px] font-extrabold text-[#071b4d]">
                   {check.label}
                 </span>
-                <TinyCheck />
+                <TinyCheck tone="blue" />
               </div>
             ))}
           </div>
@@ -275,18 +274,18 @@ function HeroTrustGatewayDiagramDesktop() {
   return (
     <div className="relative mx-auto hidden h-full w-[760px] overflow-visible xl:block">
       <div className="relative grid h-full w-full grid-cols-[180px_260px_220px] items-center gap-[36px]">
-        <div>
+        <div className="scale-[0.90]">
           <div className="mb-3 text-center text-[12px] font-bold text-[#54658a]">
             Incoming Entities
           </div>
           <div className="space-y-2">
             {incomingEntities.map((entity) => (
-              <IncomingEntityCard key={entity.label} {...entity} />
+              <IncomingEntityCard key={entity.label} {...entity} tone="blue" />
             ))}
           </div>
         </div>
         <GatewayEvaluationPanel />
-        <div className="relative z-10">
+        <div className="relative z-10 scale-[0.90]">
           <div className="mb-3 text-center text-[12px] font-bold text-[#54658a]">
             Access Decision
           </div>
@@ -295,13 +294,14 @@ function HeroTrustGatewayDiagramDesktop() {
               <DecisionCard
                 key={decision.label}
                 {...decision}
+                tone="verify"
                 className="h-[86px] px-4 py-2 shadow-none"
               />
             ))}
           </div>
         </div>
         <svg
-          className="pointer-events-none absolute inset-0 h-full w-full"
+          className="pointer-events-none translate-y-[20px] absolute inset-0 h-full w-full"
           viewBox="0 0 760 460"
           aria-hidden="true"
         >
@@ -476,16 +476,16 @@ function ThreeStepTrustSection() {
           Tunai continuously evaluates signals in real time to deliver accurate
           trust decisions you can act on with confidence.
         </p>
-        <div className="relative mt-9 grid gap-5 sm:mt-12 sm:gap-7 lg:grid-cols-3 lg:gap-9">
-          {trustSteps.map((step) => (
-            <TrustStepCard key={step.number} step={step} />
-          ))}
-          <div className="pointer-events-none absolute left-[31.8%] top-[172px] hidden items-center lg:flex">
+        <div className="mt-9 grid gap-5 sm:mt-12 sm:gap-7 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:gap-0">
+          <TrustStepCard step={trustSteps[0]} />
+          <div className="hidden items-center justify-center px-2 lg:flex">
             <ConnectorArrow />
           </div>
-          <div className="pointer-events-none absolute right-[31.8%] top-[172px] hidden items-center lg:flex">
+          <TrustStepCard step={trustSteps[1]} />
+          <div className="hidden items-center justify-center px-2 lg:flex">
             <ConnectorArrow />
           </div>
+          <TrustStepCard step={trustSteps[2]} />
         </div>
         <DecisionLegend />
         <SectionTrustNote />
@@ -657,7 +657,7 @@ function TrustCertificateSection() {
             Verified once. Trusted across the network.
           </h2>
           <p className="mt-8 max-w-[590px] text-[19px] font-medium leading-8 text-[#526991]">
-            Tunai Trust Certificates prove that an identity, device, or
+            TunAI Certificates prove that an identity, device, or
             organization meets rigorous security and compliance standards—so you
             can grant access with confidence.
           </p>
@@ -679,7 +679,7 @@ function TrustCertificateSection() {
               </div>
             ))}
           </div>
-          <div className="mt-8 border-t border-[#dce8f7] pt-6">
+          {/* <div className="mt-8 border-t border-[#dce8f7] pt-6">
             <div className="mb-4 text-[17px] font-bold text-[#526991]">
               Trusted across the ecosystem
             </div>
@@ -688,7 +688,7 @@ function TrustCertificateSection() {
                 <MiniEcosystemLogo key={label} label={label} />
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>
@@ -740,10 +740,10 @@ function TrustCertificateCard() {
         </span>
         <div className="min-w-0 flex-1">
           <div className="text-[13px] font-extrabold text-blue-700 sm:text-[16px]">
-            Verified by Tunai Trust Gateway
+            Verified by TunAI Gateway
           </div>
           <div className="mt-1 text-[12px] font-medium leading-5 text-[#526991] sm:text-[15px] sm:leading-6">
-            Identity and security posture validated against Tunai Trust
+            Identity and security posture validated against TunAI
             Standards
           </div>
         </div>
@@ -769,7 +769,7 @@ function TrustCertificateCard() {
             />
           </svg>
           <div className="border-t border-[#9eb3d2] pt-2 text-[10px] font-bold sm:pt-3 sm:text-[13px] text-[#243b69]">
-            Tunai Trust Authority
+            TunAI Authority
           </div>
         </div>
         <QrCode />
@@ -1345,7 +1345,7 @@ function UseCasesSection() {
           </div>
         </div>
       </div>
-      <TrustedPartnersStrip className="mt-8" compact />
+      {/* <TrustedPartnersStrip className="mt-8" compact /> */}
     </section>
   );
 }
@@ -1548,7 +1548,7 @@ function FinalCTASection() {
       <div className="relative mx-auto grid min-h-[210px] max-w-[1404px] gap-7 overflow-hidden rounded-xl border border-[#cfe0f7] bg-[#eef6ff] px-5 py-8 shadow-[0_12px_32px_rgba(11,27,77,0.045)] sm:px-8 sm:py-10 lg:grid-cols-[1fr_1px_1fr_240px] lg:gap-0 lg:px-10 lg:py-12">
         <div className="absolute -bottom-12 left-0 h-32 w-[520px] opacity-50 [background-image:radial-gradient(#80b4ff_1px,transparent_1px)] [background-size:10px_10px]" />
         <h2 className="relative max-w-[520px] text-[34px] font-extrabold leading-[1.22] tracking-[-0.02em] text-[#061747] sm:text-[40px] sm:leading-[1.28]">
-          Build a safer platform with a smarter trust layer.
+          Build a safer platform with a smarter TunAI.
         </h2>
         <div className="relative hidden w-px bg-[#bfcfe8] lg:block" />
         <div className="relative flex flex-col justify-center gap-6 lg:px-10">
@@ -1630,14 +1630,6 @@ function LandingFooter() {
               </div>
             ))}
           </div>
-        </div>
-        <div className="mt-8 flex flex-wrap items-center gap-4 border-t border-[#dce8f7] pt-5 text-[13px] font-medium text-[#526991]">
-          <span>© 2024 Tunai, Inc. All rights reserved.</span>
-          <span className="ml-auto inline-flex items-center gap-2">
-            Made with{" "}
-            <Heart className="size-4 text-blue-600" aria-hidden="true" /> in San
-            Francisco
-          </span>
         </div>
       </div>
     </footer>
