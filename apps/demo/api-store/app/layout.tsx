@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AuthSessionProvider } from "@/components/providers/SessionProvider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body className="antialiased bg-background text-foreground">
         <AuthSessionProvider>
           {children}
+          <Toaster />
         </AuthSessionProvider>
       </body>
     </html>

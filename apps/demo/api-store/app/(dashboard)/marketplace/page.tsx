@@ -1,8 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 import { Globe, DollarSign, Copy, Check, ArrowRight, TrendingUp, Clock, Filter, Search } from "lucide-react"
 import Link from "next/link"
 
@@ -26,34 +28,88 @@ const filters = ["All", "Trending", "Newest", "Most Used"]
 const categories = ["All", "Finance", "ML", "Geo", "Social", "Data"]
 
 export default function MarketplacePage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [endpoints, setEndpoints] = useState<ApiEndpoint[]>([])
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState("All")
   const [activeCategory, setActiveCategory] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const q = searchParams.get("q")
+    if (q) setSearchQuery(q)
+  }, [searchParams])
 
   useEffect(() => {
     fetch("/api/endpoints")
-      .then((r) => r.json())
-      .then((d) => setEndpoints(d))
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load endpoints")
+        return r.json()
+      })
+      .then((d) => {
+        setEndpoints(d)
+        setError(null)
+      })
+      .catch(() => setError("Failed to load endpoints. Please try again later."))
       .finally(() => setLoading(false))
   }, [])
 
-  function copyUrl(id: string) {
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    const currentQ = searchParams.get("q") || ""
+    if (searchQuery === currentQ) return
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      const url = searchQuery ? `/marketplace?q=${encodeURIComponent(searchQuery)}` : "/marketplace"
+      router.replace(url)
+    }, 200)
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [searchQuery, searchParams, router])
+
+  async function copyUrl(id: string) {
     const url = `${window.location.origin}/api/proxy/${id}`
-    navigator.clipboard.writeText(url)
-    setCopied(id)
-    setTimeout(() => setCopied(null), 2000)
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(id)
+      setTimeout(() => setCopied(null), 2000)
+    } catch {
+      toast.error("Copy failed. Please copy the URL manually.")
+    }
   }
 
-  const filtered = endpoints.filter((ep) => {
-    if (!searchQuery) return true
-    return (
-      ep.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (ep.description?.toLowerCase() || "").includes(searchQuery.toLowerCase())
-    )
-  })
+  const filtered = endpoints
+    .filter((ep) => {
+      if (!searchQuery) return true
+      return (
+        ep.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (ep.description?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+      )
+    })
+    .filter((ep) => {
+      if (activeCategory === "All") return true
+      // No category field on ApiEndpoint yet; pass all through until backend supports it
+      return true
+    })
+    .sort((a, b) => {
+      if (activeFilter === "Newest") {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      }
+      if (activeFilter === "Most Used") {
+        // No usage data yet; fall through to default order
+        return 0
+      }
+      if (activeFilter === "Trending") {
+        // No trending score yet; fall through to default order
+        return 0
+      }
+      return 0
+    })
 
   if (loading) {
     return (
@@ -128,7 +184,13 @@ export default function MarketplacePage() {
         {filtered.length} {filtered.length === 1 ? "API" : "APIs"} available
       </p>
 
-      {filtered.length === 0 ? (
+      {error ? (
+        <div className="text-center py-16 border border-border-light rounded-xl bg-surface">
+          <Globe className="h-12 w-12 text-text-muted mx-auto mb-4" />
+          <p className="text-text-secondary font-medium">Something went wrong</p>
+          <p className="text-text-muted text-sm mt-1">{error}</p>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="text-center py-16 border border-border-light rounded-xl bg-surface">
           <Globe className="h-12 w-12 text-text-muted mx-auto mb-4" />
           <p className="text-text-secondary font-medium">No APIs match your search</p>
