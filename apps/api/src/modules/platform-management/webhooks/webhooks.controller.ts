@@ -13,11 +13,24 @@ import { WebhooksService } from './webhooks.service';
 import { RetryWebhookDto } from './dto/retry-webhook.dto';
 import { WebhookLog } from './entities/webhook-log.entity';
 
-@Controller('v1/platform/webhooks')
+@Controller()
 export class WebhooksController {
   constructor(private readonly webhooksService: WebhooksService) {}
 
-  @Get('logs')
+  @Get('admin/webhooks/logs')
+  listAdminWebhookLogs(
+    @Query('take') take?: string,
+    @Query('skip') skip?: string,
+  ): Promise<WebhookLog[]> {
+    const parsedTake = take ? parseInt(take, 10) : undefined;
+    const parsedSkip = skip ? parseInt(skip, 10) : undefined;
+    return this.webhooksService.listAllWebhookLogs(
+      Number.isFinite(parsedTake) ? parsedTake : undefined,
+      Number.isFinite(parsedSkip) ? parsedSkip : undefined,
+    );
+  }
+
+  @Get('v1/platform/webhooks/logs')
   @UseGuards(ApiKeyGuard)
   listWebhookLogs(
     @CurrentPlatform() platformId: string,
@@ -33,12 +46,12 @@ export class WebhooksController {
     });
   }
 
-  @Get('logs/:id')
+  @Get('v1/platform/webhooks/logs/:id')
   getWebhookLogById(@Param('id') id: string): Promise<WebhookLog | null> {
     return this.webhooksService.getWebhookLogById(id);
   }
 
-  @Post('logs/:id/retry')
+  @Post('v1/platform/webhooks/logs/:id/retry')
   retryWebhook(
     @Param('id') id: string,
     @Body() dto: RetryWebhookDto,

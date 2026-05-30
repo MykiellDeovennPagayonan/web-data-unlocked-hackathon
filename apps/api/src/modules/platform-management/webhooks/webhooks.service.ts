@@ -3,6 +3,7 @@ import { WebhooksRepository } from './webhooks.repository';
 import { logWebhookAttempt } from './service-methods/log-webhook-attempt';
 import { getWebhookLogById } from './service-methods/get-webhook-log-by-id';
 import { listWebhookLogs } from './service-methods/list-webhook-logs';
+import { listAllWebhookLogs } from './service-methods/list-all-webhook-logs';
 import { recordDelivery } from './service-methods/record-delivery';
 import { queueRetry } from './service-methods/queue-retry';
 import {
@@ -23,6 +24,9 @@ export class WebhooksService {
 
   listWebhookLogs = (filters: WebhookLogFilters): Promise<WebhookLog[]> =>
     listWebhookLogs(this.repository, filters);
+
+  listAllWebhookLogs = (take?: number, skip?: number): Promise<WebhookLog[]> =>
+    listAllWebhookLogs(this.repository, take, skip);
 
   recordDelivery = (
     logId: string,

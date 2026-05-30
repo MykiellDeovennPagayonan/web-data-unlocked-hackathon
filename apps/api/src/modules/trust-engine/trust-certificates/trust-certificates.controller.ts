@@ -43,6 +43,19 @@ export class TrustCertificatesController {
     return this.trustCertificatesService.revokeCertificate(id, dto.reason);
   }
 
+  @Get('admin/trust-certificates')
+  listAdmin(
+    @Query('take') take?: string,
+    @Query('skip') skip?: string,
+  ): Promise<TrustCertificate[]> {
+    const parsedTake = take ? parseInt(take, 10) : undefined;
+    const parsedSkip = skip ? parseInt(skip, 10) : undefined;
+    return this.trustCertificatesService.listCertificates(
+      Number.isFinite(parsedTake) ? parsedTake : undefined,
+      Number.isFinite(parsedSkip) ? parsedSkip : undefined,
+    );
+  }
+
   @Get('v1/trust-certificates')
   @UseGuards(ApiKeyGuard)
   list(

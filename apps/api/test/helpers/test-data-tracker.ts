@@ -156,9 +156,18 @@ export class TestDataTracker {
         where: { id: { in: this.webhookLogs } },
       });
     }
-    // Clean up untracked access/behavioral events that may reference tracked parents
-    await prisma.accessEvent.deleteMany();
-    await prisma.behavioralEvent.deleteMany();
+    // Clean up access/behavioral events and sessions scoped to tracked platforms
+    if (this.platforms.length > 0) {
+      await prisma.behavioralEvent.deleteMany({
+        where: { platformId: { in: this.platforms } },
+      });
+      await prisma.accessEvent.deleteMany({
+        where: { platformId: { in: this.platforms } },
+      });
+      await prisma.session.deleteMany({
+        where: { platformId: { in: this.platforms } },
+      });
+    }
     if (this.certificateVerifications.length > 0) {
       await prisma.certificateVerification.deleteMany({
         where: { id: { in: this.certificateVerifications } },

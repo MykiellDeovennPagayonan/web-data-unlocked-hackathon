@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
+import { tmpdir } from 'os'
+import { join } from 'path'
 
 const headed = process.env.E2E_HEADED === 'true'
 const debugArtifacts = process.env.E2E_DEBUG_ARTIFACTS === 'true'

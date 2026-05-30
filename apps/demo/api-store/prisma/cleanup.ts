@@ -137,9 +137,16 @@ async function main() {
   console.log()
   console.log("📊 Manual data preservation check:")
   const manualUserCount = await prisma.user.count({ where: { email: { notIn: ALL_SEEDED_EMAILS } } })
-  const manualEndpointCount = await prisma.apiEndpoint.count({ where: { id: { notIn: seededEndpointIds.length > 0 ? seededEndpointIds : [""] } } })
-  const manualUsageLogCount = await prisma.apiUsageLog.count({ where: { userId: { notIn: seededUsers.map((u) => u.id).length > 0 ? seededUsers.map((u) => u.id) : [""] } } })
-  const manualTransactionCount = await prisma.creditTransaction.count({ where: { userId: { notIn: seededUsers.map((u) => u.id).length > 0 ? seededUsers.map((u) => u.id) : [""] } } })
+  const manualEndpointCount = seededEndpointIds.length > 0
+    ? await prisma.apiEndpoint.count({ where: { id: { notIn: seededEndpointIds } } })
+    : await prisma.apiEndpoint.count()
+  const seededUserIds = seededUsers.map((u) => u.id)
+  const manualUsageLogCount = seededUserIds.length > 0
+    ? await prisma.apiUsageLog.count({ where: { userId: { notIn: seededUserIds } } })
+    : await prisma.apiUsageLog.count()
+  const manualTransactionCount = seededUserIds.length > 0
+    ? await prisma.creditTransaction.count({ where: { userId: { notIn: seededUserIds } } })
+    : await prisma.creditTransaction.count()
 
   console.log(`   Users preserved: ${manualUserCount}`)
   console.log(`   Endpoints preserved: ${manualEndpointCount}`)

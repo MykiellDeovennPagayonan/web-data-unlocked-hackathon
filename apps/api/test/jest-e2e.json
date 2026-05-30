@@ -8,5 +8,7 @@
   },
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/../src/$1"
-  }
+  },
+  "globalSetup": "<rootDir>/helpers/global-setup.ts",
+  "testTimeout": 30000
 }

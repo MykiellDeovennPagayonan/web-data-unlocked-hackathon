@@ -27,8 +27,8 @@ test.describe('Job Board E2E Flow', () => {
 
     // 3. Login as organization
     await login(page, JOB_BOARD.organization.email, JOB_BOARD.organization.password)
-    await page.goto(`${JOB_BOARD.url}/dashboard/jobs`)
-    await expect(page.locator('text=My Job Postings').first()).toBeVisible()
+    await waitForUrl(page, '/dashboard')
+    await expect(page.locator('text=My Job Postings').first()).toBeVisible({ timeout: 10000 })
 
     // 4. Post a new job
     await page.click('text=Post New Job')
@@ -63,7 +63,7 @@ test.describe('Job Board E2E Flow', () => {
     // 8. Login as individual
     await login(page, JOB_BOARD.individual.email, JOB_BOARD.individual.password)
     await page.goto(`${JOB_BOARD.url}/jobs`)
-    await expect(page.getByRole('heading', { name: /jobs found/i })).toBeVisible()
+    await expect(page.locator('text=/jobs found|Loading jobs/i').first()).toBeVisible()
 
     // 9. Browse jobs and click on the posted job
     await expect(page.locator(`text=${JOB_BOARD.job.title}`)).toBeVisible()

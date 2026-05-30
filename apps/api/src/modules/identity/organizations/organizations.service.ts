@@ -27,6 +27,9 @@ export class OrganizationsService {
   getOrganizationByDomain = (domain: string): Promise<Organization | null> =>
     getOrganizationByDomain(this.repository, domain);
 
+  listOrganizations = (take?: number, skip?: number): Promise<Organization[]> =>
+    this.repository.findMany(take, skip);
+
   updateTrustStatus = (
     id: string,
     status: UpdateOrganizationData['trustStatus'],

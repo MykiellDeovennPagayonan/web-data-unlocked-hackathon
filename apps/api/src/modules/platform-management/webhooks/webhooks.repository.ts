@@ -3,6 +3,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { insertWebhookLog } from './repository-ops/insert-webhook-log';
 import { findWebhookLogById } from './repository-ops/find-webhook-log-by-id';
 import { findWebhookLogsByPlatform } from './repository-ops/find-webhook-logs-by-platform';
+import { findManyWebhookLogs } from './repository-ops/find-many-webhook-logs';
 import { updateWebhookLog } from './repository-ops/update-webhook-log';
 import {
   WebhookLog,
@@ -23,6 +24,9 @@ export class WebhooksRepository {
 
   findByPlatform = (filters: WebhookLogFilters): Promise<WebhookLog[]> =>
     findWebhookLogsByPlatform(this.prisma, filters);
+
+  findAll = (take?: number, skip?: number): Promise<WebhookLog[]> =>
+    findManyWebhookLogs(this.prisma, take, skip);
 
   update = (id: string, data: UpdateWebhookLogData): Promise<WebhookLog> =>
     updateWebhookLog(this.prisma, id, data);

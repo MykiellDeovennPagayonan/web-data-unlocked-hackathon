@@ -15,6 +15,11 @@ export async function rotateApiKey(
   oldKeyId: string,
   newKeyData: CreateApiKeyData,
 ): Promise<RotateApiKeyResult> {
+  const existing = await repository.findById(oldKeyId);
+  if (!existing) {
+    throw new Error(`API key not found: ${oldKeyId}`);
+  }
+
   // Revoke the old key
   const oldKey = await repository.update(oldKeyId, { revokedAt: new Date() });
 
@@ -27,10 +32,8 @@ export async function rotateApiKey(
     name: newKeyData.name,
     scopes: newKeyData.scopes,
     expiresAt: newKeyData.expiresAt,
+    keyHash,
   });
-
-  // Update with the hash
-  await repository.update(apiKey.id, { keyHash });
 
   await auditLogsService.logAction({
     actorType: AuditActorType.system,

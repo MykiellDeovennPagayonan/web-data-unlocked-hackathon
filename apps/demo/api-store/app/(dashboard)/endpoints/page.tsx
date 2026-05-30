@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { toast } from "sonner"
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Copy } from "lucide-react"
 
 interface ApiEndpoint {
@@ -23,35 +24,65 @@ interface ApiEndpoint {
 export default function EndpointsPage() {
   const [endpoints, setEndpoints] = useState<ApiEndpoint[]>([])
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchEndpoints()
   }, [])
 
   async function fetchEndpoints() {
-    const res = await fetch("/api/endpoints/mine")
-    if (res.ok) setEndpoints(await res.json())
+    try {
+      const res = await fetch("/api/endpoints/mine")
+      if (!res.ok) {
+        setError("Failed to load endpoints.")
+        return
+      }
+      setError(null)
+      setEndpoints(await res.json())
+    } catch {
+      setError("Failed to load endpoints.")
+    }
   }
 
   async function toggleActive(ep: ApiEndpoint) {
-    await fetch(`/api/endpoints/${ep.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isActive: !ep.isActive }),
-    })
-    fetchEndpoints()
+    try {
+      const res = await fetch(`/api/endpoints/${ep.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: !ep.isActive }),
+      })
+      if (res.ok) {
+        await fetchEndpoints()
+      } else {
+        toast.error("Failed to update endpoint status. Please try again.")
+      }
+    } catch {
+      toast.error("Failed to update endpoint status. Please try again.")
+    }
   }
 
   async function confirmDelete() {
     if (!deleteId) return
-    await fetch(`/api/endpoints/${deleteId}`, { method: "DELETE" })
-    setDeleteId(null)
-    fetchEndpoints()
+    try {
+      const res = await fetch(`/api/endpoints/${deleteId}`, { method: "DELETE" })
+      if (res.ok) {
+        setDeleteId(null)
+        await fetchEndpoints()
+      } else {
+        toast.error("Failed to delete endpoint. Please try again.")
+      }
+    } catch {
+      toast.error("Failed to delete endpoint. Please try again.")
+    }
   }
 
-  function copyProxyUrl(id: string) {
+  async function copyProxyUrl(id: string) {
     const url = `${window.location.origin}/api/proxy/${id}`
-    navigator.clipboard.writeText(url)
+    try {
+      await navigator.clipboard.writeText(url)
+    } catch {
+      toast.error("Copy failed. Please copy the URL manually.")
+    }
   }
 
   return (
@@ -69,14 +100,19 @@ export default function EndpointsPage() {
         </Button>
       </div>
 
-      {endpoints.length === 0 ? (
+      {error && (
+        <div className="text-sm text-destructive text-center py-8 border border-border-light rounded-xl bg-white">
+          {error}
+        </div>
+      )}
+      {!error && endpoints.length === 0 ? (
         <div className="bg-white border border-border-light rounded-xl py-16 text-center">
           <p className="text-text-secondary mb-4">You haven&apos;t created any endpoints yet.</p>
           <Button asChild className="bg-kaggle-blue hover:bg-kaggle-blue-hover text-white">
             <Link href="/endpoints/new">Create your first endpoint</Link>
           </Button>
         </div>
-      ) : (
+      ) : !error ? (
         <div className="space-y-4">
           {endpoints.map((ep) => (
             <div key={ep.id} className="bg-white border border-border-light rounded-xl p-5 hover:bg-surface transition-colors">
@@ -151,7 +187,7 @@ export default function EndpointsPage() {
             </div>
           ))}
         </div>
-      )}
+      ) : null}
 
       <Dialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
         <DialogContent className="sm:max-w-sm bg-white border-border-light">

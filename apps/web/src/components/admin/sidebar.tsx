@@ -1,32 +1,28 @@
+"use client";
+
 import {
   Activity,
   Building2,
   ChevronLeft,
   Database,
-  Fingerprint,
   Globe2,
   LayoutDashboard,
-  Link2,
   Monitor,
-  Network,
   Plug,
   Settings,
   ShieldCheck,
-  SlidersHorizontal,
-  Sparkles,
-  SquareStack,
   UserRound,
   Webhook,
-  Zap,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { ComponentType } from "react";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
   label: string;
+  href: string;
   icon: ComponentType<{ className?: string }>;
-  active?: boolean;
-  selected?: boolean;
   count?: string;
   badge?: string;
 };
@@ -42,47 +38,47 @@ const sections: NavSection[] = [
     items: [
       {
         label: "Command Center",
+        href: "/admin",
         icon: LayoutDashboard,
-        active: true,
       },
     ],
   },
   {
     label: "Intelligence",
     items: [
-      { label: "Identities", icon: UserRound },
-      { label: "Organizations", icon: Building2 },
-      { label: "Devices", icon: Monitor },
-      { label: "IP Records", icon: Globe2 },
-      { label: "Certificates", icon: ShieldCheck },
-      { label: "Aliases", icon: Link2 },
+      { label: "Identities", href: "/admin/identities", icon: UserRound },
+      { label: "Organizations", href: "/admin/organizations", icon: Building2 },
+      { label: "Devices", href: "/admin/devices", icon: Monitor },
+      { label: "IP Records", href: "/admin/ip-records", icon: Globe2 },
+      { label: "Certificates", href: "/admin/certificates", icon: ShieldCheck },
+      // { label: "Aliases", href: "#", icon: Link2 },
     ],
   },
   {
     label: "Operations",
     items: [
-      { label: "Access Events", icon: Activity, selected: true },
-      { label: "Behavioral Events", icon: Sparkles },
-      { label: "Trust Signals", icon: Network },
-      { label: "Webhook Logs", icon: Webhook },
-      { label: "Pending Reviews", icon: Database, count: "12" },
+      { label: "Access Events", href: "/admin/access-events", icon: Activity },
+      // { label: "Behavioral Events", href: "#", icon: Sparkles },
+      // { label: "Trust Signals", href: "#", icon: Network },
+      { label: "Webhook Logs", href: "/admin/webhook-logs", icon: Webhook },
+      { label: "Pending Reviews", href: "/admin/pending-reviews", icon: Database },
     ],
   },
-  {
-    label: "Risk & Analysis",
-    items: [
-      { label: "Risk Explorer", icon: SquareStack },
-      { label: "Threat Intelligence", icon: Fingerprint },
-      { label: "Attack Surface", icon: Zap },
-      { label: "MITRE ATT&CK", icon: SlidersHorizontal, badge: "BETA" },
-    ],
-  },
+  // {
+  //   label: "Risk & Analysis",
+  //   items: [
+  //     { label: "Risk Explorer", href: "#", icon: SquareStack },
+  //     { label: "Threat Intelligence", href: "#", icon: Fingerprint },
+  //     { label: "Attack Surface", href: "#", icon: Zap },
+  //     { label: "MITRE ATT&CK", href: "#", icon: SlidersHorizontal, badge: "BETA" },
+  //   ],
+  // },
   {
     label: "Platform",
     items: [
-      { label: "Integrations", icon: Plug },
-      { label: "Audit Logs", icon: Database },
-      { label: "Settings", icon: Settings },
+      { label: "Integrations", href: "/admin/integrations", icon: Plug },
+      { label: "Audit Logs", href: "/admin/audit-logs", icon: Database },
+      { label: "Settings", href: "/admin/settings", icon: Settings },
     ],
   },
 ];
@@ -125,24 +121,24 @@ export function Sidebar() {
 }
 
 function NavLink({ item }: { item: NavItem }) {
+  const pathname = usePathname();
+  const isActive = pathname === item.href;
   const Icon = item.icon;
 
   return (
-    <a
-      href="#"
-      aria-current={item.active ? "page" : undefined}
+    <Link
+      href={item.href}
+      aria-current={isActive ? "page" : undefined}
       className={cn(
         "flex h-10 items-center gap-3 rounded-md px-3 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
-        item.active &&
+        isActive &&
           "bg-blue-50 text-blue-600 shadow-[inset_0_0_0_1px_rgba(37,99,235,0.04)]",
-        item.selected && !item.active && "bg-[#edf5ff] text-[var(--dashboard-text)]",
-        !item.active &&
-          !item.selected &&
+        !isActive &&
           "text-[var(--dashboard-text)] hover:bg-slate-50 hover:text-blue-600",
       )}
     >
       <Icon
-        className={cn("size-4 stroke-[1.8]", item.active && "text-blue-600")}
+        className={cn("size-4 stroke-[1.8]", isActive && "text-blue-600")}
         aria-hidden="true"
       />
       <span className="min-w-0 flex-1 truncate">{item.label}</span>
@@ -156,6 +152,6 @@ function NavLink({ item }: { item: NavItem }) {
           {item.badge}
         </span>
       ) : null}
-    </a>
+    </Link>
   );
 }

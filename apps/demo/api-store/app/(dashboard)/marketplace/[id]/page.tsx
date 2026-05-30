@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
+import { toast } from "sonner"
 import { ArrowLeft, Copy, Check, Loader2, AlertTriangle, DollarSign } from "lucide-react"
 
 interface ApiEndpoint {
@@ -39,23 +39,25 @@ interface RunResponse {
   error: string | null
 }
 
+function validMethod(m: string): "GET" | "POST" | "PUT" | "DELETE" {
+  const v = ["GET", "POST", "PUT", "DELETE"] as const
+  return v.includes(m as any) ? (m as "GET" | "POST" | "PUT" | "DELETE") : "POST"
+}
+
 export default function TryApiPage() {
   const params = useParams()
   const router = useRouter()
-  const id = params.id as string
+  const id = useMemo(() => {
+    const raw = Array.isArray(params.id) ? params.id[0] : params.id
+    return raw || ""
+  }, [params.id])
 
   const [endpoint, setEndpoint] = useState<ApiEndpoint | null>(null)
   const [loading, setLoading] = useState(true)
   const [apiKey, setApiKey] = useState<ApiKey | null>(null)
   const [keyLoading, setKeyLoading] = useState(true)
-
   const [method, setMethod] = useState<"GET" | "POST" | "PUT" | "DELETE">("POST")
   const [body, setBody] = useState<string>("{}")
-
-  const validMethod = (m: string): "GET" | "POST" | "PUT" | "DELETE" => {
-    const v = ["GET", "POST", "PUT", "DELETE"] as const
-    return v.includes(m as any) ? (m as "GET" | "POST" | "PUT" | "DELETE") : "POST"
-  }
   const [bodyError, setBodyError] = useState<string | null>(null)
   const [isRunning, setIsRunning] = useState(false)
   const [response, setResponse] = useState<RunResponse | null>(null)
@@ -75,27 +77,42 @@ export default function TryApiPage() {
   }
 
   useEffect(() => {
+    if (!id) return
+    let ignore = false
     fetch(`/api/endpoints/${id}`)
       .then((r) => {
         if (!r.ok) throw new Error("Endpoint not found")
         return r.json()
       })
       .then((d) => {
+        if (ignore) return
         setEndpoint(d)
         setMethod(validMethod(d.method))
         setBody(d.samplePayload ?? "{}")
       })
-      .catch(() => setEndpoint(null))
-      .finally(() => setLoading(false))
+      .catch(() => {
+        if (!ignore) setEndpoint(null)
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false)
+      })
+    return () => { ignore = true }
   }, [id])
 
   useEffect(() => {
+    let ignore = false
     fetch("/api/keys")
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setApiKey(d))
-      .catch(() => setApiKey(null))
-      .finally(() => setKeyLoading(false))
-    fetchFreeTrial()
+      .then((d) => {
+        if (!ignore) setApiKey(d)
+      })
+      .catch(() => {
+        if (!ignore) setApiKey(null)
+      })
+      .finally(() => {
+        if (!ignore) setKeyLoading(false)
+      })
+    return () => { ignore = true }
   }, [])
 
   function validateBody(value: string) {
@@ -131,9 +148,13 @@ export default function TryApiPage() {
 
   async function copyProxyUrl() {
     const url = `${window.location.origin}/api/proxy/${id}`
-    await navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      toast.error("Copy failed. Please copy the URL manually.")
+    }
   }
 
   async function runRequest() {
@@ -207,7 +228,6 @@ export default function TryApiPage() {
     )
   }
 
-  const proxyUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/api/proxy/${endpoint.id}`
 
   return (
     <div className="space-y-6">
@@ -232,10 +252,10 @@ export default function TryApiPage() {
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-surface-muted border border-border-light flex items-center justify-center">
               <span className="text-[10px] font-bold text-text-secondary">
-                {endpoint.orgProfile.user.name.charAt(0).toUpperCase()}
+                {endpoint.orgProfile?.user?.name?.charAt(0).toUpperCase() ?? "?"}
               </span>
             </div>
-            <span className="text-sm text-text-secondary">{endpoint.orgProfile.user.name}</span>
+            <span className="text-sm text-text-secondary">{endpoint.orgProfile?.user?.name ?? "Unknown"}</span>
           </div>
           <span className="text-xs text-text-muted">{new Date(endpoint.createdAt).toLocaleDateString()}</span>
           <Badge className="bg-sky-50 text-sky-600 border-0 text-xs font-medium">{endpoint.method}</Badge>
@@ -281,7 +301,7 @@ export default function TryApiPage() {
               <div className="bg-white border border-border-light rounded-xl p-6">
                 <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide mb-3">Proxy URL</h2>
                 <div className="flex items-center gap-2 bg-surface-muted rounded p-3">
-                  <code className="text-xs font-mono text-text-primary break-all flex-1">{proxyUrl}</code>
+                  <code className="text-xs font-mono text-text-primary break-all flex-1">{`${window.location.origin}/api/proxy/${endpoint.id}`}</code>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -311,7 +331,7 @@ export default function TryApiPage() {
                 <div className="bg-surface-muted rounded p-4">
                   <p className="text-xs font-mono text-text-primary mb-2">// cURL</p>
                   <pre className="text-xs font-mono text-text-primary overflow-auto">
-                    {`curl -X ${endpoint.method} ${proxyUrl} \\
+                    {`curl -X ${endpoint.method} ${window.location.origin}/api/proxy/${endpoint.id} \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`}
                   </pre>
@@ -321,7 +341,7 @@ export default function TryApiPage() {
                 <p className="text-xs font-mono text-text-primary mb-2">// JavaScript</p>
                 <div className="bg-surface-muted rounded p-4">
                   <pre className="text-xs font-mono text-text-primary overflow-auto">
-                    {`fetch("${proxyUrl}", {
+                    {`fetch("${window.location.origin}/api/proxy/${endpoint.id}", {
   method: "${endpoint.method}",
   headers: {
     "x-api-key": "YOUR_API_KEY",
@@ -480,10 +500,10 @@ export default function TryApiPage() {
           <div className="lg:sticky lg:top-24 space-y-4">
             <div className="bg-white border border-border-light rounded-xl p-5 space-y-4">
               <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wide">Actions</h3>
-              <Button className="w-full bg-kaggle-blue hover:bg-kaggle-blue-hover text-white h-10">
-                Get API Key
+              <Button asChild className="w-full bg-kaggle-blue hover:bg-kaggle-blue-hover text-white h-10">
+                <Link href="/keys">Get API Key</Link>
               </Button>
-              <Button variant="outline" className="w-full h-10 border-border-light text-text-secondary hover:bg-surface-muted">
+              <Button variant="outline" className="w-full h-10 border-border-light text-text-secondary hover:bg-surface-muted" onClick={copyProxyUrl}>
                 Copy Proxy URL
               </Button>
             </div>
@@ -517,11 +537,11 @@ export default function TryApiPage() {
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-surface-muted border border-border-light flex items-center justify-center">
                   <span className="text-sm font-bold text-text-secondary">
-                    {endpoint.orgProfile.user.name.charAt(0).toUpperCase()}
+                    {endpoint.orgProfile?.user?.name?.charAt(0).toUpperCase() ?? "?"}
                   </span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-text-primary">{endpoint.orgProfile.user.name}</p>
+                  <p className="text-sm font-medium text-text-primary">{endpoint.orgProfile?.user?.name ?? "Unknown"}</p>
                   <p className="text-xs text-text-muted">Organization</p>
                 </div>
               </div>

@@ -1,295 +1,1579 @@
 # Tunai DESIGN.md
 
-## Overview
-Tunai is an enterprise trust intelligence interface for platforms that need to evaluate identities, organizations, devices, IPs, and behavioral activity in real time. 
+## 1. Design Overview
 
-The aesthetic is designed to function as a high-stakes security operations center (SOC). It feels **secure, intelligent, precise, and calm under pressure**. The UI accommodates high information density—processing millions of `access_events` and `trust_signals`—without feeling cluttered or chaotic. The visual language favors sharp borders, dark/slate tones, highly legible typography, and strict semantic color coding to ensure security reviewers and platform admins can instantly identify and act on risk.
+Tunai is an AI-native identity trust and access-security platform. It helps client platforms evaluate identities, organizations, devices, IP addresses, certificates, and behavioral activity in real time.
 
----
+The interface should feel like a **modern enterprise trust-intelligence dashboard**: secure, precise, data-rich, and approachable. It must communicate operational seriousness without looking intimidating, overly technical, or cyberpunk-inspired.
 
-## Colors
-The Tunai palette is engineered for a dark-mode-first security environment, reducing eye strain for reviewers working long shifts while ensuring critical alerts are unmissable.
+The visual reference establishes a calm and professional control-center experience:
 
-**Core Brand & Surface**
-* **Primary:** `#2563EB` (Royal Blue) — Primary actions, active tab states, focused inputs.
-* **Primary Hover:** `#1D4ED8` (Deep Blue) — Interactive hover states for primary buttons.
-* **Secondary:** `#334155` (Slate 700) — Secondary buttons, neutral actions.
-* **Accent (AI/Intelligence):** `#8B5CF6` (Violet) — Indicates machine learning insights, such as `llm_summary` in background checks or predictive email fraud flags.
-* **Background:** `#0F172A` (Slate 900) — Deep slate for the main application canvas.
-* **Surface:** `#1E293B` (Slate 800) — Cards, panels, tables, and modal backgrounds.
-* **Surface Muted:** `#0B1120` (Slate 950) — Sidebar background, nested data tables, JSON viewer backgrounds.
+- Light-mode-first interface
+- White cards on a soft blue-gray canvas
+- Thin borders and subtle elevation
+- Compact but readable information density
+- Clear blue primary accent
+- Restrained use of red, amber, and green for security meaning
+- Minimal decorative styling
+- Frequent use of small status indicators, badges, icons, and concise labels
+- Dashboard modules arranged in a structured grid
+- Fast scanning for security reviewers and platform administrators
 
-**Text & Borders**
-* **Text Primary:** `#F8FAFC` (Slate 50) — Headings, primary data values, table rows.
-* **Text Secondary:** `#94A3B8` (Slate 400) — Column headers, timestamps, helper text.
-* **Text Muted:** `#64748B` (Slate 500) — Placeholder text, disabled states, empty state text.
-* **Border:** `#334155` (Slate 700) — Card outlines, table row dividers, input borders.
-
-**Semantic Risk Palette**
-Used strictly for status indicators, badges, and trust scoring.
-* **Allowed / Clean (Success):** `#10B981` (Emerald 500) — Clean background checks, allowed access events.
-* **Verified / Trusted:** `#3B82F6` (Blue 500) — Entities holding valid `trust_certificates`.
-* **Flagged / Warning:** `#F59E0B` (Amber 500) — Soft flags, limited sessions, throttled API calls, yellow severity `registry_entries`.
-* **Blocked / Critical (Danger/Error):** `#EF4444` (Red 500) — Blocked logins, hard red `registry_entries`, failed webhook logs, revoked certificates.
-* **Info:** `#0EA5E9` (Sky 500) — System updates, neutral audit log actions.
-* **Unknown / Pending:** `#64748B` (Slate 500) — Ongoing verification requests, pending community reports.
+The application should resemble a polished modern B2B SaaS product used by operations and security teams throughout the day.
 
 ---
 
-## Typography
-The typography system is engineered for technical clarity, dense data scanning, and enterprise-grade professionalism.
+## 2. Visual Source of Truth
 
-* **Display Font:** `Inter` — Used for page headers, metric card numbers, and modal titles. 
-* **Body Font:** `Inter` — Used for all UI text, table rows, badges, and standard copy.
-* **Code/Monospace Font:** `JetBrains Mono` — Used for IP addresses, `api_keys`, `session_token_hash`, JSON viewer blocks, and webhook payloads.
+The provided Tunai Command Center dashboard image is the primary visual source of truth.
 
-**Type Scale & Usage:**
-* **H1 (Page Titles):** 24px, Semi-Bold, -0.02em letter spacing.
-* **H2 (Section/Modal Titles):** 18px, Medium, -0.01em letter spacing.
-* **H3 (Card Titles):** 14px, Medium, Default letter spacing.
-* **Dashboard Metrics:** 32px, Semi-Bold, -0.02em letter spacing.
-* **Body (Default):** 14px, Regular, Default letter spacing.
-* **Table Text / UI Controls:** 13px, Regular, Default letter spacing.
-* **Code / Badges / Timestamps:** 12px, `JetBrains Mono` (Code) or `Inter Medium` (Badges), +0.02em letter spacing for uppercase badges.
+When implementing or extending the application:
+
+1. Match the reference image's layout proportions, spacing rhythm, density, borders, and component treatment.
+2. Preserve the clean and calm visual character.
+3. Prefer white surfaces, pale blue-gray backgrounds, and restrained accents.
+4. Avoid introducing visual ideas that conflict with the reference, such as dark-mode-first layouts, cyberpunk effects, neon colors, heavy gradients, excessive shadows, or highly decorative cards.
+5. Keep new screens consistent with the reference even when the exact screen is not shown.
+
+The interface should feel cohesive across dashboards, lists, detail views, reviews, settings pages, drawers, and modals.
 
 ---
 
-## Layout
-The dashboard employs a rigid, grid-based layout that prioritizes content and evidence visibility. 
+## 3. Core Design Principles
 
-* **Sidebar:** Fixed left sidebar (260px). Persistent. Can be collapsed to icons (64px) for power users.
-* **Top Bar:** Fixed height (64px). Houses global search (finds `identities`, `ip_records`, `organizations`), current Platform context switcher, and user profile/settings.
-* **Main Content Area:** Fluid width, constrained to a max-width of 1600px for ultra-wide monitors. Uses a 12-column grid with a 24px gap.
-* **Card Grid:** Metric cards typically span 3 columns (4 per row). Charts span 6 or 12 columns. Tables always span the full 12 columns.
-* **Detail Pages:** Split layout. Left column (8 cols) for primary timelines and raw data (`behavioral_events`, `access_events`). Right column (4 cols) for sticky contextual summaries (current trust score, linked `entity_aliases`, action buttons).
-* **Drawers:** Slide out from the right. Used for deep-dives into single rows without losing the context of the main list (e.g., clicking a specific `access_event` opens a drawer showing the `triggered_rules` and `ip_records` context).
-* **Responsive Behavior:** Below 1024px, the sidebar collapses automatically. Detail page split-views stack vertically. 
+### 3.1 Calm Security Interface
 
----
+Tunai deals with high-risk events, but the entire interface should not look alarming. Most surfaces should remain neutral. Risk colors are reserved for the specific items that require attention.
 
-## Elevation
-Tunai relies on **borders and color contrast** rather than decorative shadows to separate z-index layers. This keeps the interface feeling flat, sharp, and technical.
+### 3.2 High Information Density Without Visual Clutter
 
-* **Static Cards:** No shadow. 1px solid border (`#334155`). Background `#1E293B`.
-* **Hover Cards (e.g., clickable list items):** 1px solid border (`#475569`), slight background lighten (`#334155`).
-* **Dropdowns / Context Menus:** 1px solid border (`#475569`), soft drop shadow (0 10px 15px -3px rgba(0, 0, 0, 0.5)) to break it away from complex underlying data.
-* **Modals & Drawers:** Full screen backdrop (`#000000` at 60% opacity). The modal itself has a 1px border and no shadow.
-* **Focus States:** 2px solid ring of `#2563EB` with a 2px offset. Absolutely critical for keyboard navigation.
-* **Critical Alert States:** Glow effect using `#EF4444` at 20% opacity for pulsing high-severity unreviewed `community_reports` or live breach alerts.
+The dashboard contains metrics, live tables, review queues, maps, health panels, and AI-generated insights. Information must be arranged in clear modules with predictable spacing and hierarchy.
 
----
+### 3.3 Evidence-First Presentation
 
-## Components
+Risk decisions should be supported by visible evidence. The UI should expose event details, trust scores, locations, devices, linked identities, triggered rules, and recent activity without forcing excessive navigation.
 
-* **Buttons:** Flat, rectangular. Primary buttons have `#2563EB` background. Destructive buttons use `#EF4444`. Secondary buttons are transparent with a `#334155` border.
-* **Cards:** Square corners (4px radius). Padded evenly (24px). Always possess a 1px border.
-* **Metric Cards:** Display a label (e.g., "Blocked IPs"), a large value (e.g., "1,204"), and a sparkline or percentage change indicator.
-* **Inputs & Selects:** 40px height. Background `#0F172A`, border `#334155`. Text is `#F8FAFC`.
-* **Search Bars:** Prominent, often taking up 40% of the top bar. Includes a keyboard shortcut indicator (e.g., `Cmd + K`).
-* **Filters:** Rendered as horizontal pill groups above tables. Include complex boolean filter builders for `access_events` (e.g., `Risk Score > 80 AND Event Type = API_Call`).
-* **Tables:** Edge-to-edge within their container. Sticky headers. 40px row height for high density. Hover state highlights the entire row.
-* **Tabs:** Underline style. Active tab has a 2px bottom border in Primary Blue; inactive tabs are Muted text.
-* **Badges:** Small, 24px height, inline indicators. Used for entity types (e.g., [ORGANIZATION], [IDENTITY]).
-* **Risk Badges / Status Chips:** Color-coded with a 10% opacity background of the semantic color, and 100% text color (e.g., `#EF4444` text on a dark red-tinted background for BLOCKED).
-* **Trust Score Indicators:** A circular gauge or a bold numerical pill (0-100). 0-39 (Red), 40-69 (Amber), 70-89 (Blue), 90-100 (Green).
-* **Verdict / Severity Badges:** Used to show `overall_verdict` from background checks. Uppercase, bold, dot indicator next to text (e.g., `🔴 HARD FLAG`).
-* **Timelines:** Vertical line with nodes connecting `behavioral_events`, `access_events`, and `trust_score_snapshots` to tell the story of a session.
-* **Activity Feeds:** Streaming lists of events. New events flash briefly with a muted surface color before settling into the list.
-* **Detail Panels:** Side-by-side key-value pairs for metadata (e.g., `device_signals`).
-* **JSON Viewers:** Used for `webhook_delivery_logs` and `background_check_results` (raw data). Darker background (`#0B1120`), syntax highlighting (Keys: Blue, Strings: Green, Numbers: Violet).
-* **Code/API Key Blocks:** Monospace text, obscured by default (`••••••••`), with a click-to-copy icon.
-* **Webhook Log Rows:** Expandable table rows. Clicking expands to show request payload, response status (color coded green/red), and response body.
-* **Certificate Cards:** Visual representation of `trust_certificates` featuring a blockchain hash, valid date range, and a secure watermark icon.
-* **Registry Target Lists:** Dense lists linking `registry_entries` to actual IPs, Emails, and Devices, utilizing aliases.
-* **Empty States:** Center-aligned, muted text, subtle line-art icon (e.g., empty shield), and a clear secondary action button.
-* **Loading Skeletons:** Pulsing `#1E293B` blocks that match the shape of the data that is loading.
-* **Error Panels:** Red-bordered cards with a warning triangle icon, clear error text, and a "Retry" or "View Logs" button.
-* **Confirmation Modals:** Required for destructive actions. Red primary button. Forces user to type "BLOCK" or "REVOKE" for high-impact decisions.
+### 3.4 Clear Operational Hierarchy
+
+The user should immediately understand:
+
+- What is happening now
+- What changed recently
+- Which events are risky
+- Which items require human review
+- Whether system health is stable
+- Where to investigate further
+
+### 3.5 Restrained Branding
+
+Tunai should feel distinctive through consistency rather than decoration. Use the Tunai blue accent, shield iconography, careful typography, and a structured dashboard shell.
 
 ---
 
-## Navigation
-The sidebar is structured logically, moving from high-level monitoring down to granular configuration and compliance.
+## 4. Color System
 
-**Overview**
-* **Platforms:** Manage platform instances, view aggregated strictness levels.
-* **Live Access Events:** The streaming firehose of `access_events`. The SOC view.
+Tunai uses a light-mode-first color system. The application should feel bright, clean, and professional while retaining enough contrast for data-heavy workflows.
 
-**Intelligence & Entities**
-* **Identities:** Global directory of individuals and their trust statuses.
-* **Organizations:** Global directory of verified and unverified companies.
-* **Devices & IPs:** Intelligence database of device fingerprints and IP risk profiles.
-* **Sessions & Behavior:** Drill down into active sessions and `behavioral_events`.
+### 4.1 Core Brand Colors
 
-**Trust Engine**
-* **Background Checks:** Queue of pending/completed `background_checks` and LLM summaries.
-* **Trust Engine:** View `trust_signals` weighting, score configurations, and snapshots.
-* **Certificates:** Manage issued `trust_certificates` and monitor network-wide verifications.
+| Token | Approximate Value | Usage |
+|---|---:|---|
+| `brand-primary` | `#176BFF` | Main links, active icons, primary actions, selected states |
+| `brand-primary-hover` | `#0D5BE8` | Hover state for primary buttons and links |
+| `brand-primary-soft` | `#EAF3FF` | Active sidebar item background, pale icon containers, selected filters |
+| `brand-primary-muted` | `#CFE2FF` | Soft blue borders and secondary highlights |
+| `brand-deep` | `#09265E` | Logo text, dark headings, important values |
 
-**Network & Community**
-* **Registry:** The core Blacklist/Whitelist of `registry_entries` and their targets.
-* **Community Reports:** Review queue for bad actor reports submitted by platforms.
+### 4.2 Application Surfaces
 
-**Configuration & Logs**
-* **Rules & Strictness:** Configure `platform_rules` (Low, Medium, High, Custom).
-* **API Keys:** Issue and revoke platform authentication keys.
-* **Webhooks:** Monitor `webhook_delivery_logs` and configure endpoints.
-* **Compliance:** Manage `consent_records` and `verification_requests` workflows.
-* **Audit Logs:** Immutable system action trail.
-* **Settings:** Global user preferences and billing.
+| Token | Approximate Value | Usage |
+|---|---:|---|
+| `app-background` | `#F5F8FC` | Main application canvas |
+| `sidebar-background` | `#FFFFFF` | Left navigation |
+| `header-background` | `#F9FBFE` | Top command bar |
+| `card-background` | `#FFFFFF` | Dashboard cards, tables, panels |
+| `surface-subtle` | `#F8FBFF` | Secondary panel areas, footer strip |
+| `surface-muted` | `#F1F6FC` | Map area, empty states, hover rows |
+| `surface-selected` | `#EAF3FF` | Active navigation items, selected tabs |
+| `overlay-background` | `rgba(9, 38, 94, 0.24)` | Modal backdrop |
 
----
+### 4.3 Text Colors
 
-## Dashboard Sections (Homepage)
-The main view operates as a Command Center for platform trust and security.
+| Token | Approximate Value | Usage |
+|---|---:|---|
+| `text-primary` | `#071C4A` | Headings, key values, table content |
+| `text-secondary` | `#4E6798` | Supporting text, descriptions, secondary values |
+| `text-muted` | `#7C90B6` | Timestamps, placeholders, helper text |
+| `text-subtle` | `#A6B4CC` | Disabled states, low-priority metadata |
+| `text-link` | `#0A61F5` | Clickable identities, IP addresses, actions |
 
-1. **Top Metric Cards:** - Active Sessions (Live)
-   - Blocked Requests (Last 24h)
-   - Average Trust Score 
-   - Webhook Delivery Health (%)
-2. **Live Access Event Feed (Left Column, 8 cols):** A real-time, auto-updating table of `access_events` showing Timestamp, Identity/IP, Triggered Rules, and Verdict.
-3. **Risk & Trust Score Distribution (Right Column, 4 cols):** A stacked bar chart showing the breakdown of Clean vs. Flagged vs. Blocked entities currently interacting with the platform.
-4. **IP/Device Intelligence Panel:** A geographic heat map or top-10 list of anomalous traffic origins (e.g., Datacenter/Tor traffic spikes).
-5. **Pending Review Queue:** A prioritized list of entities requiring manual review (e.g., yellow severity `community_reports` or flagged `verification_requests`).
-6. **Certificate & Registry Health:** A small monitoring block showing certificates expiring in 7 days and new additions to the global Blacklist.
+### 4.4 Borders and Dividers
 
----
+| Token | Approximate Value | Usage |
+|---|---:|---|
+| `border-default` | `#DCE5F1` | Cards, input fields, panel boundaries |
+| `border-subtle` | `#E9EFF7` | Table dividers, nested row separators |
+| `border-focus` | `#176BFF` | Focus rings and active inputs |
+| `border-hover` | `#C4D5EA` | Hovered interactive cards and inputs |
 
-## Screen Patterns
+### 4.5 Semantic Security Colors
 
-**List Screens**
-* **Usage:** `identities`, `organizations`, `access_events`, `registry_entries`.
-* **Pattern:** Top bar contains a powerful search input and "Add Filter" button. Below, a dense data table. Checkboxes on the left for bulk actions (e.g., Bulk Flag). Far right column holds an overflow menu (`...`) for row-specific actions. Status indicators are prominent in the second column.
+Semantic colors should be used only when they communicate risk, health, or state.
 
-**Detail Screens**
-* **Usage:** Viewing a specific Identity, IP, or Certificate.
-* **Pattern:** Header contains the entity name/hash, large Trust Status badge, and current Risk Score. Below the header, a 2-column layout. Left side: A chronological timeline of `behavioral_events` and `trust_score_snapshots`. Right side: Related records (`entity_aliases`, linked IPs), an Action Panel (Revoke, Block, Override), and a mini audit trail.
+| Meaning | Color | Soft Background | Typical Usage |
+|---|---:|---:|---|
+| Success / Low Risk / Healthy | `#00B67A` | `#E9FBF4` | Low-risk badge, operational system status, success trends |
+| Warning / Medium Risk | `#FF9F1A` | `#FFF7E8` | Medium-risk events, caution icons, items requiring attention |
+| Critical / Blocked / Failure | `#FF4355` | `#FFF0F2` | Critical badge, blocked activity, failed delivery |
+| Informational / Trusted | `#176BFF` | `#EAF3FF` | Links, verified states, certificates, neutral insights |
+| Unknown / Pending | `#7C90B6` | `#F1F4F8` | Pending checks, unknown values, unavailable data |
 
-**Review Screens**
-* **Usage:** Processing `community_reports`, `background_checks`, or manual flags.
-* **Pattern:** "Evidence-First Layout." The left panel displays the raw data (LinkedIn mismatches, OFAC hits, LLM summary). The right panel is a fixed decision module requiring the reviewer to select a verdict (Accept/Reject/Flag), input human review notes, and click a confirmation button.
+### 4.6 Color Usage Rules
 
-**Settings Screens**
-* **Usage:** `platform_rules`, API Keys, Webhooks.
-* **Pattern:** Standard vertical forms divided into logical sections by subtle borders. Destructive or high-impact settings (like dropping strictness to "Low") are accompanied by amber warning text. Includes "Preview before save" behavior for rule configurations.
-
----
-
-## Spacing
-Built on a strict 4px grid to ensure vertical and horizontal rhythm.
-
-* **Base Unit:** 4px
-* **Spacing Scale:** 4px, 8px, 12px, 16px, 24px, 32px, 48px, 64px
-* **Page Padding:** 32px (Desktop), 16px (Mobile)
-* **Card Padding:** 24px
-* **Table Row Height:** 40px (High density), 48px (Standard density)
-* **Sidebar Width:** 260px (Expanded), 64px (Collapsed)
-* **Header Height:** 64px
-* **Section Gaps:** 32px between discrete dashboard modules.
-* **Modal Padding:** 24px internal padding.
-* **Drawer Width:** 480px (Standard), 800px (Wide, for JSON/code review).
+- Use blue as the primary product accent.
+- Use red only for critical risk, failures, blocking, and destructive actions.
+- Use amber only for warnings, medium-risk states, or items needing attention.
+- Use green only for positive health, allowed activity, low-risk states, or successful changes.
+- Do not use purple as the default AI color. AI insights should use the same blue visual system as the rest of Tunai.
+- Do not fill entire large cards with risk colors.
+- Prefer pastel semantic backgrounds with saturated text and icons.
+- Never rely on color alone. Always include a label, icon, or explicit status text.
 
 ---
 
-## Border Radius
-Corners are kept tight to reinforce the technical, serious nature of the product.
+## 5. Typography
 
-* **Small Elements (Checkboxes, Tags, Badges):** 2px
-* **Interactive Elements (Buttons, Inputs, Selects):** 4px
-* **Structural Elements (Cards, Panels, Modals, Drawers):** 8px
-* **Avatars / Status Dots:** 50% (Fully rounded)
+Tunai uses a compact, legible typography system optimized for dashboards and technical scanning.
 
----
+### 5.1 Font Families
 
-## Iconography
-Icons are strict, uniform, line-based, and non-decorative. Stroke width is 1.5px.
+| Purpose | Font |
+|---|---|
+| Primary interface font | `Inter`, `Arial`, sans-serif |
+| Monospace values | `JetBrains Mono`, `SFMono-Regular`, monospace |
 
-* **Shield / Check-Shield:** Security status, Verified status.
-* **Fingerprint:** Device intelligence, Identity records.
-* **Globe / Crosshairs:** IP intelligence, geographic origin.
-* **Key:** API keys, authentication events.
-* **Bell / Webhook:** Delivery logs, system alerts.
-* **File Certificate:** `trust_certificates`, verification requests.
-* **Warning Triangle:** High risk, flagged behavior, failed background checks.
-* **Database / List:** Registry entries, raw logs.
-* **Lock / Scale:** Compliance, consent records, audit trails.
+Use the primary interface font for almost all visible text. Use monospace selectively for IP addresses, hashes, IDs, coordinates, certificate fingerprints, API keys, and raw payloads.
 
----
+### 5.2 Type Scale
 
-## Motion & Interaction
-Motion is fast, functional, and never decorative. Animations must not impede the speed of a security reviewer.
+| Style | Size | Weight | Usage |
+|---|---:|---:|---|
+| Page title | `22px` | `600` | Major screen heading |
+| Large metric value | `28px–32px` | `650–700` | Dashboard KPI values |
+| Section title | `14px–16px` | `600–700` | Card and panel titles |
+| Navigation item | `14px` | `500` | Sidebar links |
+| Table cell | `12px–13px` | `400–600` | Event rows and metadata |
+| Table header | `10px–11px` | `600` | Uppercase column headings |
+| Card label | `11px–12px` | `600–700` | Uppercase metric labels |
+| Helper text | `11px–12px` | `400–500` | Timestamps, subtitles |
+| Badge text | `10px–11px` | `600–700` | Uppercase risk labels |
+| Status strip text | `11px–12px` | `400–600` | Footer health information |
 
-* **Hover Transitions:** 100ms ease-in-out (color fades on buttons/rows).
-* **Focus States:** Instant (0ms) to ensure accessibility responsiveness.
-* **Drawer Transitions:** 250ms cubic-bezier slide-in from the right.
-* **Modal Transitions:** 150ms fade-in + slight scale up (98% to 100%).
-* **Table Row Hover:** Instant background color change.
-* **Loading States:** Shimmer effect on skeletons moving left-to-right at 1.5s intervals.
-* **Risk Alert Behavior:** High-priority live alerts (`behavioral_events` triggers) slide in as toast notifications from the top right, staying on screen until manually dismissed.
+### 5.3 Typography Rules
 
----
-
-## Data Visualization
-Data visualization is used sparingly and only when it provides faster insights than a raw table.
-
-* **Risk Distribution Charts:** Stacked horizontal bars showing the ratio of Clean / Flagged / Blocked traffic over a 24-hour period.
-* **Trust Score Trends:** Line charts showing score drift over time. The AI insight color (`#8B5CF6`) is used to highlight anomalies or sudden score drops.
-* **Access Event Volume:** Simple histograms (bar charts) above the live access feed to visualize traffic spikes.
-* **IP Geography Map:** A dark, minimalist dot-map with glowing points for traffic sources. Red dots indicate blocked origins.
-* **Tables vs. Charts:** If the user needs to *take action* on a specific entity, use a table. If the user needs to *understand a trend* to adjust a `platform_rule`, use a chart.
+- Use dark navy rather than pure black.
+- Use uppercase labels sparingly for metrics, table headings, and grouped navigation headings.
+- Keep line heights compact but readable.
+- Use bold type to highlight values, not entire paragraphs.
+- Avoid oversized marketing-style text inside the application shell.
+- Truncate long content only when the full value is available through hover, expansion, or a detail view.
 
 ---
 
-## Risk Status Language
-Language must be highly consistent across the UI to avoid ambiguity during security incidents.
+## 6. Application Shell
 
-* **Clean:** Passed all checks; no flags.
-* **Verified:** Passed KYC/Background check; holds a Trust Certificate.
-* **Flagged:** Suspicious behavior or soft matches found; requires review or increased friction.
-* **Limited:** Session permissions restricted due to behavioral triggers.
-* **Throttled:** API or request rates artificially slowed due to suspicious IP patterns.
-* **Blocked:** Hard denial of access based on Blacklist or high-risk rules.
-* **Pending Review:** Awaiting human decision (e.g., community reports).
-* **Revoked:** A previously valid certificate or API key that has been killed.
-* **Expired:** Time-limited credential that has lapsed.
+The application shell is persistent and should remain consistent across all authenticated Tunai screens.
+
+### 6.1 Desktop Layout
+
+The reference layout uses:
+
+- Fixed left sidebar
+- Fixed top command bar
+- Fluid main content area
+- Optional fixed bottom system-status strip
+- Compact page padding
+- Responsive grid modules
+
+Recommended dimensions:
+
+| Element | Recommended Size |
+|---|---:|
+| Expanded sidebar width | `288px` |
+| Collapsed sidebar width | `64px` |
+| Top command bar height | `72px` |
+| Bottom system-status strip | `34px–36px` |
+| Main page horizontal padding | `24px` |
+| Main page vertical padding | `16px` |
+| Standard dashboard gap | `16px` |
+| Compact internal gap | `8px–12px` |
+
+### 6.2 Sidebar
+
+The sidebar uses a white background with a thin right border.
+
+#### Header Area
+
+Display:
+
+- Tunai shield logo inside a pale blue rounded container
+- `TUNAI` wordmark in dark navy
+- Generous spacing around the logo
+- Optional collapse control near the bottom
+
+#### Navigation Grouping
+
+Use uppercase section labels with subdued blue-gray text.
+
+**Command Center**
+- Command Center
+
+**Intelligence**
+- Identities
+- Organizations
+- Devices
+- IP Records
+- Certificates
+- Aliases
+
+**Operations**
+- Access Events
+- Behavioral Events
+- Trust Signals
+- Webhook Logs
+- Pending Reviews
+
+**Risk & Analysis**
+- Risk Explorer
+- Threat Intelligence
+- Attack Surface
+
+Additional configuration pages may appear below these sections when needed.
+
+#### Active Navigation Item
+
+The active item should use:
+
+- Pale blue background
+- Blue icon
+- Blue text
+- Rounded rectangle container
+- No heavy shadow
+- No strong border unless required for accessibility
+
+#### Sidebar Icons
+
+Use small line icons with consistent stroke weight. Icons should be visually simple and aligned to a fixed width.
+
+#### Scroll Behavior
+
+The sidebar may scroll independently when navigation content exceeds the viewport. Keep the logo area stable when possible.
 
 ---
 
-## Do's and Don'ts
+## 7. Top Command Bar
 
-* **Do** use risk colors (Red, Amber, Green) *only* for status and severity. Do not use them for primary buttons or general branding.
-* **Do** keep dangerous actions (Block, Revoke, Delete) visually distinct, usually requiring secondary confirmation.
-* **Do** show raw evidence (e.g., LinkedIn API response, OFAC match data) side-by-side with the decision buttons in review screens.
-* **Do** use dense, paginated tables for high-volume logs like `access_events`.
-* **Do** require typed confirmation ("REVOKE") for high-impact destructive actions.
-* **Don't** use playful illustrations, heavily rounded corners, or emojis.
-* **Don't** use decorative gradients; flat colors and subtle borders denote hierarchy.
-* **Don't** hide raw evidence behind excessive clicks or tooltips. Security reviewers need the data visible immediately.
-* **Don't** display raw `api_keys` after creation; always obscure them.
-* **Don't** make AI-driven insights look like absolute certainties. Label them clearly (e.g., "LLM Summary - 85% Confidence").
-* **Don't** allow any manual status override without an accompanying text note that writes to the `audit_logs`.
+The top command bar is a compact utility area spanning the content width.
+
+### 7.1 Global Search
+
+The left side contains a prominent search input.
+
+Example placeholder:
+
+`Search identities, IPs, orgs, certificates...`
+
+Include:
+
+- Search icon
+- Placeholder text
+- Keyboard shortcut indicator such as `Ctrl` + `K`
+- Soft white background
+- Thin border
+- Rounded corners
+- Optional focused blue outline
+
+The search bar should be wide enough to feel global, usually around `45%–55%` of the available header width.
+
+### 7.2 Platform Selector
+
+The right side contains a platform-context switcher.
+
+Example:
+
+- Label: `Platform`
+- Value: `Acme Corp`
+- Key or platform icon
+- Chevron indicator
+
+This control should look like a bordered select card rather than a plain dropdown.
+
+### 7.3 Utility Actions
+
+Include:
+
+- Notification icon with small numeric badge
+- Help icon
+- User avatar
+- User name
+- User role
+- Dropdown chevron
+
+Keep utility icons compact and aligned horizontally.
 
 ---
 
-## Accessibility
-Tunai must be usable by all technical staff, adhering to strict WCAG 2.1 AA standards.
+## 8. Dashboard Grid Structure
 
-* **Contrast:** All text, especially in Dark Mode, must meet a 4.5:1 contrast ratio against its background.
-* **Color Independence:** Color is never the *only* risk indicator. Statuses must always include an icon or explicit text label (e.g., a red background must be accompanied by the text "BLOCKED" and a warning icon).
-* **Keyboard Navigation:** Every actionable element (links, buttons, table rows, tab headers) must be reachable via `Tab` and actionable via `Enter`/`Space`.
-* **Focus Rings:** Visible, high-contrast `#2563EB` focus rings are mandatory. Do not disable `outline: none` without providing a robust custom focus state.
-* **Screen Reader Labels:** All icon-only buttons (like "Copy API Key") must have descriptive `aria-labels`.
+The Command Center dashboard is a structured overview screen designed for rapid scanning.
+
+Use a responsive 12-column grid with `16px` gaps.
+
+### 8.1 Desktop Grid
+
+The reference composition contains:
+
+1. A full-width KPI row
+2. A large live-event table on the left
+3. A review queue on the right
+4. Geographic risk activity panel below
+5. Ranked risk lists
+6. AI-generated insight card
+7. Health and distribution cards
+8. Bottom system-health strip
+
+### 8.2 Recommended Column Distribution
+
+| Module | Suggested Width |
+|---|---:|
+| Live Access Events | `8 / 12` columns |
+| Pending Reviews | `4 / 12` columns |
+| Geographic Risk Activity | `4 / 12` columns |
+| Top Risky IPs | `2 / 12` columns |
+| Top Risky ASNs | `2 / 12` columns |
+| AI Insights | `4 / 12` columns |
+| Risk Distribution | `2 / 12` or `4 / 12` columns |
+| Certificate Health | `2 / 12` or `4 / 12` columns |
+| Webhook Delivery Health | `4 / 12` columns |
+
+The exact dimensions may adapt to available content, but the dashboard should preserve the balanced left-heavy monitoring area and right-side triage panels.
 
 ---
 
-## Responsive Design
-While Tunai is an enterprise tool primarily used on desktop, urgent security actions often happen on the go.
+## 9. Dashboard KPI Cards
 
-* **Desktop (1024px+):** Full expanded sidebar, multi-column layouts, deep data tables showing 8+ columns.
-* **Tablet (768px - 1023px):** Sidebar collapses to icons. Detail split-screens (8-col/4-col) collapse into a single stacked column.
-* **Mobile (Below 768px):** The dashboard shifts from an "analysis" tool to an "alert and triage" tool. Tables strip down to 3 essential columns (Entity, Status, Action). Complex chart views are hidden in favor of top-level metric summaries. Modals take up 100% of the screen width.
+The top row contains five compact KPI cards.
+
+### 9.1 Required Cards
+
+1. **Access Events**
+   - Example value: `1.24M`
+   - Trend indicator: `↑ 12.5% vs 24h ago`
+   - Activity waveform icon
+
+2. **Identities**
+   - Example value: `18,392`
+   - Trend indicator
+   - Identity icon
+
+3. **Risky Events**
+   - Example value: `2,847`
+   - Red increase indicator
+   - Shield-alert icon
+
+4. **Blocked Events**
+   - Example value: `732`
+   - Red increase indicator
+   - Lock icon
+
+5. **Trust Score (Avg)**
+   - Example value: `78`
+   - Trend indicator: `↑ 5 pts vs 24h ago`
+   - Circular progress gauge
+
+### 9.2 Metric Card Structure
+
+Each metric card includes:
+
+- Uppercase label
+- Large numeric value
+- Small trend text
+- Small icon in a pale semantic container
+- Optional chart or gauge
+- Thin border
+- White background
+- Rounded corners
+
+### 9.3 Metric Card Styling
+
+Recommended values:
+
+| Property | Value |
+|---|---|
+| Minimum height | `108px` |
+| Padding | `14px–16px` |
+| Border radius | `8px–10px` |
+| Border | `1px solid border-default` |
+| Shadow | Very subtle or none |
+
+The cards should feel compact and operational, not oversized.
 
 ---
 
-## Final Design Summary
-Tunai is not a standard SaaS application; it is a **trust intelligence command center**. The design must instill absolute confidence in the user. By utilizing a dark, high-contrast, data-dense UI with rigid spacing, unambiguous risk language, and strict semantic coloring, Tunai empowers security operations teams and platform administrators to make high-stakes, compliance-aware identity risk decisions rapidly and accurately.
+## 10. Live Access Events Table
+
+The Live Access Events table is the most important dashboard module.
+
+### 10.1 Header
+
+Display:
+
+- Section title: `LIVE ACCESS EVENTS`
+- Green streaming dot
+- Text label: `Streaming`
+- Event-type dropdown
+- Filter button with active filter count
+- Overflow menu
+
+Example controls:
+
+- `All Events`
+- `Filters (3)`
+- `...`
+
+### 10.2 Columns
+
+Use the following visible columns:
+
+| Column | Content |
+|---|---|
+| Time | Event timestamp and live status dot |
+| Identity | Email, username, or service identity; secondary ID below |
+| IP Address | Clickable monospace IP |
+| Action | Login, API Access, Admin Action, Data Export |
+| Risk Level | Low, Medium, High, Critical badge |
+| Trust Score | Numeric score with thin horizontal indicator |
+| Location | Country code and city |
+| Device / Client | Browser, operating system, API client, or device |
+
+### 10.3 Table Treatment
+
+- White background
+- Thin row separators
+- Small uppercase headers
+- Compact rows
+- Clickable identity and IP values in blue
+- Muted metadata beneath primary values
+- Small green streaming dot for new live activity
+- Risk badges with semantic pastel backgrounds
+- Trust score bar that changes color by score
+- Footer with result count and action link
+
+Example footer:
+
+`Showing 1 to 6 of 25,833 events`
+
+`View all events →`
+
+### 10.4 Table Row Density
+
+| Property | Value |
+|---|---:|
+| Header row height | `32px–36px` |
+| Data row height | `40px–44px` |
+| Cell horizontal padding | `12px–16px` |
+| Primary text size | `12px–13px` |
+| Secondary text size | `10px–11px` |
+
+### 10.5 Interaction
+
+- Highlight rows with a very subtle blue-gray background on hover.
+- Open event details in a right-side drawer.
+- Briefly animate new streaming rows with a soft background pulse.
+- Preserve scroll position when the live stream updates.
+- Allow users to pause automatic updates.
+
+---
+
+## 11. Pending Reviews Panel
+
+The Pending Reviews panel is a compact triage queue on the right side of the dashboard.
+
+### 11.1 Header
+
+Display:
+
+- `PENDING REVIEWS`
+- Count badge, such as `12`
+
+### 11.2 Review Row Structure
+
+Each item should include:
+
+- Semantic icon container
+- Review title
+- Secondary contextual information
+- Relative timestamp
+- Thin divider between rows
+
+Example review items:
+
+- `Critical login from new ASN`
+- `Impossible travel detected`
+- `High volume data export`
+- `New device seen`
+- `Unusual API activity`
+
+### 11.3 Footer Action
+
+Display:
+
+`View all pending reviews →`
+
+### 11.4 Styling
+
+- Use red icons for critical reviews.
+- Use amber icons for warning-level reviews.
+- Keep card background white.
+- Use minimal visual noise.
+- Keep descriptions short.
+- Align timestamps to the right.
+
+---
+
+## 12. Geographic Risk Activity
+
+The geographic panel visualizes suspicious traffic sources and attack flows.
+
+### 12.1 Header
+
+Use a title such as:
+
+`THREAT ORIGINS / GEOGRAPHIC RISK ACTIVITY`
+
+Include:
+
+- Info tooltip icon
+- Compact legend
+- Risk levels
+- Attack-flow indicator
+
+Example legend:
+
+- Blue dot: Low
+- Amber dot: Medium
+- Red dot: High
+- Dashed red line: Attack Flow
+
+### 12.2 Map Styling
+
+The map should use:
+
+- Pale blue-gray background
+- Light muted continent shapes
+- Minimal geographic detail
+- Small glowing dots
+- Dashed curved attack-flow lines
+- Low saturation
+- High contrast only for meaningful threat markers
+
+### 12.3 Tooltip
+
+Map hover tooltips may display:
+
+- City and country
+- Risk level
+- Event count
+- Coordinates
+- Related ASN or IP address
+- Time period
+
+The tooltip should use a white card with a subtle border and minimal shadow.
+
+### 12.4 Map Rules
+
+- Do not use a dark map.
+- Do not use excessive glow effects.
+- Avoid cluttering the map with too many visible markers.
+- Aggregate dense regions where necessary.
+- Provide a `View full geo analysis →` action.
+
+---
+
+## 13. Ranked Risk Lists
+
+Use compact ranked tables for the most suspicious infrastructure sources.
+
+### 13.1 Top Risky IPs
+
+Columns:
+
+- IP Address
+- Risk Score
+- Events
+
+### 13.2 Top Risky ASNs
+
+Columns:
+
+- ASN Number
+- Risk Score
+- Events
+
+### 13.3 Styling
+
+- Use monospace font for IP addresses and ASN values.
+- Use blue links for clickable infrastructure identifiers.
+- Use red and amber text for elevated risk scores.
+- Keep tables dense.
+- Add an info tooltip to the card title.
+- Use thin dividers between rows.
+
+---
+
+## 14. AI Insights Panel
+
+AI Insights should feel integrated into the product rather than visually separated into a futuristic or decorative panel.
+
+### 14.1 Header
+
+Display:
+
+- Sparkle or intelligence icon
+- `AI INSIGHTS`
+- Small `BETA` badge
+
+### 14.2 Content
+
+Use a concise bulleted list of actionable findings.
+
+Examples:
+
+- `Identity risk for account contractor.user is elevated from unusual authentication patterns observed.`
+- `2 critical sign-ins require immediate attention`
+- `5 identities show anomalous behavior`
+- `10 risky events in the last 24h`
+
+### 14.3 Styling
+
+- Use the Tunai blue accent.
+- Use white card background.
+- Keep body text compact.
+- Avoid violet panels, gradients, or glowing effects.
+- Label AI-generated insights clearly.
+- Do not present AI conclusions as absolute certainty.
+- Link to a more detailed insight screen.
+
+Example footer:
+
+`View all insights →`
+
+---
+
+## 15. Webhook Delivery Health
+
+This card summarizes platform integration health.
+
+### 15.1 Suggested Metrics
+
+- Success Rate
+- Failures
+- Average Latency
+
+Example:
+
+| Metric | Value |
+|---|---:|
+| Success Rate | `98.7%` |
+| Failures | `21` |
+| Average Latency | `312 ms` |
+
+### 15.2 Styling
+
+- Keep the module compact.
+- Use green for improved success rate.
+- Use red for increasing failures or worsening latency.
+- Use subdued labels above prominent values.
+- Provide drill-down access to webhook logs.
+
+---
+
+## 16. Risk Distribution and Certificate Health
+
+Smaller analytical cards may appear beneath the main risk panels.
+
+### 16.1 Risk Distribution
+
+Use:
+
+- Donut chart, horizontal segmented bar, or compact legend
+- Risk-category counts
+- Percentage values
+- Muted category labels
+
+Recommended categories:
+
+- Low
+- Medium
+- High
+- Critical
+
+### 16.2 Certificate Health
+
+Use:
+
+- Donut chart or radial gauge
+- Valid certificates
+- Expiring certificates
+- Revoked certificates
+- Pending verification
+
+### 16.3 Chart Rules
+
+- Prefer simple charts.
+- Use limited labels.
+- Use semantic colors only when meaningful.
+- Avoid rainbow palettes.
+- Keep legends compact.
+- Prioritize rapid interpretation over visual complexity.
+
+---
+
+## 17. Bottom System-Status Strip
+
+A thin system-status strip appears at the bottom of the application.
+
+### 17.1 Left Side
+
+Display:
+
+- Shield or system icon
+- `System Status`
+- Green status dot
+- `All Systems Operational`
+
+### 17.2 Right Side
+
+Display:
+
+- Last data update time
+- Stream health
+- Live status
+- Events per second
+
+Example:
+
+- `Data last updated: 14:32:12 UTC`
+- `Stream Health`
+- `Live`
+- `Event/sec: 240`
+
+### 17.3 Styling
+
+- Pale blue-gray background
+- Thin upper border
+- Compact font size
+- Minimal height
+- Fixed positioning when appropriate
+- Green used only for the live operational state
+
+---
+
+## 18. General Component System
+
+### 18.1 Cards
+
+Cards are the primary structural components.
+
+| Property | Value |
+|---|---|
+| Background | White |
+| Border | `1px solid border-default` |
+| Border radius | `8px–10px` |
+| Shadow | None or extremely subtle |
+| Padding | `14px–18px` |
+| Internal spacing | `8px–16px` |
+
+Cards should look clean and structured rather than elevated or floating.
+
+### 18.2 Buttons
+
+#### Primary Button
+
+- Blue fill
+- White text
+- Blue hover state
+- `6px–8px` corner radius
+- Compact height
+
+#### Secondary Button
+
+- White background
+- Thin border
+- Navy or blue text
+- Subtle blue-gray hover state
+
+#### Destructive Button
+
+- Red fill or red outline
+- Used only for block, revoke, delete, or irreversible actions
+- Requires confirmation for high-impact changes
+
+#### Icon Button
+
+- Small square or rounded rectangle
+- White or pale background
+- Clear hover state
+- Tooltip and accessible label required
+
+### 18.3 Inputs
+
+Inputs should use:
+
+- White background
+- Thin gray-blue border
+- Dark navy text
+- Blue focus outline
+- Muted placeholder
+- Compact `36px–40px` height
+- Rounded `6px–8px` corners
+
+### 18.4 Dropdowns
+
+Dropdowns should:
+
+- Match input styling
+- Use compact rows
+- Support keyboard navigation
+- Show a small chevron
+- Use subtle shadow only when floating over other content
+
+### 18.5 Badges
+
+Badges should be compact and readable.
+
+| Property | Value |
+|---|---|
+| Height | `20px–24px` |
+| Radius | `4px–6px` |
+| Font size | `10px–11px` |
+| Font weight | `600–700` |
+| Case | Uppercase for risk states |
+
+Examples:
+
+- `LOW`
+- `MEDIUM`
+- `HIGH`
+- `CRITICAL`
+- `BETA`
+- `LIVE`
+- `PENDING`
+- `REVOKED`
+
+### 18.6 Count Badges
+
+Count badges, such as the Pending Reviews count, should use:
+
+- Small rounded capsule shape
+- Pale blue background
+- Blue text
+- Compact numeric value
+
+### 18.7 Trust Score Indicator
+
+Trust score components may use:
+
+- Circular radial gauge for summary cards
+- Numeric score with thin bar inside tables
+- Semantic color transitions
+
+Recommended meaning:
+
+| Score | Meaning | Color |
+|---:|---|---|
+| `0–39` | Critical risk | Red |
+| `40–69` | Medium risk | Amber |
+| `70–89` | Generally trusted | Blue |
+| `90–100` | Highly trusted | Green |
+
+### 18.8 Tooltips
+
+Use tooltips for:
+
+- Icon explanations
+- Chart legends
+- Map details
+- Abbreviated values
+- Risk score methodology
+- ASN and certificate metadata
+
+Tooltips should use a white surface, dark text, subtle border, and light shadow.
+
+---
+
+## 19. Detail Screens
+
+Detail screens should extend the dashboard style without increasing visual noise.
+
+### 19.1 Identity Detail Page
+
+Header should contain:
+
+- Identity name or email
+- Entity ID
+- Trust score
+- Risk status
+- Verification state
+- Primary actions
+
+Main content may include:
+
+- Identity overview
+- Linked devices
+- IP addresses
+- Aliases
+- Organizations
+- Certificates
+- Access events
+- Behavioral anomalies
+- Trust-signal timeline
+- Audit history
+
+Recommended layout:
+
+- Main column: `8 / 12`
+- Contextual side panel: `4 / 12`
+
+### 19.2 IP Record Detail Page
+
+Show:
+
+- IP address
+- ASN
+- Country and location
+- Risk score
+- Datacenter, proxy, Tor, VPN, or residential classification
+- Related events
+- Linked identities
+- Attack patterns
+- Registry status
+- Historical activity
+
+### 19.3 Organization Detail Page
+
+Show:
+
+- Organization name
+- Verification status
+- Linked identities
+- Domains
+- Certificates
+- Recent events
+- API activity
+- Risk trend
+- Manual-review history
+
+### 19.4 Certificate Detail Page
+
+Show:
+
+- Certificate ID
+- Holder
+- Type
+- Issuance date
+- Expiration date
+- Verification state
+- Trust score
+- Related organization or identity
+- Audit history
+- Revoke action
+
+Use a clean metadata card rather than a highly decorative certificate illustration.
+
+---
+
+## 20. List Screens
+
+List screens include:
+
+- Identities
+- Organizations
+- Devices
+- IP Records
+- Certificates
+- Aliases
+- Access Events
+- Behavioral Events
+- Trust Signals
+- Webhook Logs
+- Pending Reviews
+- Threat Intelligence
+
+### 20.1 Standard List Layout
+
+Use:
+
+1. Page header
+2. Search input
+3. Filters
+4. Optional summary metrics
+5. Dense data table
+6. Pagination or infinite scrolling
+7. Row actions
+8. Optional detail drawer
+
+### 20.2 Filters
+
+Filters should appear as compact bordered controls.
+
+Examples:
+
+- Risk Level
+- Trust Score
+- Event Type
+- Country
+- Device Type
+- Certificate Status
+- Review State
+- Date Range
+
+Active filters may show a numeric count:
+
+`Filters (3)`
+
+Avoid oversized pill-heavy filter toolbars.
+
+### 20.3 Row Actions
+
+Use a right-aligned overflow menu for secondary actions.
+
+Examples:
+
+- View details
+- Add to registry
+- Flag for review
+- Block
+- Revoke certificate
+- Copy identifier
+- View related events
+
+---
+
+## 21. Review Screens
+
+Review screens are used for manual decisions involving suspicious identities, events, certificates, organizations, or community reports.
+
+### 21.1 Evidence-First Layout
+
+Use:
+
+- Main evidence area on the left
+- Sticky decision module on the right
+- Clear event timeline
+- Linked entity context
+- Triggered trust signals
+- Reviewer notes
+
+### 21.2 Review Decision Module
+
+Include:
+
+- Risk summary
+- Recommended action
+- Confidence indicator
+- Human-review notes field
+- Approve / Allow action
+- Flag action
+- Block / Reject action
+- Audit-log notice
+
+### 21.3 Confirmation Rules
+
+Require confirmation for:
+
+- Blocking an identity
+- Revoking a certificate
+- Deleting a registry entry
+- Overriding a trust verdict
+- Disabling a security rule
+
+For critical actions, require a text note that is saved to the audit log.
+
+---
+
+## 22. Drawers and Modals
+
+### 22.1 Right-Side Drawers
+
+Use drawers for investigation workflows that should not interrupt the current screen.
+
+Examples:
+
+- Access-event detail
+- Pending-review preview
+- Identity quick view
+- Webhook payload detail
+- Trust-signal explanation
+
+Recommended widths:
+
+| Drawer Type | Width |
+|---|---:|
+| Standard metadata drawer | `480px` |
+| Detailed investigation drawer | `640px` |
+| Raw JSON or payload drawer | `760px–820px` |
+
+### 22.2 Modals
+
+Use modals for:
+
+- Confirmations
+- Short forms
+- Platform switching
+- Creating keys
+- Issuing or revoking certificates
+- Adding registry entries
+
+Modal styling:
+
+- White surface
+- Thin border
+- Soft shadow
+- Rounded corners
+- Dark navy headings
+- Compact spacing
+- Restrained backdrop opacity
+
+---
+
+## 23. Raw Data and Developer-Facing Content
+
+### 23.1 JSON Viewers
+
+Use JSON viewers for:
+
+- Webhook payloads
+- Trust-signal metadata
+- Background-check results
+- API request details
+- Device signals
+- Debug data
+
+Styling:
+
+- Light neutral background or opt-in dark code panel
+- Monospace font
+- Syntax highlighting
+- Copy button
+- Expand and collapse behavior
+- Search within payload
+
+### 23.2 API Key Display
+
+API keys must be:
+
+- Obscured after creation
+- Copyable only during controlled flows
+- Clearly labeled
+- Supported by revoke and regenerate actions
+- Accompanied by audit-log entries
+
+Never display permanent secret keys openly in a standard table.
+
+---
+
+## 24. Spacing System
+
+Tunai uses a strict `4px` base grid.
+
+### 24.1 Spacing Scale
+
+Use:
+
+- `4px`
+- `8px`
+- `12px`
+- `16px`
+- `20px`
+- `24px`
+- `32px`
+- `40px`
+- `48px`
+- `64px`
+
+### 24.2 Recommended Usage
+
+| Context | Spacing |
+|---|---:|
+| Icon to label | `8px–10px` |
+| Compact control gap | `8px` |
+| Table cell horizontal padding | `12px–16px` |
+| Card internal padding | `14px–18px` |
+| Dashboard module gap | `16px` |
+| Page padding | `16px–24px` |
+| Large page section gap | `24px–32px` |
+
+The interface should feel tighter and more efficient than a marketing website.
+
+---
+
+## 25. Border Radius
+
+Tunai uses modest rounding to feel modern without appearing playful.
+
+| Component | Radius |
+|---|---:|
+| Status dot | `50%` |
+| Small badge | `4px–6px` |
+| Input or button | `6px–8px` |
+| Card or table container | `8px–10px` |
+| Avatar | `50%` |
+| Large modal | `10px–12px` |
+
+Avoid excessively rounded `20px+` cards, oversized pill shapes, or bubbly visual styling.
+
+---
+
+## 26. Elevation and Borders
+
+Tunai relies primarily on borders, spacing, and surface contrast.
+
+### 26.1 Standard Card
+
+```css
+background: #ffffff;
+border: 1px solid #dce5f1;
+border-radius: 8px;
+box-shadow: 0 1px 2px rgba(9, 38, 94, 0.03);
+````
+
+### 26.2 Floating Menu
+
+```css
+background: #ffffff;
+border: 1px solid #dce5f1;
+border-radius: 8px;
+box-shadow: 0 10px 24px rgba(9, 38, 94, 0.10);
+```
+
+### 26.3 Focus State
+
+```css
+outline: 2px solid #176bff;
+outline-offset: 2px;
+```
+
+### 26.4 Rules
+
+* Avoid heavy shadows.
+* Avoid glowing cards.
+* Avoid large gradients.
+* Use shadows only for menus, tooltips, drawers, and modals that float over existing content.
+* Use thin separators for dense tables and lists.
+
+---
+
+## 27. Iconography
+
+Icons should be:
+
+* Line-based
+* Compact
+* Consistent
+* Easy to scan
+* Professional
+* Usually `16px–18px`
+* Around `1.5px–2px` stroke width
+
+Recommended icon meanings:
+
+| Icon             | Usage                                |
+| ---------------- | ------------------------------------ |
+| Shield           | Trust status, certificates, security |
+| Grid             | Command Center                       |
+| User             | Identities                           |
+| Building         | Organizations                        |
+| Monitor          | Devices                              |
+| Globe            | IP Records                           |
+| Link             | Aliases                              |
+| Pulse / waveform | Access Events                        |
+| Sparkle          | AI Insights                          |
+| Nodes            | Trust Signals                        |
+| Bell             | Notifications                        |
+| Lock             | Blocked Events                       |
+| Key              | Platform selector and API access     |
+| Warning triangle | Medium-risk review                   |
+| Shield alert     | Critical review                      |
+| Database         | Logs and registries                  |
+| Map pin          | Geographic analysis                  |
+| Fingerprint      | Identity or device signals           |
+
+Icons should not be decorative. Each icon must communicate function or status.
+
+---
+
+## 28. Motion and Interaction
+
+Motion should be subtle and functional.
+
+### 28.1 Recommended Timing
+
+| Interaction             |       Duration |
+| ----------------------- | -------------: |
+| Hover color transition  |  `100ms–150ms` |
+| Button state transition |        `120ms` |
+| Dropdown opening        |        `150ms` |
+| Drawer slide-in         |  `220ms–280ms` |
+| Modal fade and scale    |  `150ms–200ms` |
+| New live row highlight  | `600ms–1200ms` |
+| Skeleton shimmer        |    `1.4s–1.8s` |
+
+### 28.2 Motion Rules
+
+* Do not animate large areas unnecessarily.
+* Do not use decorative looping animations.
+* Allow users to pause live-event streaming.
+* Respect `prefers-reduced-motion`.
+* Preserve keyboard focus during dynamic updates.
+* Use subtle transitions to reinforce responsiveness, not to attract attention.
+
+---
+
+## 29. Loading, Empty, and Error States
+
+### 29.1 Loading Skeletons
+
+Use:
+
+* Pale blue-gray skeleton blocks
+* Shapes matching the eventual layout
+* Minimal shimmer
+* Stable card dimensions to prevent layout shift
+
+### 29.2 Empty States
+
+Use:
+
+* Small line icon
+* Concise title
+* Short explanation
+* One clear next action where appropriate
+
+Example:
+
+`No risky events found`
+
+`No events matched the current filters.`
+
+### 29.3 Error States
+
+Use:
+
+* Soft red-tinted background
+* Red warning icon
+* Concise message
+* Retry action
+* Optional view-logs action
+
+Avoid filling the full page with aggressive red styling unless the entire application is unavailable.
+
+---
+
+## 30. Responsive Behavior
+
+Tunai is desktop-first because it is designed for operational monitoring. It must still support smaller screens for urgent review and triage.
+
+### 30.1 Large Desktop: `1440px+`
+
+* Full expanded sidebar
+* Five KPI cards in one row
+* Multi-column lower dashboard layout
+* Full live-events table columns
+* Bottom system-health strip visible
+
+### 30.2 Standard Desktop: `1024px–1439px`
+
+* Full or compact sidebar depending on space
+* KPI cards may wrap into two rows
+* Reduce less-important table columns
+* Preserve live events and pending reviews as highest-priority modules
+
+### 30.3 Tablet: `768px–1023px`
+
+* Sidebar collapses to icons or becomes a drawer
+* Dashboard modules stack into fewer columns
+* Hide lower-priority table columns
+* Use horizontal scrolling only when necessary
+* Preserve review actions and status visibility
+
+### 30.4 Mobile: `<768px`
+
+Shift from analytics to triage:
+
+* Use top-bar menu instead of persistent sidebar
+* Stack KPI cards
+* Show compact event cards instead of wide tables
+* Surface critical reviews first
+* Reduce maps and charts to summary cards
+* Use full-width drawers and modals
+* Prioritize allow, review, block, and inspect actions
+
+---
+
+## 31. Accessibility
+
+Tunai must meet WCAG 2.1 AA standards.
+
+### 31.1 Contrast
+
+* Use dark navy text on white surfaces.
+* Ensure muted text remains readable.
+* Validate semantic badge contrast.
+* Avoid low-contrast pale text for essential information.
+
+### 31.2 Color Independence
+
+Never rely solely on red, amber, green, or blue. Use:
+
+* Explicit label
+* Icon
+* Numeric value
+* Tooltip or helper text where needed
+
+### 31.3 Keyboard Support
+
+All interactive elements must be keyboard accessible:
+
+* Sidebar links
+* Search input
+* Platform selector
+* Dropdowns
+* Table rows
+* Filter controls
+* Buttons
+* Drawers
+* Modal actions
+* Chart detail controls
+
+### 31.4 Screen Readers
+
+Provide:
+
+* Descriptive labels for icon-only buttons
+* Table headers
+* Accessible status announcements for live events
+* Proper modal focus trapping
+* Non-disruptive live-region updates
+* Meaningful chart summaries
+
+---
+
+## 32. Risk Status Language
+
+Use consistent language throughout the product.
+
+| Status         | Meaning                                              |
+| -------------- | ---------------------------------------------------- |
+| Low Risk       | Minimal indicators of suspicious activity            |
+| Medium Risk    | Some suspicious signals; monitor or review           |
+| High Risk      | Strong suspicious signals; investigation recommended |
+| Critical       | Immediate attention required                         |
+| Allowed        | Access permitted                                     |
+| Limited        | Reduced access due to risk signals                   |
+| Throttled      | Request rate intentionally restricted                |
+| Blocked        | Access denied                                        |
+| Pending Review | Waiting for human evaluation                         |
+| Verified       | Trust checks passed                                  |
+| Revoked        | Previously valid permission or certificate disabled  |
+| Expired        | Time-limited credential is no longer valid           |
+| Unknown        | Insufficient information                             |
+
+Avoid inconsistent synonyms that could cause operational ambiguity.
+
+---
+
+## 33. Do's and Don'ts
+
+### Do
+
+* Use white cards and pale blue-gray backgrounds.
+* Use the Tunai blue accent consistently.
+* Keep the dashboard compact and data-rich.
+* Use restrained semantic colors for risk and health.
+* Use thin borders to separate modules.
+* Provide visible evidence for risk decisions.
+* Keep AI insights concise and clearly labeled.
+* Use dense tables for high-volume operational data.
+* Preserve strong visual hierarchy.
+* Require confirmation and notes for high-impact actions.
+* Add audit-log entries for manual overrides.
+
+### Don't
+
+* Do not design the app as a dark-mode-first SOC dashboard.
+* Do not use neon colors, cyberpunk effects, or glowing panels.
+* Do not introduce purple AI cards unless explicitly required later.
+* Do not use excessive gradients.
+* Do not use heavy drop shadows.
+* Do not make every card oversized.
+* Do not overuse rounded pill shapes.
+* Do not use playful illustrations inside the admin interface.
+* Do not use red or amber for decorative emphasis.
+* Do not hide essential evidence behind multiple clicks.
+* Do not present AI suggestions as absolute facts.
+* Do not display secret API keys after creation.
+* Do not allow destructive changes without confirmation.
+
+---
+
+## 34. Implementation Checklist
+
+Before marking a Tunai UI implementation as complete, confirm:
+
+### Shell
+
+* [ ] Sidebar matches the white, bordered, grouped-navigation style.
+* [ ] Tunai logo area is visible and properly spaced.
+* [ ] Active navigation item uses pale blue selection styling.
+* [ ] Top command bar contains global search.
+* [ ] Platform selector is visible.
+* [ ] Notification, help, avatar, name, and role controls are present.
+* [ ] Bottom status strip is implemented where appropriate.
+
+### Dashboard
+
+* [ ] Five KPI cards are present.
+* [ ] KPI cards use compact spacing and restrained colors.
+* [ ] Live Access Events is the largest visible module.
+* [ ] Streaming indicator is included.
+* [ ] Filters and event-type dropdown are available.
+* [ ] Pending Reviews panel is visible.
+* [ ] Geographic Risk Activity map is visible.
+* [ ] Ranked risky-IP and ASN lists are present.
+* [ ] AI Insights uses the blue visual system.
+* [ ] Webhook health information is visible.
+* [ ] Risk Distribution and Certificate Health panels are supported.
+
+### Components
+
+* [ ] Cards use white backgrounds and thin borders.
+* [ ] Buttons use restrained styling.
+* [ ] Tables are compact and readable.
+* [ ] Risk badges include text labels.
+* [ ] Trust-score visuals are easy to interpret.
+* [ ] Modals and drawers match the light surface system.
+* [ ] Loading, empty, and error states are implemented.
+* [ ] Keyboard focus states are visible.
+* [ ] Responsive layouts preserve triage workflows.
+
+---
+
+## 35. Final Design Summary
+
+Tunai is a **calm, light-mode-first trust intelligence command center**.
+
+Its design should balance high information density with a clean enterprise SaaS aesthetic. The interface uses white surfaces, pale blue-gray backgrounds, thin borders, compact modules, dark navy typography, and a restrained blue accent. Red, amber, and green appear only where they communicate security meaning.
+
+The result should feel secure, credible, and efficient without appearing harsh or intimidating. Tunai is not a cyberpunk SOC dashboard. It is a polished operational platform that helps security teams and platform administrators understand risk, review anomalies, and take action with confidence.
+

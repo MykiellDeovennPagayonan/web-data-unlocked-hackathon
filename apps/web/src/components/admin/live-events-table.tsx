@@ -89,7 +89,7 @@ export function LiveEventsTable({
                 </td>
                 <td className="px-3">
                   <a
-                    href="#"
+                    href="/admin/ip-records"
                     className="font-mono font-semibold text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   >
                     {event.ipAddress}
@@ -137,7 +137,7 @@ export function LiveEventsTable({
           {total.toLocaleString()} events
         </span>
         <a
-          href="#"
+          href="/admin/access-events"
           className="ml-auto inline-flex items-center gap-2 font-semibold text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           View all events

@@ -3,6 +3,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { insertDevice } from './repository-ops/insert-device';
 import { findDeviceById } from './repository-ops/find-device-by-id';
 import { findDeviceByStableHash } from './repository-ops/find-device-by-stable-hash';
+import { findManyDevices } from './repository-ops/find-many-devices';
 import { updateDevice } from './repository-ops/update-device';
 import {
   CreateDeviceData,
@@ -22,6 +23,9 @@ export class DevicesRepository {
 
   findByStableHash = (stableHash: string): Promise<Device | null> =>
     findDeviceByStableHash(this.prisma, stableHash);
+
+  findMany = (take?: number, skip?: number): Promise<Device[]> =>
+    findManyDevices(this.prisma, take, skip);
 
   update = (id: string, data: UpdateDeviceData): Promise<Device> =>
     updateDevice(this.prisma, id, data);

@@ -37,6 +37,9 @@ export class DevicesService {
   getDeviceById = (id: string): Promise<Device | null> =>
     getDeviceById(this.repository, id);
 
+  listDevices = (take?: number, skip?: number): Promise<Device[]> =>
+    this.repository.findMany(take, skip);
+
   updateDeviceRiskScore = (id: string, riskScore: number): Promise<Device> =>
     updateDeviceRiskScore(this.repository, id, riskScore);
 

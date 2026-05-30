@@ -108,36 +108,42 @@ export async function login(
 ) {
   await page.fill('input[name="email"]', email)
   await page.fill('input[name="password"]', password)
+  const sessionPromise = page.waitForResponse(/api\/auth\/session/)
   await page.click('button[type="submit"]')
+  await sessionPromise.catch(() => {
+    // Session endpoint may not be called if redirect happens first
+  })
+  await page.waitForLoadState('networkidle')
 }
 
 /** Click logout / sign out. Tries multiple common patterns. */
 export async function logout(page: Page) {
-  // Try TopNavbar avatar dropdown (API Store)
-  const apiStoreAvatar = page.locator('[aria-label="User menu"]')
-  if (await apiStoreAvatar.isVisible().catch(() => false)) {
-    await apiStoreAvatar.click()
-    await page.click('text=Sign out')
+  // Try social media avatar dropdown (round button with single initial)
+  const avatarBtn = page.locator('button[class*="rounded-full"]').filter({ hasText: /^[A-Z]$/ })
+  if (await avatarBtn.isVisible().catch(() => false)) {
+    await avatarBtn.click()
+    await page.locator('div[role="menuitem"]:has-text("Sign Out")').waitFor({ state: 'visible' })
+    await page.locator('div[role="menuitem"]:has-text("Sign Out")').click()
     return
   }
 
-  // Try avatar dropdown first (social media)
-  const dropdownTrigger = page.locator('button[aria-label="Open user menu"]')
+  // Try dropdown first (social media legacy)
+  const dropdownTrigger = page.locator('button:has-text("Test")')
   if (await dropdownTrigger.isVisible().catch(() => false)) {
     await dropdownTrigger.click()
     await page.click('text=Sign Out')
     return
   }
 
-  // Fallback: text-based trigger for older UI
-  const textTrigger = page.locator('button:has-text("Test")')
-  if (await textTrigger.isVisible().catch(() => false)) {
-    await textTrigger.click()
-    await page.click('text=Sign Out')
+  // Try user menu dropdown (api store)
+  const userMenuBtn = page.locator('button[aria-label="User menu"]')
+  if (await userMenuBtn.isVisible().catch(() => false)) {
+    await userMenuBtn.click()
+    await page.click('text=Sign out')
     return
   }
 
-  // Try sidebar button (api store)
+  // Try sidebar button
   const signOutBtn = page.locator('button:has-text("Sign Out")')
   if (await signOutBtn.isVisible().catch(() => false)) {
     await signOutBtn.click()

@@ -72,14 +72,15 @@ export class ApiKeysController {
     };
   }
 
-  @Delete(':id')
+  @Delete('v1/platform/api-keys/:id')
+  @UseGuards(ApiKeyGuard)
   revokeApiKey(@Param('id') id: string): Promise<ApiKeyResponse> {
     return this.apiKeysService
       .revokeApiKey(id)
       .then((key) => this.mapToResponse(key));
   }
 
-  @Post(':id/rotate')
+  @Post('v1/platform/api-keys/:id/rotate')
   @UseGuards(ApiKeyGuard)
   async rotateApiKey(
     @CurrentPlatform() platformId: string,

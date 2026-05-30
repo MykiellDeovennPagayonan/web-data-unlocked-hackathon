@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
 import { IpRecordsService } from './ip-records.service';
 import { LookupIpDto } from './dto/lookup-ip.dto';
@@ -23,14 +31,27 @@ export class IpRecordsController {
     return this.ipRecordsService.trackVelocity(dto.ipAddress);
   }
 
-  @Post('v1/intelligence/ip/probe')
-  @UseGuards(ApiKeyGuard)
-  trackProbe(@Body() dto: TrackIpProbeDto): Promise<ProbeResult> {
-    return this.ipRecordsService.trackProbe(
-      dto.ipAddress,
-      dto.endpointSignature,
-    );
-  }
+@Get('admin/ip-records')
+listIpRecords(
+  @Query('take') take?: string,
+  @Query('skip') skip?: string,
+): Promise<IpRecord[]> {
+  const parsedTake = take ? parseInt(take, 10) : undefined;
+  const parsedSkip = skip ? parseInt(skip, 10) : undefined;
+  return this.ipRecordsService.listIpRecords(
+    Number.isFinite(parsedTake) ? parsedTake : undefined,
+    Number.isFinite(parsedSkip) ? parsedSkip : undefined,
+  );
+}
+
+@Post('v1/intelligence/ip/probe')
+@UseGuards(ApiKeyGuard)
+trackProbe(@Body() dto: TrackIpProbeDto): Promise<ProbeResult> {
+  return this.ipRecordsService.trackProbe(
+    dto.ipAddress,
+    dto.endpointSignature,
+  );
+}
 
   @Get('admin/ip/:ip')
   getIpRecord(@Param('ip') ip: string): Promise<IpRecord> {

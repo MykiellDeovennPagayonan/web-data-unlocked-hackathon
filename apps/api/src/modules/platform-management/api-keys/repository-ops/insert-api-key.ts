@@ -9,7 +9,7 @@ export function insertApiKey(
     data: {
       platformId: data.platformId,
       name: data.name,
-      keyHash: '', // Will be set by service method
+      keyHash: data.keyHash ?? '',
       scopes: data.scopes,
       expiresAt: data.expiresAt,
     },

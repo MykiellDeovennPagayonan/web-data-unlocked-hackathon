@@ -1,3 +1,4 @@
+import { ConflictException } from '@nestjs/common';
 import { IdentitiesRepository } from '../identities.repository';
 import { AuditLogsService } from '../../../compliance/audit-logs/audit-logs.service';
 import { AuditActorType } from '../../../../generated/client';
@@ -12,7 +13,7 @@ export async function createIdentity(
   const emailHash = hashEmail(input.email);
   const existing = await repository.findByEmailHash(emailHash);
   if (existing) {
-    throw new Error('Identity already exists');
+    throw new ConflictException('Identity already exists');
   }
   const identity = await repository.insert(input);
 
