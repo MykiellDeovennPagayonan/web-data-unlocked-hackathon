@@ -32,7 +32,7 @@ test.describe("Flow 2: Suspicious Email Block", () => {
       await expect(page.getByText(attempt.expectedError).first()).toBeVisible({
         timeout: 5000,
       });
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1500);
     }
 
     // ============================================================
@@ -46,7 +46,7 @@ test.describe("Flow 2: Suspicious Email Block", () => {
       await expect(page.getByText(attempt.expectedError).first()).toBeVisible({
         timeout: 5000,
       });
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1500);
     }
 
     // ============================================================
@@ -62,7 +62,7 @@ test.describe("Flow 2: Suspicious Email Block", () => {
       await expect(page.getByText(attempt.expectedError).first()).toBeVisible({
         timeout: 10000,
       });
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1500);
     }
     await page.waitForTimeout(5000);
   });

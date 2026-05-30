@@ -132,7 +132,7 @@ test.describe('Flow 1: Free-Tier Abuser', () => {
     await expect(page.locator('text=Response').first()).toBeVisible()
     await expect(page.locator('text=403').first()).toBeVisible()
     await expect(page.locator('text=Access denied').first()).toBeVisible()
-    await page.waitForTimeout(3000)
+    await page.waitForTimeout(5000)
     await logout(page)
     await waitForUrl(page, '/login')
 

@@ -71,12 +71,12 @@ export const FLOW1 = {
       "5+ years backend experience, strong in Node.js or Go, familiarity with Docker and Kubernetes.",
   },
   jobSeeker: {
-    name: "Riley Chen",
-    email: "riley.chen.abuse@e2e.local",
+    name: "Alex Morgan",
+    email: "alex.morgan5@gmail.com",
     password: TEST_PASSWORD,
-    bio: "Backend engineer specializing in distributed systems and event-driven architecture.",
+    bio: "Data enthusiast building dashboards",
     location: "San Diego, CA",
-    website: "https://rileychen.dev",
+    website: "https://AMorgan.dev",
   },
   application: {
     coverLetter:

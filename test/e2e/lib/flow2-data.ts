@@ -32,7 +32,7 @@ export const FLOW2 = {
     },
     {
       name: 'Sophie Brennan',
-      email: 'example.user99@gmail.com',
+      email: 'example.user99.test@gmail.com',
       password: TEST_PASSWORD,
       expectedError: 'You have been flagged as a suspicious user.',
     },
