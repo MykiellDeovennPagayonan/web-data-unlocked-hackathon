@@ -58,7 +58,14 @@ export default function MyJobsPage() {
       <div className="max-w-7xl mx-auto px-4 lg:px-6 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">My Job Postings</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold text-text-primary">My Job Postings</h1>
+              {session?.user?.isVerified && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded-full border border-green-200">
+                  <span>✓</span> TrustLayer Verified
+                </span>
+              )}
+            </div>
             <p className="text-sm text-text-muted mt-1">Manage your job listings and applicants</p>
           </div>
           <Link href="/dashboard/jobs/new">

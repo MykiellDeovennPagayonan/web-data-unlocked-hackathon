@@ -8,6 +8,9 @@ export function insertPlatformUser(
   prisma: PrismaService,
   data: CreatePlatformUserData,
 ): Promise<PlatformUser> {
+  if (!data.identityId) {
+    throw new Error('identityId is required when creating a platform user');
+  }
   return prisma.platformUser.create({
     data: {
       identityId: data.identityId,

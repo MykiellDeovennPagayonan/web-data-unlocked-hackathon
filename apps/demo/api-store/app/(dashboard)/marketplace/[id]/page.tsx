@@ -60,6 +60,19 @@ export default function TryApiPage() {
   const [isRunning, setIsRunning] = useState(false)
   const [response, setResponse] = useState<RunResponse | null>(null)
   const [copied, setCopied] = useState(false)
+  const [freeTrial, setFreeTrial] = useState<{ usedCount: number; freeLimit: number } | null>(null)
+
+  async function fetchFreeTrial() {
+    try {
+      const res = await fetch(`/api/free-trial/${id}`)
+      if (res.ok) {
+        const data = await res.json()
+        setFreeTrial(data)
+      }
+    } catch {
+      // Non-fatal
+    }
+  }
 
   useEffect(() => {
     fetch(`/api/endpoints/${id}`)
@@ -82,6 +95,7 @@ export default function TryApiPage() {
       .then((d) => setApiKey(d))
       .catch(() => setApiKey(null))
       .finally(() => setKeyLoading(false))
+    fetchFreeTrial()
   }, [])
 
   function validateBody(value: string) {
@@ -151,6 +165,7 @@ export default function TryApiPage() {
       setResponse({ status: 0, body: "", error: (err as Error).message })
     } finally {
       setIsRunning(false)
+      await fetchFreeTrial()
     }
   }
 
@@ -328,7 +343,22 @@ export default function TryApiPage() {
 
           {/* Request builder */}
           <div className="bg-white border border-border-light rounded-xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide">Test Endpoint</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide">Test Endpoint</h2>
+              {freeTrial && (
+                <Badge
+                  className={
+                    freeTrial.freeLimit - freeTrial.usedCount > 10
+                      ? "bg-green-50 text-green-700 border-0"
+                      : freeTrial.freeLimit - freeTrial.usedCount > 0
+                      ? "bg-amber-50 text-amber-700 border-0"
+                      : "bg-red-50 text-red-700 border-0"
+                  }
+                >
+                  {freeTrial.freeLimit - freeTrial.usedCount} free left
+                </Badge>
+              )}
+            </div>
             {!keyLoading && !apiKey && (
               <div className="flex items-center gap-2 p-3 rounded bg-amber-50 text-amber-800 text-sm">
                 <AlertTriangle className="h-4 w-4 shrink-0" />

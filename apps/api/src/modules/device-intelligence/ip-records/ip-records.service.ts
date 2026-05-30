@@ -8,6 +8,7 @@ import {
   trackIpVelocity,
   VelocityResult,
 } from './service-methods/track-ip-velocity';
+import { trackIpProbe, ProbeResult } from './service-methods/track-ip-probe';
 import { IpRecord } from './entities/ip-record.entity';
 
 @Injectable()
@@ -25,4 +26,13 @@ export class IpRecordsService {
 
   trackVelocity = (ipAddress: string): Promise<VelocityResult> =>
     trackIpVelocity(this.repository, this.redis, ipAddress);
+
+  trackProbe = (
+    ipAddress: string,
+    endpointSignature: string,
+  ): Promise<ProbeResult> =>
+    trackIpProbe(this.repository, this.redis, ipAddress, endpointSignature);
+
+  unbanIp = (ipAddress: string): Promise<{ count: number }> =>
+    this.repository.unbanByAddress(ipAddress);
 }

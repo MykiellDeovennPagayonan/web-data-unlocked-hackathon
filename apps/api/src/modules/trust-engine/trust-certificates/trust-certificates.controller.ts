@@ -12,6 +12,7 @@ import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
 import { TrustCertificatesService } from './trust-certificates.service';
 import { IssueCertificateDto } from './dto/issue-certificate.dto';
 import { RevokeCertificateDto } from './dto/revoke-certificate.dto';
+import { VerifyCertificateByHashDto } from './dto/verify-certificate-by-hash.dto';
 import { TrustCertificate } from './entities/trust-certificate.entity';
 import { EntityType } from '../../../generated/client';
 
@@ -51,6 +52,20 @@ export class TrustCertificatesController {
     return this.trustCertificatesService.getCertificatesByEntity(
       entityType,
       entityId,
+    );
+  }
+
+  @Post('v1/trust-certificates/verify')
+  @UseGuards(ApiKeyGuard)
+  verifyByHash(@Body() dto: VerifyCertificateByHashDto): Promise<{
+    valid: boolean;
+    verdict: string;
+    entityType?: string;
+    entityId?: string;
+  }> {
+    return this.trustCertificatesService.verifyByHash(
+      dto.certificateHash,
+      dto.verifiedByPlatformId,
     );
   }
 }

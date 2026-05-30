@@ -2,6 +2,7 @@ import { VerificationRequestsRepository } from '../verification-requests.reposit
 import { TrustSignalsService } from '../../../trust-engine/trust-signals/trust-signals.service';
 import { TrustScoreSnapshotsService } from '../../../trust-engine/trust-score-snapshots/trust-score-snapshots.service';
 import { AuditLogsService } from '../../audit-logs/audit-logs.service';
+import { PrismaService } from '../../../../prisma/prisma.service';
 import { VerificationRequest } from '../entities/verification-request.entity';
 import {
   VerificationStatus,
@@ -17,6 +18,7 @@ export async function approveVerification(
   trustSignalsService: TrustSignalsService,
   trustScoreSnapshotsService: TrustScoreSnapshotsService,
   auditLogsService: AuditLogsService,
+  prisma: PrismaService,
   id: string,
 ): Promise<VerificationRequest> {
   const request = await repository.findById(id);
@@ -27,6 +29,12 @@ export async function approveVerification(
   const updated = await repository.updateStatus(id, {
     status: VerificationStatus.approved,
     decidedAt: new Date(),
+  });
+
+  // Mark identity as human-verified so certificate verification can succeed
+  await prisma.identity.update({
+    where: { id: request.identityId },
+    data: { isHumanVerified: true },
   });
 
   await trustSignalsService.createTrustSignal({

@@ -18,6 +18,7 @@ export function enrollOrganization(
     post<PlatformUser>(config, "/v1/platform-users", {
       identityId: org.id,
       externalUserId,
+      platformId: config.platformId,
     }).then((platformUser) => ({
       orgId: org.id,
       platformUserId: platformUser.id,

@@ -17,6 +17,8 @@ export function insertAlias(
       aliasValueEncrypted: data.aliasValueEncrypted,
       confidence: data.confidence,
       source: data.source,
+      identityId: data.identityId,
+      orgId: data.orgId,
     },
   });
 }

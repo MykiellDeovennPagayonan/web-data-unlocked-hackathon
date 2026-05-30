@@ -1,4 +1,5 @@
 import { Client } from 'pg'
+import Redis from 'ioredis'
 
 /**
  * Clean up all test data from the three demo app databases.
@@ -10,6 +11,7 @@ const DB_URLS = {
   apiStore: 'postgresql://user:trustlayer123@127.0.0.1:5501/demo-api-store',
   jobBoard: 'postgresql://user:trustlayer123@127.0.0.1:5501/demo-job-board',
   socialMedia: 'postgresql://user:trustlayer123@127.0.0.1:5501/demo-social-media',
+  trustLayer: 'postgresql://user:trustlayer123@127.0.0.1:5501/trust-later',
 }
 
 async function cleanupDb(name: string, url: string) {
@@ -95,11 +97,98 @@ async function cleanupDb(name: string, url: string) {
   }
 }
 
+async function cleanupTrustLayer(url: string) {
+  const client = new Client({ connectionString: url })
+  try {
+    await client.connect()
+
+    async function safeDelete(sql: string) {
+      try {
+        const result = await client.query(sql)
+        return result.rowCount ?? 0
+      } catch (err: unknown) {
+        const e = err as { code?: string; message?: string }
+        if (e.code === '42P01' || e.code === '42703') {
+          console.log(`[trustLayer] Skipped: ${e.message}`)
+          return 0
+        }
+        throw err
+      }
+    }
+
+    // Delete child records first to respect FK constraints
+    // NOTE: TrustLayer schema uses camelCase column names (Prisma default without @map on fields)
+    const counts: Record<string, number> = {}
+
+    counts.certificate_verifications = await safeDelete(`DELETE FROM certificate_verifications`)
+    counts.trust_certificates = await safeDelete(`DELETE FROM trust_certificates`)
+    counts.trust_signals = await safeDelete(`DELETE FROM trust_signals`)
+    counts.entity_aliases = await safeDelete(`DELETE FROM entity_aliases`)
+    counts.platform_users = await safeDelete(`DELETE FROM platform_users`)
+    counts.access_events = await safeDelete(`DELETE FROM access_events`)
+    counts.sessions = await safeDelete(`DELETE FROM sessions`)
+    counts.device_signals = await safeDelete(`DELETE FROM device_signals`)
+    counts.devices = await safeDelete(`DELETE FROM devices`)
+    counts.identities = await safeDelete(`DELETE FROM identities`)
+    counts.organizations = await safeDelete(`DELETE FROM organizations`)
+
+    const total = Object.values(counts).reduce((sum, c) => sum + c, 0)
+    console.log(`[trustLayer] Cleaned up ${total} test records`, counts)
+  } catch (err) {
+    console.error('[trustLayer] Cleanup error:', err)
+    throw err
+  } finally {
+    await client.end()
+  }
+}
+
+async function unbanLocalhostIps() {
+  for (const ip of ['127.0.0.1', '::1']) {
+    try {
+      const res = await fetch(`http://localhost:8090/admin/ip/${encodeURIComponent(ip)}/unban`, {
+        method: 'POST',
+      })
+      if (res.ok) {
+        const json = await res.json()
+        console.log(`[trustLayer] Unbanned ${ip}: ${json.count} record(s) cleared`)
+      }
+    } catch {
+      // Non-fatal — API may not be running
+    }
+  }
+}
+
+async function cleanupRedis() {
+  try {
+    const redis = new Redis({
+      host: '127.0.0.1',
+      port: 56380,
+    })
+
+    // Clear all API velocity counters from Redis
+    const keys = await redis.keys('identity_api_velocity:*')
+    if (keys.length > 0) {
+      await redis.del(...keys)
+      console.log(`[redis] Cleared ${keys.length} velocity counter keys`)
+    } else {
+      console.log('[redis] No velocity counter keys to clear')
+    }
+
+    await redis.quit()
+  } catch (err) {
+    console.error('[redis] Cleanup error:', err)
+    // Non-fatal — Redis may not be running
+  }
+}
+
 export async function cleanupAll() {
   console.log('Starting cleanup of all test data...')
   await cleanupDb('apiStore', DB_URLS.apiStore)
   await cleanupDb('jobBoard', DB_URLS.jobBoard)
   await cleanupDb('socialMedia', DB_URLS.socialMedia)
+  await cleanupTrustLayer(DB_URLS.trustLayer)
+  await unbanLocalhostIps()
+  await cleanupRedis()
   console.log('Cleanup complete.')
 }
 

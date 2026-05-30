@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { insertCertificate } from './repository-ops/insert-certificate';
 import { findCertificateById } from './repository-ops/find-certificate-by-id';
+import { findCertificateByHash } from './repository-ops/find-certificate-by-hash';
 import { findCertificatesByEntity } from './repository-ops/find-certificates-by-entity';
 import { updateCertificate } from './repository-ops/update-certificate';
 import {
@@ -20,6 +21,9 @@ export class TrustCertificatesRepository {
 
   findById = (id: string): Promise<TrustCertificate | null> =>
     findCertificateById(this.prisma, id);
+
+  findByHash = (hash: string): Promise<TrustCertificate | null> =>
+    findCertificateByHash(this.prisma, hash);
 
   findByEntity = (
     entityType: EntityType,

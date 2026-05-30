@@ -130,7 +130,7 @@ export interface DashboardEventRecord {
     IpRecord,
     'id' | 'ipAddress' | 'country' | 'region' | 'asn' | 'riskScore'
   >;
-  device: Pick<Device, 'id' | 'stableHash' | 'riskScore'>;
+  device: Pick<Device, 'id' | 'stableHash' | 'riskScore'> | null;
 }
 
 export interface DashboardCommunityReportRecord {

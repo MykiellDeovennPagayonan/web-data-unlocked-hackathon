@@ -410,7 +410,9 @@ function toAccessEventDto(
     flag: countryFlag(event.ip.country),
     location: `${event.ip.region}, ${event.ip.country}`,
     device:
-      readString(event.triggeredRules, 'device') ?? event.device.stableHash,
+      readString(event.triggeredRules, 'device') ??
+      event.device?.stableHash ??
+      'unknown',
     client: readString(event.triggeredRules, 'client') ?? 'Unknown client',
   };
 }

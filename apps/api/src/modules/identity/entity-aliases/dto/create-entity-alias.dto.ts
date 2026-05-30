@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsNumber } from 'class-validator';
+import { IsString, IsEnum, IsNumber, IsOptional } from 'class-validator';
 import {
   EntityType,
   AliasType,
@@ -26,4 +26,12 @@ export class CreateEntityAliasDto {
 
   @IsEnum(AliasSource)
   source!: AliasSource;
+
+  @IsOptional()
+  @IsString()
+  identityId?: string;
+
+  @IsOptional()
+  @IsString()
+  orgId?: string;
 }

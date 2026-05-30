@@ -19,6 +19,23 @@ export default function OrganizationSignup() {
     setError("")
 
     const formData = new FormData(event.currentTarget)
+
+    let deviceFingerprint: Array<{ signalType: string; value: string }> = []
+    try {
+      const FingerprintJS = await import("@fingerprintjs/fingerprintjs")
+      const fp = await FingerprintJS.load()
+      const result = await fp.get()
+      deviceFingerprint = [
+        { signalType: "canvas_hash", value: result.visitorId },
+        { signalType: "user_agent", value: navigator.userAgent },
+        { signalType: "language", value: navigator.language },
+        { signalType: "screen_resolution", value: `${screen.width}x${screen.height}` },
+        { signalType: "timezone", value: Intl.DateTimeFormat().resolvedOptions().timeZone },
+      ]
+    } catch {
+      // Non-fatal — proceed without fingerprint
+    }
+
     const data = {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
@@ -29,6 +46,8 @@ export default function OrganizationSignup() {
       regNumber: (formData.get("regNumber") as string) || undefined,
       address: (formData.get("address") as string) || undefined,
       description: (formData.get("description") as string) || undefined,
+      certificateHash: (formData.get("certificateHash") as string) || undefined,
+      deviceFingerprint,
     }
 
     try {
@@ -150,6 +169,20 @@ export default function OrganizationSignup() {
               disabled={isLoading}
               className="border-border-strong focus-visible:ring-glassdoor-green min-h-[80px]"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-1">TrustLayer Certificate Hash (optional)</label>
+            <Input
+              id="certificateHash"
+              name="certificateHash"
+              type="text"
+              placeholder="Paste your TrustLayer certificate hash"
+              disabled={isLoading}
+              className="h-11 border-border-strong focus-visible:ring-glassdoor-green"
+            />
+            <p className="text-xs text-text-secondary mt-1">
+              Presenting a valid certificate will skip manual vetting.
+            </p>
           </div>
           {error && (
             <div className="text-sm text-danger text-center font-medium">{error}</div>

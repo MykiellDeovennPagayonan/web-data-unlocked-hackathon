@@ -18,6 +18,13 @@ export interface IpVelocity {
   isBlacklisted: boolean
 }
 
+export interface IpProbe {
+  ipAddress: string
+  uniqueEndpoints: number
+  thresholdExceeded: boolean
+  isBlacklisted: boolean
+}
+
 export type DeviceSignalType =
   | "canvas_hash"
   | "webgl_hash"
@@ -109,7 +116,21 @@ export interface EnrolledOrganization {
   platformUserId: string
 }
 
+export interface CertificateVerificationResult {
+  valid: boolean
+  verdict: "valid" | "expired" | "revoked" | "not_found"
+  entityType?: "identity" | "organization"
+  entityId?: string
+  certificate?: {
+    id: string
+    certificateHash: string
+    status: string
+    expiresAt: string
+  }
+}
+
 export interface TunaiConfig {
   baseUrl: string
   apiKey: string
+  platformId?: string
 }

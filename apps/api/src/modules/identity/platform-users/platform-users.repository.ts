@@ -12,7 +12,7 @@ import {
 
 @Injectable()
 export class PlatformUsersRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(public readonly prisma: PrismaService) {}
 
   insert = (data: CreatePlatformUserData): Promise<PlatformUser> =>
     insertPlatformUser(this.prisma, data);

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { tl } from "@/lib/trustlayer"
+import { logApiAccess } from "@/lib/access-event"
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,10 +11,27 @@ export async function GET(request: NextRequest) {
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
       request.headers.get("x-real-ip") ??
       "127.0.0.1"
+    const userAgent = request.headers.get("user-agent") ?? "unknown"
+
+    let verdict: "allowed" | "throttled" | "blocked" = "allowed"
 
     try {
       const velocity = await tl.trackRequestVelocity(ip)
-      if (velocity.thresholdExceeded || velocity.isBlacklisted) {
+      if (velocity.isBlacklisted) {
+        verdict = "blocked"
+        void logApiAccess({ ip, userAgent, verdict })
+        return NextResponse.json(
+          {
+            error: "Access denied",
+            message:
+              "Your IP address has been flagged for suspicious activity.",
+          },
+          { status: 403 }
+        )
+      }
+      if (velocity.thresholdExceeded) {
+        verdict = "throttled"
+        void logApiAccess({ ip, userAgent, verdict })
         return NextResponse.json(
           {
             error: "Rate limit exceeded",
@@ -23,6 +41,9 @@ export async function GET(request: NextRequest) {
           { status: 429 }
         )
       }
+
+      const endpointSignature = `/api/feed${request.url.split("/api/feed")[1] ?? ""}`
+      await tl.trackIpProbe(ip, endpointSignature)
     } catch {
       // Non-fatal — continue serving if TrustLayer unreachable
     }
@@ -106,7 +127,7 @@ export async function GET(request: NextRequest) {
       likes: undefined,
     }))
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       posts: normalizedPosts,
       pagination: {
         page,
@@ -115,6 +136,8 @@ export async function GET(request: NextRequest) {
         pages: Math.ceil(total / limit),
       },
     })
+    void logApiAccess({ ip, userAgent, verdict })
+    return response
   } catch (error) {
     console.error("Error fetching feed:", error)
     return NextResponse.json(

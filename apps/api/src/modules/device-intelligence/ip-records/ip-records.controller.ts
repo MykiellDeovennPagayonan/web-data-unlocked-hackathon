@@ -2,8 +2,10 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
 import { IpRecordsService } from './ip-records.service';
 import { LookupIpDto } from './dto/lookup-ip.dto';
+import { TrackIpProbeDto } from './dto/track-ip-probe.dto';
 import { IpRecord } from './entities/ip-record.entity';
 import { VelocityResult } from './service-methods/track-ip-velocity';
+import { ProbeResult } from './service-methods/track-ip-probe';
 
 @Controller()
 export class IpRecordsController {
@@ -21,8 +23,22 @@ export class IpRecordsController {
     return this.ipRecordsService.trackVelocity(dto.ipAddress);
   }
 
+  @Post('v1/intelligence/ip/probe')
+  @UseGuards(ApiKeyGuard)
+  trackProbe(@Body() dto: TrackIpProbeDto): Promise<ProbeResult> {
+    return this.ipRecordsService.trackProbe(
+      dto.ipAddress,
+      dto.endpointSignature,
+    );
+  }
+
   @Get('admin/ip/:ip')
   getIpRecord(@Param('ip') ip: string): Promise<IpRecord> {
     return this.ipRecordsService.getIpIntelligence(ip);
+  }
+
+  @Post('admin/ip/:ip/unban')
+  unbanIp(@Param('ip') ip: string): Promise<{ count: number }> {
+    return this.ipRecordsService.unbanIp(ip);
   }
 }

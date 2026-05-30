@@ -2,6 +2,7 @@ import {
   IsArray,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -22,4 +23,8 @@ export class ResolveDeviceDto {
   @ValidateNested({ each: true })
   @Type(() => SignalInputDto)
   signals!: SignalInputDto[];
+
+  @IsOptional()
+  @IsString()
+  identityId?: string;
 }

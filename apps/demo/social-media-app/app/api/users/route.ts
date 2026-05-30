@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     const deviceSignals = (profileData.deviceFingerprint as Array<{ signalType: string; value: string }> | undefined) ?? []
     try {
-      await tl.enrollIndividual({
+      const enrolled = await tl.enrollIndividual({
         email,
         fullName: name,
         externalUserId: user.id,
@@ -73,7 +73,8 @@ export async function POST(request: NextRequest) {
           deviceSignals.map((s) => ({
             signalType: s.signalType as "canvas_hash" | "webgl_hash" | "screen_resolution" | "os" | "timezone" | "user_agent" | "language",
             value: s.value,
-          }))
+          })),
+          enrolled.identityId
         )
       }
     } catch (tlErr) {

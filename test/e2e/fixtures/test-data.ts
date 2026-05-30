@@ -96,8 +96,8 @@ export const SOCIAL_MEDIA = {
       email: 'seed.user.1@e2e.local',
       password: TEST_PASSWORD,
       posts: [
-        'Hello from Alice! This is a seeded post for e2e testing.',
-        'Another day, another test. Excited to see how the demo works!',
+        "Hello from Alice!\nThis is a seeded post for e2e testing. We are validating the new Publish-style UI.",
+        "Another day, another test.\nExcited to see how the demo works with the redesigned post cards!",
       ],
     },
     {
@@ -105,13 +105,13 @@ export const SOCIAL_MEDIA = {
       email: 'seed.user.2@e2e.local',
       password: TEST_PASSWORD,
       posts: [
-        'Bob here! Just seeding some data for the social media demo.',
-        'Testing is fun when everything works as expected.',
+        "Bob here!\nJust seeding some data for the social media demo and checking the title extraction.",
+        "Testing is fun when everything works as expected.\nEspecially with multi-line post content!",
       ],
     },
   ],
   newPost: {
-    content: 'This is a brand new post created by our e2e test user!',
+    content: "This is a brand new post!\nCreated by our e2e test user using the redesigned UI.",
   },
   comment: 'Great post! This comment was added during e2e testing.',
 } as const

@@ -11,7 +11,7 @@ export interface CreateAccessEventData {
   identityId?: string;
   orgId?: string;
   ipId: string;
-  deviceId: string;
+  deviceId?: string;
   eventType: AccessEventType;
   verdict: AccessVerdict;
   scoreAtEvent: number;

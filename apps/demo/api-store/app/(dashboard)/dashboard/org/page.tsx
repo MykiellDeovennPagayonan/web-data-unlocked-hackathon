@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -27,6 +28,7 @@ interface OrgStats {
 }
 
 export default function OrgDashboard() {
+  const { data: session } = useSession()
   const [stats, setStats] = useState<OrgStats | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -57,7 +59,14 @@ export default function OrgDashboard() {
     <div className="space-y-8">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text-primary tracking-tight">Organization Dashboard</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-text-primary tracking-tight">Organization Dashboard</h1>
+            {session?.user?.isVerified && (
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded-full border border-green-200">
+                <span>✓</span> TrustLayer Verified
+              </span>
+            )}
+          </div>
           <p className="text-text-secondary mt-1">Monitor your APIs and earnings</p>
         </div>
         <Button asChild className="bg-kaggle-blue hover:bg-kaggle-blue-hover text-white h-10">

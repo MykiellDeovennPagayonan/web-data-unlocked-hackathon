@@ -118,12 +118,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Step 10: Trust gate — check identity score before allowing application
+    // Step 10: Trust gate — progressive throttle based on trust score
     try {
       const tlUser = await tl.getPlatformUser(session.user.id)
       if (tlUser.identityId) {
         const score = await tl.getTrustScore("identity", tlUser.identityId)
-        if (score.score < 30) {
+        const existingCount = await prisma.application.count({
+          where: { individualId: individual.id },
+        })
+        if (score.score < 30 && existingCount >= 2) {
           return NextResponse.json(
             {
               message:

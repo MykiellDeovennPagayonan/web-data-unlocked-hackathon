@@ -3,6 +3,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { insertIpRecord } from './repository-ops/insert-ip-record';
 import { findIpByAddress } from './repository-ops/find-ip-by-address';
 import { updateIpRecord } from './repository-ops/update-ip-record';
+import { unbanIp } from './service-methods/unban-ip';
 import {
   CreateIpRecordData,
   IpRecord,
@@ -21,4 +22,7 @@ export class IpRecordsRepository {
 
   update = (id: string, data: UpdateIpRecordData): Promise<IpRecord> =>
     updateIpRecord(this.prisma, id, data);
+
+  unbanByAddress = (ipAddress: string): Promise<{ count: number }> =>
+    unbanIp(this.prisma, ipAddress);
 }

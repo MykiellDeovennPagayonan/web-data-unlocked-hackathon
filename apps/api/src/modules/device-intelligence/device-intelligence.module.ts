@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ComplianceModule } from '../compliance/compliance.module';
+import { EntityAliasesModule } from '../identity/entity-aliases/entity-aliases.module';
+import { TrustEngineModule } from '../trust-engine/trust-engine.module';
 import { DevicesController } from './devices/devices.controller';
 import { IpRecordsController } from './ip-records/ip-records.controller';
 import { DevicesService } from './devices/devices.service';
@@ -11,7 +13,7 @@ import { DeviceSignalsRepository } from './device-signals/device-signals.reposit
 import { IpRecordsRepository } from './ip-records/ip-records.repository';
 
 @Module({
-  imports: [ComplianceModule],
+  imports: [ComplianceModule, EntityAliasesModule, TrustEngineModule],
   controllers: [DevicesController, IpRecordsController],
   providers: [
     PrismaService,

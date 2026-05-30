@@ -69,7 +69,7 @@ export function Header() {
                 </button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center justify-center w-8 h-8 rounded-full bg-[#F2F2F2] text-[14px] font-medium text-[#242424] hover:bg-[#E5E5E5] transition-colors duration-150">
+                    <button aria-label="Open user menu" className="flex items-center justify-center w-8 h-8 rounded-full bg-[#F2F2F2] text-[14px] font-medium text-[#242424] hover:bg-[#E5E5E5] transition-colors duration-150">
                       {session.user.name?.charAt(0).toUpperCase()}
                     </button>
                   </DropdownMenuTrigger>
@@ -81,7 +81,7 @@ export function Header() {
                       <Link href="/post/create">Create Post</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut()}>
+                    <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
                       Sign Out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
