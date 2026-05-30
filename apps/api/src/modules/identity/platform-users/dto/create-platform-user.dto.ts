@@ -1,12 +1,14 @@
-import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsEmail } from 'class-validator';
 import { PlatformUserStatus } from '../../../../generated/client';
 
 export class CreatePlatformUserDto {
+  @IsOptional()
   @IsString()
-  identityId!: string;
+  identityId?: string;
 
+  @IsOptional()
   @IsString()
-  platformId!: string;
+  platformId?: string;
 
   @IsString()
   externalUserId!: string;
@@ -14,4 +16,17 @@ export class CreatePlatformUserDto {
   @IsOptional()
   @IsEnum(PlatformUserStatus)
   statusOnPlatform?: PlatformUserStatus;
+
+  // Identity creation fields (used when identityId not provided)
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  encryptedEmail?: string;
+
+  @IsOptional()
+  @IsString()
+  encryptedFullName?: string;
 }

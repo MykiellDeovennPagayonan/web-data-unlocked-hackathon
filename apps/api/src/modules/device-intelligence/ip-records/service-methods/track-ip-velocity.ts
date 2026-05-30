@@ -35,6 +35,12 @@ export async function trackIpVelocity(
   if (thresholdExceeded) {
     const existing = await repository.findByAddress(ipAddress);
     if (existing && !existing.isBlacklisted) {
+      console.warn(
+        `[TrustLayer IP Intelligence] Blacklisting IP ${ipAddress}:` +
+          ` ${count} requests in ${VELOCITY_WINDOW_SECONDS}s` +
+          ` exceeded threshold of ${VELOCITY_THRESHOLD}.` +
+          ` Source: behavioral:velocity`,
+      );
       await repository.update(existing.id, {
         isBlacklisted: true,
         blacklistSource: 'behavioral:velocity',

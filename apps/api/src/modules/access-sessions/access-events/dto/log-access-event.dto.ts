@@ -23,7 +23,8 @@ export class LogAccessEventDto {
   ipId!: string;
 
   @IsUUID()
-  deviceId!: string;
+  @IsOptional()
+  deviceId?: string;
 
   @IsEnum(AccessEventType)
   eventType!: AccessEventType;

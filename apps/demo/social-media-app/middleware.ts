@@ -9,6 +9,11 @@ export const config = {
 }
 
 export async function middleware(request: NextRequest) {
+  // Skip TrustLayer check for seed endpoint (e2e tests)
+  if (request.nextUrl.pathname === '/api/seed') {
+    return NextResponse.next()
+  }
+
   if (!TL_API_KEY) {
     return NextResponse.next()
   }
@@ -23,10 +28,12 @@ export async function middleware(request: NextRequest) {
     const ipRecord = await tl.lookupIp(ip)
 
     if (ipRecord.isBlacklisted) {
+      const source = ipRecord.blacklistSource ?? 'unknown'
+      console.warn(`[TrustLayer] Blocked IP ${ip}: blacklisted (source: ${source})`)
       return NextResponse.json(
         {
           error: "Access denied",
-          message: "Your IP address has been flagged for suspicious activity.",
+          message: `Your IP address has been flagged for suspicious activity.`,
         },
         { status: 403 }
       )

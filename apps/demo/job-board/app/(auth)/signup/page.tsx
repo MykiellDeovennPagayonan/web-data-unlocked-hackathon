@@ -18,6 +18,23 @@ export default function IndividualSignup() {
     setError("")
 
     const formData = new FormData(event.currentTarget)
+
+    let deviceFingerprint: Array<{ signalType: string; value: string }> = []
+    try {
+      const FingerprintJS = await import("@fingerprintjs/fingerprintjs")
+      const fp = await FingerprintJS.load()
+      const result = await fp.get()
+      deviceFingerprint = [
+        { signalType: "canvas_hash", value: result.visitorId },
+        { signalType: "user_agent", value: navigator.userAgent },
+        { signalType: "language", value: navigator.language },
+        { signalType: "screen_resolution", value: `${screen.width}x${screen.height}` },
+        { signalType: "timezone", value: Intl.DateTimeFormat().resolvedOptions().timeZone },
+      ]
+    } catch {
+      // Non-fatal — proceed without fingerprint
+    }
+
     const data = {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
@@ -26,6 +43,7 @@ export default function IndividualSignup() {
       bio: (formData.get("bio") as string) || undefined,
       location: (formData.get("location") as string) || undefined,
       website: (formData.get("website") as string) || undefined,
+      deviceFingerprint,
     }
 
     try {

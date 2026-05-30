@@ -1,9 +1,11 @@
 export { createClient } from "./client"
 export type { TunaiClient, TunaiConfig } from "./client"
+export { TunaiError } from "./fetch"
 
 export type {
   IpRecord,
   IpVelocity,
+  IpProbe,
   DeviceSignal,
   DeviceSignalType,
   Device,
@@ -21,6 +23,7 @@ export type {
   ReportTargetType,
   EnrolledUser,
   EnrolledOrganization,
+  CertificateVerificationResult,
 } from "./types"
 
 export type { DeviceResolution } from "./device"

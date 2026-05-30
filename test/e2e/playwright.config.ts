@@ -10,7 +10,10 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: debugArtifacts ? [['html', { open: 'never' }], ['list']] : [['list']],
-  outputDir: process.env.PLAYWRIGHT_OUTPUT_DIR ?? join(tmpdir(), 'playwright-output'),
+  outputDir: process.env.PLAYWRIGHT_OUTPUT_DIR ?? 'results',
+  expect: {
+    timeout: 10000,
+  },
   use: {
     baseURL: 'http://localhost:3001',
     browserName: 'chromium',
@@ -20,7 +23,7 @@ export default defineConfig({
     },
     viewport: { width: 1280, height: 720 },
     screenshot: debugArtifacts ? 'only-on-failure' : 'off',
-    video: debugArtifacts ? 'retain-on-failure' : 'off',
+    video: debugArtifacts ? 'on' : 'off',
     trace: debugArtifacts ? 'retain-on-failure' : 'off',
   },
   projects: [

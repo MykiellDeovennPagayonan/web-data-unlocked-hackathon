@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuditLogsService } from '../../compliance/audit-logs/audit-logs.service';
+import { EntityAliasesRepository } from '../../identity/entity-aliases/entity-aliases.repository';
+import { TrustSignalsService } from '../../trust-engine/trust-signals/trust-signals.service';
 import { DevicesRepository } from './devices.repository';
 import { DeviceSignalsRepository } from '../device-signals/device-signals.repository';
 import { resolveOrCreateDevice } from './service-methods/resolve-or-create-device';
@@ -14,13 +16,23 @@ export class DevicesService {
   constructor(
     private readonly repository: DevicesRepository,
     private readonly signalsRepository: DeviceSignalsRepository,
+    private readonly entityAliasesRepository: EntityAliasesRepository,
+    private readonly trustSignalsService: TrustSignalsService,
     private readonly auditLogsService: AuditLogsService,
   ) {}
 
   resolveOrCreateDevice = (
     signals: RawSignalInput[],
+    identityId?: string,
   ): Promise<{ device: Device; isNew: boolean }> =>
-    resolveOrCreateDevice(this.repository, this.signalsRepository, signals);
+    resolveOrCreateDevice(
+      this.repository,
+      this.signalsRepository,
+      this.entityAliasesRepository,
+      this.trustSignalsService,
+      signals,
+      identityId,
+    );
 
   getDeviceById = (id: string): Promise<Device | null> =>
     getDeviceById(this.repository, id);

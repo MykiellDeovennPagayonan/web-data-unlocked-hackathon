@@ -158,9 +158,16 @@ export default function ProfilePage() {
                 >
                   {profile.name}
                 </h1>
-                <p className="text-[14px] text-[#6B6B6B]">
-                  {profile._count.followers} followers · {profile._count.following} following
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[14px] text-[#6B6B6B]">
+                    {profile._count.followers} followers · {profile._count.following} following
+                  </p>
+                  {profile.isVerified && (
+                    <span className="inline-flex items-center gap-1 text-[12px] font-medium text-[#1A8917] bg-[#E8F5E9] px-2 py-0.5 rounded-full">
+                      <span>✓</span> TrustLayer Verified
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
             {!isOwnProfile && session && (

@@ -12,8 +12,7 @@ test.describe('API Store E2E Flow', () => {
     await cleanupAll()
   })
 
-  test('full user flow: org creates endpoint, individual uses API, org sees usage', async ({ page }) => {
-    // ========== ORGANIZATION FLOW ==========
+  test('org: signup, login, and create endpoint', async ({ page }) => {
     // 1. Navigate to org signup
     await page.goto(`${API_STORE.url}/signup/organization`)
     await expect(page.locator('text=Create Organization Account').first()).toBeVisible()
@@ -46,8 +45,9 @@ test.describe('API Store E2E Flow', () => {
     await logout(page)
     await waitForUrl(page, '/login')
     await expect(page.locator('text=Sign In').first()).toBeVisible()
+  })
 
-    // ========== INDIVIDUAL FLOW ==========
+  test('individual: signup, login, generate key, try API, and top up', async ({ page }) => {
     // 6. Navigate to individual signup
     await page.goto(`${API_STORE.url}/signup`)
     await expect(page.locator('text=Create Account').first()).toBeVisible()
@@ -63,14 +63,14 @@ test.describe('API Store E2E Flow', () => {
     await expect(page.locator('text=My Dashboard').first()).toBeVisible()
     await expect(page.locator('text=Test User API').first()).toBeVisible()
 
-    // 9. Generate API key
+    // 9. Generate API key inline on dashboard
     await page.click('button:has-text("Generate API Key")')
     await expect(page.locator('code')).toBeVisible()
     const apiKeyText = await page.locator('code').textContent()
     expect(apiKeyText).toBeTruthy()
     expect(apiKeyText!.length).toBeGreaterThan(10)
 
-    // 10. Navigate to marketplace
+    // 10. Navigate to marketplace via sidebar
     await page.click('text=Marketplace')
     await waitForUrl(page, '/marketplace')
     await expect(page.locator('text=API Marketplace').first()).toBeVisible()
@@ -85,8 +85,8 @@ test.describe('API Store E2E Flow', () => {
     // Clipboard API may fail in headless browsers; just verify the button was clickable
 
     // 13. Run request via Try API page
-    await page.selectOption('select', API_STORE.endpoint.method)
-    await page.click('button:has-text("Run")')
+    await page.selectOption('select[aria-label="HTTP method"]', API_STORE.endpoint.method)
+    await page.click('button:has-text("Run Request")')
     await expect(page.locator('text=Response').first()).toBeVisible()
     await expect(page.locator('text=200').first()).toBeVisible()
 
@@ -103,8 +103,9 @@ test.describe('API Store E2E Flow', () => {
     await logout(page)
     await waitForUrl(page, '/login')
     await expect(page.locator('text=Sign In').first()).toBeVisible()
+  })
 
-    // ========== ORGANIZATION RE-LOGIN ==========
+  test('org: re-login and verify usage stats', async ({ page }) => {
     // 16. Login as organization again
     await login(page, API_STORE.organization.email, API_STORE.organization.password)
     await waitForUrl(page, '/dashboard')
@@ -112,6 +113,9 @@ test.describe('API Store E2E Flow', () => {
 
     // 17. Verify usage stats show calls
     await expect(page.locator('text=Total API Calls').first()).toBeVisible()
+    const totalCallsCard = page.locator('div.rounded-xl').filter({ hasText: 'Total API Calls' }).first()
+    const callsText = await totalCallsCard.locator('p').textContent()
+    expect(callsText).toBeTruthy()
 
     // 18. Final logout
     await logout(page)

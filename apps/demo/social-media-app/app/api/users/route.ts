@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { tl } from "@/lib/trustlayer"
+import { TunaiError } from "@trust-layer/tunai"
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     const deviceSignals = (profileData.deviceFingerprint as Array<{ signalType: string; value: string }> | undefined) ?? []
     try {
-      await tl.enrollIndividual({
+      const enrolled = await tl.enrollIndividual({
         email,
         fullName: name,
         externalUserId: user.id,
@@ -73,10 +74,19 @@ export async function POST(request: NextRequest) {
           deviceSignals.map((s) => ({
             signalType: s.signalType as "canvas_hash" | "webgl_hash" | "screen_resolution" | "os" | "timezone" | "user_agent" | "language",
             value: s.value,
-          }))
+          })),
+          enrolled.identityId
         )
       }
     } catch (tlErr) {
+      // Handle hard blocks from TrustLayer (e.g. suspicious email domain or pattern)
+      if (tlErr instanceof TunaiError && tlErr.status === 403) {
+        await prisma.user.delete({ where: { id: user.id } })
+        return NextResponse.json(
+          { message: tlErr.cleanMessage },
+          { status: 403 }
+        )
+      }
       console.error("[TrustLayer] registerUser failed (non-fatal):", tlErr)
     }
 

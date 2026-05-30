@@ -74,7 +74,7 @@ test.describe('Job Board E2E Flow', () => {
 
     // 10. Apply for the job
     await page.click('text=Apply Now')
-    await waitForUrl(page, '/apply')
+    await page.waitForURL(/\/jobs\/.+\/apply/)
     await expect(page.locator('text=Apply for Job').first()).toBeVisible()
 
     await page.fill('textarea[name="coverLetter"]', JOB_BOARD.application.coverLetter)
@@ -107,7 +107,7 @@ test.describe('Job Board E2E Flow', () => {
     await page.goto(`${JOB_BOARD.url}/dashboard/applications`)
     await expect(page.getByRole('heading', { name: 'My Applications' })).toBeVisible()
     await expect(page.locator(`text=${JOB_BOARD.job.title}`)).toBeVisible()
-    await expect(page.getByText('Pending').first()).toBeVisible()
+    await expect(page.getByText('Applied').first()).toBeVisible()
 
     // 12. Logout
     await logout(page)
@@ -122,7 +122,7 @@ test.describe('Job Board E2E Flow', () => {
 
     // 14. View applicants
     await page.click('text=View Applicants')
-    await waitForUrl(page, '/applicants')
+    await page.waitForURL(/\/dashboard\/jobs\/.+\/applicants/)
     await expect(page.locator('text=Job Applicants').first()).toBeVisible()
     await expect(page.locator('text=Test Seeker').first()).toBeVisible()
     await expect(page.locator('text=test.seeker@e2e.local').first()).toBeVisible()

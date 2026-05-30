@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -29,6 +30,7 @@ interface RecentLog {
 }
 
 export default function UserDashboard() {
+  const { data: session } = useSession()
   const [stats, setStats] = useState<{
     creditBalance: number
     byEndpoint: EndpointStat[]
@@ -93,7 +95,14 @@ export default function UserDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-text-primary tracking-tight">My Dashboard</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-text-primary tracking-tight">My Dashboard</h1>
+          {session?.user?.isVerified && (
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded-full border border-green-200">
+              <span>✓</span> TrustLayer Verified
+            </span>
+          )}
+        </div>
         <p className="text-text-secondary mt-1">Your API usage and credits overview</p>
       </div>
 

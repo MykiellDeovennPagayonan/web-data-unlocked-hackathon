@@ -8,7 +8,8 @@ export interface DeviceResolution {
 
 export function resolveDevice(
   config: TunaiConfig,
-  signals: DeviceSignal[]
+  signals: DeviceSignal[],
+  identityId?: string
 ): Promise<DeviceResolution> {
-  return post<DeviceResolution>(config, "/v1/intelligence/device", { signals })
+  return post<DeviceResolution>(config, "/v1/intelligence/device", { signals, identityId })
 }

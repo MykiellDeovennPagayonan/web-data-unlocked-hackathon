@@ -14,4 +14,8 @@ export class CreateIdentityDto {
   @IsOptional()
   @IsEnum(TrustStatus)
   trustStatus?: TrustStatus;
+
+  @IsOptional()
+  @IsString()
+  submittedByPlatformId?: string;
 }

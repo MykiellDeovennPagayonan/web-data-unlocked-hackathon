@@ -21,7 +21,10 @@ export class DevicesController {
   resolveDevice(
     @Body() dto: ResolveDeviceDto,
   ): Promise<{ device: Device; isNew: boolean }> {
-    return this.devicesService.resolveOrCreateDevice(dto.signals);
+    return this.devicesService.resolveOrCreateDevice(
+      dto.signals,
+      dto.identityId,
+    );
   }
 
   @Get('admin/devices')

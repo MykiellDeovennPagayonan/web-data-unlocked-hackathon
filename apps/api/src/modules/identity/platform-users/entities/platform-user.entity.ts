@@ -6,7 +6,7 @@ import {
 export type PlatformUser = PrismaPlatformUser;
 
 export interface CreatePlatformUserData {
-  identityId: string;
+  identityId?: string;
   platformId: string;
   externalUserId: string;
   statusOnPlatform?: PlatformUserStatus;

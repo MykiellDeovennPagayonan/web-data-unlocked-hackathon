@@ -2,11 +2,11 @@
 
 ## The Story
 
-A bad actor discovers that **API Store** gives every new account 50 free API calls per endpoint. Rather than pay, they create a second account with a different email, exhaust another 50 free calls, then a third, a fourth. Same laptop, same IP, different aliases.
+A bad actor discovers that **API Store** gives every new account 25 free API calls per endpoint. Rather than pay, they create a second account with a different email, exhaust another 25 free calls, then a third, a fourth. Same laptop, same IP, different aliases.
 
 To them it looks like a harmless exploit of a free trial system. What they don't realize is that TrustLayer is watching every registration — not just the email, but the device fingerprint and IP address behind each one. The moment a pattern emerges, TrustLayer links all those aliases to a single identity and starts building a suspicion score.
 
-By the time that same person walks over to **Job Board** and tries to apply for jobs, TrustLayer already knows who they are. They get two applications through — then on the third, they're quietly throttled. No error, no explanation that makes sense to them. Just a wall.
+By the time that same person walks over to **Job Board** and tries to sign up, TrustLayer already knows who they are. The signup is denied immediately. No error that makes sense to them. Just a wall.
 
 ---
 
@@ -26,47 +26,53 @@ By the time that same person walks over to **Job Board** and tries to apply for 
 The bad actor signs up on API Store as `user1@gmail.com`. Normal registration. TrustLayer receives a signal from API Store at the moment of signup:
 
 - The browser sends a **device fingerprint** — a hash built from canvas rendering, WebGL, user-agent, screen resolution, timezone, and language. This becomes the `Device.stableHash` in TrustLayer.
-- The **IP address** is logged and evaluated — is it residential, a datacenter, a VPN, or a known proxy?
+- The **IP address** is logged and evaluated.
 - A new `Identity` is created in TrustLayer, linked to this device and IP.
 - Trust score starts at **50** (neutral baseline).
 
-The user gets their 50 free calls, uses them, and moves on.
+The user gets their 25 free calls, uses them, and moves on.
 
-### Step 2 — Second and Third Registrations
+### Step 2 — Second Registration (Silent Tracking)
 
-The bad actor registers again as `user2@protonmail.com`, then `user3@outlook.com`. Different email providers. Different names. But the same laptop, the same browser, the same IP.
+The bad actor registers again as `user2@protonmail.com`. Different email. Same laptop, same browser, same IP.
 
-TrustLayer receives the same device fingerprint hash on each registration. It recognizes the device. Each new email that registers from an already-seen device gets flagged as an **EntityAlias** — a new identity that is linked back to the original with high confidence.
+TrustLayer receives the same device fingerprint hash on this registration. It recognizes the device. TrustLayer creates an **EntityAlias** — linking this new identity back to the original canonical identity with high confidence.
 
-At this point TrustLayer fires a `TrustSignal` of type `behavioral_flag` with negative weight against the canonical identity. The trust score starts dropping.
+At this stage the alias is logged but the actor is not blocked. The system is building a profile. The user gets their 25 free calls and moves on.
 
-By the third account the pattern is clear: one device, three emails, 150 free API calls consumed. TrustLayer has now assigned this device a risk score and flagged it.
+### Step 3 — Third Registration (The 10-Call Limit)
 
-### Step 3 — Trust Score Crosses the Threshold
+The bad actor registers again as `user3@outlook.com`. Same device, same IP. TrustLayer now sees **two aliases** tied to the same canonical identity. The pattern is undeniable.
 
-After three registrations from the same device fingerprint and IP, TrustLayer's computed trust score for this identity drops below the threshold. The scoring is simple: each `behavioral_flag` signal carries a negative weight. Stack enough of them and the score floors.
+A `behavioral_flag` TrustSignal is fired. The trust score drops from 50 to 10.
 
-The identity is now marked with `TrustStatus: flagged` in TrustLayer. Any platform in the TrustLayer network that queries this identity will get back a low trust score.
+The user starts using their free API calls. But this time the system is watching. The free limit is capped at 10. On the **11th API call**, the request is **denied**.
 
-### Step 4 — The Bad Actor Moves to Job Board
+The user sees: *"Access denied. Your account has been flagged for suspicious activity."*
 
-The bad actor — or the same person using the same laptop — creates an account on **Job Board**. They use yet another email, but the same device and IP.
+### Step 4 — Fourth Registration (Hard Block)
 
-Job Board is integrated with TrustLayer. At registration, it sends the same device fingerprint and IP. TrustLayer immediately recognizes the device. It returns the flagged identity record and the low trust score.
+Undeterred, the bad actor tries a fourth account. Same device, same IP, another new email.
 
-Job Board doesn't block them at registration — the score is below the hard-block threshold but not in the hard-block zone. The user gets in.
+At the moment of registration, TrustLayer looks up the device fingerprint. It finds the canonical identity with multiple aliases, a dropped trust score, and an active behavioral flag. This time, there is no ambiguity.
 
-### Step 5 — Two Applications Go Through
+The signup request is **denied at registration**.
 
-The user starts applying for jobs. Job Board checks with TrustLayer on each application submission. The trust score is low but not zero, so the first two applications are allowed through with a soft flag attached internally.
+The user sees: *"You have been flagged for suspicious activity."*
 
-### Step 6 — The Third Application Is Throttled
+They cannot create another account on API Store from this device.
 
-On the third job application, Job Board's TrustLayer integration returns the current trust score. The platform's configured rule kicks in: **users below this score threshold are limited to 2 job applications**. The third attempt is rejected.
+### Step 5 — The Bad Actor Moves to Job Board (Hard Blocked)
 
-The user sees a message like: *"You've reached the application limit for your account. Please contact support to continue."*
+The same person opens **Job Board** and tries to sign up with yet another email. Job Board also collects the device fingerprint and sends it to TrustLayer.
 
-They don't know why. There's no mention of TrustLayer. There's no accusation. But the damage they could have done — spamming dozens of employers — has been prevented.
+TrustLayer immediately recognizes the device. It finds the canonical identity with three aliases, a dropped trust score, and an active behavioral flag. This time, there is no ambiguity.
+
+The signup request is **denied at registration**.
+
+The user sees: *"You have been flagged for suspicious activity."*
+
+They cannot create an account on Job Board from this device. The cross-platform network effect is immediate and total.
 
 ---
 
@@ -79,7 +85,7 @@ API Store and Job Board are separate companies with separate databases. Neither 
 The user changed their email three times. They could have used a VPN and changed their IP. But the browser fingerprint is much harder to spoof without significant effort. TrustLayer catches the pattern that email-level checks completely miss.
 
 ### Proportional Response
-The user isn't banned from Job Board. They're throttled. TrustLayer's architecture supports `flagged`, `limited`, and `blocked` — the platform chose `limited`. This is realistic: a job board wouldn't hard-ban someone for having a suspicious API usage pattern. They'd quietly limit them and monitor.
+The response escalates proportionally: Account 2 is silently tracked, Account 3 is limited on API calls, Account 4 and any cross-platform attempts are hard-blocked at registration. TrustLayer's architecture supports `flagged`, `limited`, and `blocked` — each platform can choose its response level based on the severity of the trust score.
 
 ### Bright Data's Role
 When the IPs associated with these accounts are evaluated, TrustLayer uses Bright Data's **Proxy Network** in reverse — not to scrape, but to identify whether incoming IPs belong to known datacenter ranges, VPN providers, or residential addresses. A user registering from a datacenter IP is a strong signal even before the device fingerprint links come in.
@@ -88,13 +94,11 @@ When the IPs associated with these accounts are evaluated, TrustLayer uses Brigh
 
 ## The Moment to Show in the Demo
 
-1. Open API Store. Register as User 1. Use 50 free calls. Show the usage counter hit 50.
-2. Register as User 2 (same browser, different email). Use 50 more calls.
-3. Register as User 3. Show the usage counter again.
-4. Switch to Job Board. Register with a new email (same browser).
-5. Apply to Job 1. Success.
-6. Apply to Job 2. Success.
-7. Apply to Job 3. **Throttled.** Show the error message.
-8. Pull up the TrustLayer dashboard. Show the identity with three aliases, the device fingerprint match, the trust score trajectory, and the flagged status.
+1. Open API Store. Register as User 1 (`user1@gmail.com`). Use 25 free calls. Show the usage counter hit 25.
+2. Register as User 2 (`user2@protonmail.com`, same browser, different email). Use 25 more calls. Nothing appears blocked yet.
+3. Register as User 3 (`user3@outlook.com`). Start using free calls. Count up to **10**. On the 11th call, the request is **denied** with *"Access denied. Your account has been flagged for suspicious activity."*
+4. Try to register as User 4. The signup form is **rejected immediately** with *"You have been flagged for suspicious activity."*
+5. Switch to Job Board. Register with a new email (same browser). The signup is **rejected immediately** with *"You have been flagged for suspicious activity."*
+6. Pull up the TrustLayer dashboard. Show the canonical identity with three aliases, the device fingerprint match, the trust score trajectory (50 → 30 → 10 → 0), the behavioral flags, and the progressive platform responses.
 
-The punchline: *three platforms, one bad actor, zero coordination between the platforms, and TrustLayer caught it anyway.*
+The punchline: *four accounts, two platforms, zero coordination, and TrustLayer caught every alias — progressively, proportionally, and automatically.*

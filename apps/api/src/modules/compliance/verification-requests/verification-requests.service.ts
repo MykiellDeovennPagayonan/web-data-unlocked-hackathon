@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { VerificationRequestsRepository } from './verification-requests.repository';
 import { TrustSignalsService } from '../../trust-engine/trust-signals/trust-signals.service';
 import { TrustScoreSnapshotsService } from '../../trust-engine/trust-score-snapshots/trust-score-snapshots.service';
@@ -22,6 +23,7 @@ export class VerificationRequestsService {
     private readonly trustSignalsService: TrustSignalsService,
     private readonly trustScoreSnapshotsService: TrustScoreSnapshotsService,
     private readonly auditLogsService: AuditLogsService,
+    private readonly prisma: PrismaService,
   ) {}
 
   createRequest = (
@@ -44,6 +46,7 @@ export class VerificationRequestsService {
       this.trustSignalsService,
       this.trustScoreSnapshotsService,
       this.auditLogsService,
+      this.prisma,
       id,
     );
 

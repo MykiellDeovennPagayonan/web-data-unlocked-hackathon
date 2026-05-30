@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Prisma } from "@/generated/client"
 import { prisma } from "@/lib/prisma"
-
-const FREE_TRIAL_LIMIT = 50
+import { tl, PLATFORM_ID } from "@/lib/trustlayer"
+import { FREE_TRIAL_LIMIT } from "@/lib/constants"
 
 export async function POST(
   request: NextRequest,
@@ -64,14 +64,72 @@ async function handleProxy(request: NextRequest, endpointId: string) {
 
   const user = apiKeyRecord.user
 
+  // Get client IP for TrustLayer tracking
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || request.headers.get("x-real-ip")
+    || "127.0.0.1"
+
+  let freeLimit = FREE_TRIAL_LIMIT
+  let identityId: string | null = null
+  let ipId: string | null = null
+
+  // Try to get existing TrustLayer user, or auto-enroll if not found
+  let platformUser: { identityId: string | null } | null = null
+  try {
+    platformUser = await tl.getPlatformUser(user.id)
+    console.log(`[PROXY] platformUser for ${user.id}:`, platformUser)
+  } catch (err) {
+    console.log(`[PROXY] getPlatformUser failed for ${user.id} (user not in TrustLayer), will auto-enroll`)
+  }
+
+  if (platformUser?.identityId) {
+    // User already enrolled in TrustLayer
+    identityId = platformUser.identityId
+    const score = await tl.getTrustScore("identity", platformUser.identityId)
+    console.log("[PROXY] trust score:", score)
+    if (score.score < 15) {
+      freeLimit = Math.max(0, score.score)
+    }
+
+    // Get IP record for access event logging
+    const ipRecord = await tl.lookupIp(ip)
+    ipId = ipRecord.id
+  } else {
+    // AUTO-ENROLL: User exists in API Store but not in TrustLayer
+    console.log(`[PROXY] User ${user.id} not enrolled in TrustLayer, auto-enrolling...`)
+    try {
+      const enrolled = await tl.enrollIndividual({
+        email: user.email,
+        fullName: user.name || user.email,
+        externalUserId: user.id,
+      })
+      identityId = enrolled.identityId
+      console.log(`[PROXY] Auto-enrolled user ${user.id} with identityId: ${identityId}`)
+      
+      // Now get IP record for the newly enrolled user
+      const ipRecord = await tl.lookupIp(ip)
+      ipId = ipRecord.id
+    } catch (enrollErr) {
+      console.error(`[PROXY] Auto-enrollment failed for ${user.id}:`, enrollErr)
+    }
+  }
+
+  console.log(`[PROXY] identityId: ${identityId}, ipId: ${ipId}, PLATFORM_ID: ${PLATFORM_ID}`)
+
   let freeTrial = await prisma.freeTrial.findUnique({
     where: { userId_endpointId: { userId: user.id, endpointId } },
   })
 
-  const isFree = (freeTrial?.usedCount ?? 0) < FREE_TRIAL_LIMIT
+  const isFree = (freeTrial?.usedCount ?? 0) < freeLimit
   let costCharged = 0
 
   if (!isFree) {
+    if (freeLimit < FREE_TRIAL_LIMIT) {
+      return NextResponse.json(
+        { error: "Access denied. Your account has been flagged for suspicious activity." },
+        { status: 403 }
+      )
+    }
     costCharged = endpoint.pricePer1k / 1000
     if (user.creditBalance < costCharged) {
       return NextResponse.json(
@@ -120,6 +178,24 @@ async function handleProxy(request: NextRequest, endpointId: string) {
       },
     })
     return NextResponse.json({ error: "Failed to reach upstream endpoint" }, { status: 502 })
+  }
+
+  // Log access event to TrustLayer for behavioral analysis
+  console.log(`[PROXY] Will log access event? identityId=${identityId}, ipId=${ipId}, PLATFORM_ID=${PLATFORM_ID}`)
+  if (identityId && ipId && PLATFORM_ID) {
+    try {
+      await tl.logAccessEvent({
+        platformId: PLATFORM_ID,
+        identityId,
+        ipId,
+        eventType: "api_call",
+        verdict: statusCode >= 200 && statusCode < 300 ? "allowed" : "throttled",
+        scoreAtEvent: freeLimit,
+      })
+    } catch (err) {
+      // Non-fatal — don't block the API call if logging fails
+      console.error("[TrustLayer] Failed to log access event:", err)
+    }
   }
 
   await prisma.$transaction(async (tx: Prisma.TransactionClient) => {

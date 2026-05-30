@@ -18,6 +18,8 @@ export interface CreateEntityAliasData {
   aliasValueEncrypted: string;
   confidence: number;
   source: AliasSource;
+  identityId?: string;
+  orgId?: string;
 }
 
 export interface UpdateAliasConfidenceData {

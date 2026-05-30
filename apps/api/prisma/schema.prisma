@@ -473,8 +473,10 @@ model EntityAlias {
   source              AliasSource
   createdAt           DateTime    @default(now())
 
-  identity     Identity?     @relation(fields: [canonicalEntityId], references: [id], map: "entity_aliases_identity_fk")
-  organization Organization? @relation(fields: [canonicalEntityId], references: [id], map: "entity_aliases_org_fk")
+  identity     Identity?     @relation(fields: [identityId], references: [id], map: "entity_aliases_identity_fk")
+  identityId   String?
+  organization Organization? @relation(fields: [orgId], references: [id], map: "entity_aliases_org_fk")
+  orgId        String?
 
   @@map("entity_aliases")
 }
@@ -542,7 +544,7 @@ model AccessEvent {
   identityId     String?
   orgId          String?
   ipId           String
-  deviceId       String
+  deviceId       String?
   eventType      AccessEventType
   verdict        AccessVerdict
   scoreAtEvent   Decimal
@@ -553,7 +555,7 @@ model AccessEvent {
   identity Identity?     @relation(fields: [identityId], references: [id])
   org      Organization? @relation(fields: [orgId], references: [id])
   ip       IpRecord      @relation(fields: [ipId], references: [id])
-  device   Device        @relation(fields: [deviceId], references: [id])
+  device   Device?       @relation(fields: [deviceId], references: [id])
 
   @@map("access_events")
 }
@@ -685,7 +687,7 @@ model TrustCertificate {
   expiresAt        DateTime
   status           CertificateStatus
   revocationReason String?
-  certificateHash  String
+  certificateHash  String      @unique
   blockchainTxHash String
   issuingCheckId   String
 

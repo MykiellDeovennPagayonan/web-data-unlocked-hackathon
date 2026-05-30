@@ -2,9 +2,52 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { tl } from "@/lib/trustlayer"
+import { logApiAccess } from "@/lib/access-event"
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      "127.0.0.1"
+    const userAgent = request.headers.get("user-agent") ?? "unknown"
+
+    let verdict: "allowed" | "throttled" | "blocked" = "allowed"
+
+    try {
+      const velocity = await tl.trackRequestVelocity(ip)
+      if (velocity.isBlacklisted) {
+        verdict = "blocked"
+        void logApiAccess({ ip, userAgent, verdict })
+        return NextResponse.json(
+          {
+            error: "Access denied",
+            message:
+              "Your IP address has been flagged for suspicious activity.",
+          },
+          { status: 403 }
+        )
+      }
+      if (velocity.thresholdExceeded) {
+        verdict = "throttled"
+        void logApiAccess({ ip, userAgent, verdict })
+        return NextResponse.json(
+          {
+            error: "Rate limit exceeded",
+            message:
+              "Too many requests detected from your IP. Access has been restricted.",
+          },
+          { status: 429 }
+        )
+      }
+
+      const endpointSignature = `/api/jobs${request.url.split("/api/jobs")[1] ?? ""}`
+      await tl.trackIpProbe(ip, endpointSignature)
+    } catch {
+      // Non-fatal — continue serving if TrustLayer unreachable
+    }
+
     const jobs = await prisma.job.findMany({
       where: { status: "ACTIVE" },
       include: {
@@ -22,7 +65,9 @@ export async function GET() {
       orderBy: { createdAt: "desc" }
     })
 
-    return NextResponse.json(jobs)
+    const response = NextResponse.json(jobs)
+    void logApiAccess({ ip, userAgent, verdict })
+    return response
   } catch (error) {
     console.error("Error fetching jobs:", error)
     return NextResponse.json(

@@ -7,10 +7,15 @@ import {
   Param,
   UseGuards,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
 import { CurrentPlatform } from '../../../common/decorators/current-platform.decorator';
-import { PlatformUsersService } from './platform-users.service';
+import {
+  PlatformUsersService,
+  SuspiciousEmailDomainError,
+  SuspiciousEmailPatternError,
+} from './platform-users.service';
 import { CreatePlatformUserDto } from './dto/create-platform-user.dto';
 import { UpdatePlatformUserStatusDto } from './dto/update-platform-user-status.dto';
 import { PlatformUser } from './entities/platform-user.entity';
@@ -21,14 +26,24 @@ export class PlatformUsersController {
 
   @Post('v1/platform-users')
   @UseGuards(ApiKeyGuard)
-  createPlatformUser(
+  async createPlatformUser(
     @CurrentPlatform() platformId: string,
     @Body() dto: CreatePlatformUserDto,
   ): Promise<PlatformUser> {
-    return this.platformUsersService.createPlatformUser({
-      ...dto,
-      platformId,
-    });
+    try {
+      return await this.platformUsersService.createPlatformUser({
+        ...dto,
+        platformId,
+      });
+    } catch (error) {
+      if (
+        error instanceof SuspiciousEmailDomainError ||
+        error instanceof SuspiciousEmailPatternError
+      ) {
+        throw new ForbiddenException((error as Error).message);
+      }
+      throw error;
+    }
   }
 
   @Get('v1/platform-users/:externalId')
